@@ -1,9 +1,12 @@
 # Build stage for github-mcp-server
-FROM node:20-alpine AS github-mcp-builder
-RUN apk add --no-cache git python3 make g++
-RUN git clone https://github.com/modelcontextprotocol/servers.git /tmp/mcp-servers
-WORKDIR /tmp/mcp-servers/src/github
-RUN npm install && npm run build
+# Use Go 1.23 for building, then switch to Node.js for runtime
+FROM golang:1.23-bullseye AS builder
+
+# Build GitHub MCP Server
+RUN git clone https://github.com/github/github-mcp-server.git /tmp/github-mcp-server \
+    && cd /tmp/github-mcp-server \
+    && go build -o github-mcp-server ./cmd/github-mcp-server
+
 
 # Build stage for similarity-ts
 FROM rust:latest AS similarity-builder
@@ -50,7 +53,8 @@ RUN npm install -g pnpm
 RUN npm install -g @anthropic-ai/claude-code
 
 # Copy built binaries from build stages
-COPY --from=github-mcp-builder /tmp/mcp-servers/src/github /opt/mcp-servers/github
+# Copy the built MCP server binary
+COPY --from=builder /tmp/github-mcp-server/github-mcp-server /usr/local/bin/
 COPY --from=similarity-builder /usr/local/cargo/bin/similarity-ts /usr/local/bin/
 
 # Make binaries executable

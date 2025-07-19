@@ -21,6 +21,13 @@ services:
     user: node
     working_dir: /workspace
     command: /bin/bash
+    networks:
+      - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge
+    name: mcp-network
 
 volumes:
   node_modules:
