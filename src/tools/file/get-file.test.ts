@@ -26,18 +26,19 @@ describe('get-file tool', () => {
         id: 'doc-id',
         name: 'Document',
         type: 'DOCUMENT',
-        scrollBehavior: 'FIXED',
         children: [],
       },
       components: {},
+      componentSets: {},
+      schemaVersion: 0,
       styles: {},
-      mainFileKey: 'file-key',
-      branches: [],
+      role: 'editor',
+      linkAccess: 'view',
     };
 
     vi.spyOn(filesApi, 'getFile').mockResolvedValue(mockFile);
 
-    const result = await get_file.handler({
+    const result = await get_file.execute({
       file_key: 'test-file-key',
     });
 
@@ -56,7 +57,7 @@ describe('get-file tool', () => {
     expect(filesApi.getFile).toHaveBeenCalledWith('test-file-key', {});
   });
 
-  test('ブランチIDを指定してファイル情報を取得できる', async () => {
+  test('ブランチデータを含めてファイル情報を取得できる', async () => {
     const mockFile: FigmaFile = {
       name: 'Branch File',
       lastModified: '2024-01-01T00:00:00Z',
@@ -67,36 +68,35 @@ describe('get-file tool', () => {
         id: 'doc-id',
         name: 'Document',
         type: 'DOCUMENT',
-        scrollBehavior: 'FIXED',
         children: [],
       },
       components: {},
+      componentSets: {},
+      schemaVersion: 0,
       styles: {},
-      mainFileKey: 'file-key',
-      branches: [],
+      role: 'editor',
+      linkAccess: 'view',
     };
 
     vi.spyOn(filesApi, 'getFile').mockResolvedValue(mockFile);
 
-    await get_file.handler({
+    await get_file.execute({
       file_key: 'test-file-key',
-      branch_data_id: 'branch-123',
+      branch_data: true,
     });
 
     expect(filesApi.getFile).toHaveBeenCalledWith('test-file-key', {
-      branch_data_id: 'branch-123',
+      branch_data: true,
     });
   });
 
   test('エラーが発生した場合は適切にエラーを返す', async () => {
-    vi.spyOn(filesApi, 'getFile').mockRejectedValue(
-      new Error('API Error'),
-    );
+    vi.spyOn(filesApi, 'getFile').mockRejectedValue(new Error('API Error'));
 
     await expect(
-      get_file.handler({
+      get_file.execute({
         file_key: 'test-file-key',
-      }),
+      })
     ).rejects.toThrow('API Error');
   });
 });

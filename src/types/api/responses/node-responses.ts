@@ -13,7 +13,7 @@ export interface GetNodesResponse {
 export interface GetFileNodesResponse {
   name: string;
   lastModified: string;
-  thumbnailUrl: string;
+  thumbnailUrl?: string;
   version: string;
   nodes: Record<string, {
     document: Node;
