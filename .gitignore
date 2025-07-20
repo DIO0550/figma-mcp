@@ -37,3 +37,4 @@ coverage/
 
 .claude
 doc/
+.mcp.json
