@@ -1,9 +1,6 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import dotenv from 'dotenv';
 
 import { createApiConfig } from './api/config.js';
@@ -16,18 +13,50 @@ import { createVersionsApi } from './api/endpoints/versions.js';
 // import { createTeamsApi } from './api/endpoints/teams.js';
 import { FigmaApiClient } from './api/figma-api-client.js';
 import { createFileTools } from './tools/file/index.js';
+import type { GetFileArgs, GetFileNodesArgs } from './tools/file/types.js';
+import { createCache } from './utils/cache.js';
+import { Logger, LogLevel } from './utils/logger/index.js';
 
 dotenv.config();
+
+// MCPサーバーの設定
+const server = new Server(
+  {
+    name: 'figma-mcp',
+    version: '0.1.0',
+  },
+  {
+    capabilities: {
+      tools: {},
+    },
+  }
+);
+
+// ロガーの初期化
+const logLevel = process.env.LOG_LEVEL
+  ? LogLevel[process.env.LOG_LEVEL as keyof typeof LogLevel]
+  : LogLevel.INFO;
+
+Logger.init({ type: 'mcp', server, level: logLevel });
 
 // APIクライアントの初期化
 const accessToken = process.env.FIGMA_ACCESS_TOKEN;
 if (!accessToken) {
-  console.error('FIGMA_ACCESS_TOKEN environment variable is required');
+  Logger.error('FIGMA_ACCESS_TOKEN environment variable is required');
   process.exit(1);
 }
 
+// キャッシュの設定
+const cache = createCache({
+  maxSize: 100,
+  defaultTtl: 300000, // 5分
+});
+
 const config = createApiConfig(accessToken);
-const httpClient = createHttpClient(config);
+const httpClient = createHttpClient(config, {
+  cache,
+  cacheKeyPrefix: 'figma:',
+});
 
 // API エンドポイントの作成
 const componentsApi = createComponentsApi(httpClient);
@@ -43,24 +72,77 @@ const apiClient = new FigmaApiClient(accessToken);
 // ツールの作成
 const fileTools = createFileTools(apiClient);
 
-// MCPサーバーの設定
-const server = new Server(
-  {
-    name: 'figma-mcp',
-    version: '0.1.0',
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
-
 server.setRequestHandler(ListToolsRequestSchema, () => {
   return {
     tools: [
-      fileTools.get_file,
-      fileTools.get_file_nodes,
+      {
+        name: fileTools.getFile.name,
+        description: fileTools.getFile.description,
+        inputSchema: {
+          type: 'object',
+          properties: {
+            file_key: {
+              type: 'string',
+              description: 'The Figma file key',
+            },
+            branch_data: {
+              type: 'boolean',
+              description: 'Include branch data',
+            },
+            version: {
+              type: 'string',
+              description: 'Version ID to fetch',
+            },
+            plugin_data: {
+              type: 'string',
+              description: 'Plugin data to include',
+            },
+          },
+          required: ['file_key'],
+        },
+      },
+      {
+        name: fileTools.getFileNodes.name,
+        description: fileTools.getFileNodes.description,
+        inputSchema: {
+          type: 'object',
+          properties: {
+            file_key: {
+              type: 'string',
+              description: 'The Figma file key',
+            },
+            ids: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+              description: 'Array of node IDs to fetch',
+            },
+            depth: {
+              type: 'number',
+              description: 'Depth of nodes to fetch',
+            },
+            geometry: {
+              type: 'string',
+              enum: ['paths', 'points'],
+              description: 'Geometry type to include',
+            },
+            branch_data: {
+              type: 'boolean',
+              description: 'Include branch data',
+            },
+            version: {
+              type: 'string',
+              description: 'Version ID to fetch',
+            },
+            plugin_data: {
+              type: 'string',
+              description: 'Plugin data to include',
+            },
+          },
+          required: ['file_key', 'ids'],
+        },
+      },
       {
         name: 'get_components',
         description: 'Get components from a Figma file',
@@ -158,7 +240,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case 'get_file': {
-        const result = await fileTools.get_file.handler(toolArgs);
+        const args: GetFileArgs = {
+          file_key: toolArgs.file_key as string,
+          branch_data: toolArgs.branch_data as boolean | undefined,
+          version: toolArgs.version as string | undefined,
+          plugin_data: toolArgs.plugin_data as string | undefined,
+        };
+        const result = await fileTools.getFile.execute(args);
         return {
           content: [
             {
@@ -170,7 +258,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_file_nodes': {
-        const result = await fileTools.get_file_nodes.handler(toolArgs);
+        const args: GetFileNodesArgs = {
+          file_key: toolArgs.file_key as string,
+          ids: toolArgs.ids as string[],
+          depth: toolArgs.depth as number | undefined,
+          geometry: toolArgs.geometry as 'paths' | 'points' | undefined,
+          branch_data: toolArgs.branch_data as boolean | undefined,
+          version: toolArgs.version as string | undefined,
+          plugin_data: toolArgs.plugin_data as string | undefined,
+        };
+        const result = await fileTools.getFileNodes.execute(args);
         return {
           content: [
             {
@@ -285,4 +382,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 const transport = new StdioServerTransport();
 await server.connect(transport);
 
-console.error('Figma MCP server running on stdio');
+Logger.info('Figma MCP server started', {
+  version: '0.1.0',
+  logLevel: LogLevel[logLevel],
+  cacheEnabled: true,
+});
