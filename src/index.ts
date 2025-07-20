@@ -8,14 +8,14 @@ import dotenv from 'dotenv';
 
 import { createApiConfig } from './api/config.js';
 import { createHttpClient } from './api/client.js';
-import { createFilesApi } from './api/endpoints/files.js';
-import { createNodesApi } from './api/endpoints/nodes.js';
 import { createComponentsApi } from './api/endpoints/components.js';
 import { createStylesApi } from './api/endpoints/styles.js';
 import { createImagesApi } from './api/endpoints/images.js';
 import { createCommentsApi } from './api/endpoints/comments.js';
 import { createVersionsApi } from './api/endpoints/versions.js';
 // import { createTeamsApi } from './api/endpoints/teams.js';
+import { FigmaApiClient } from './api/figma-api-client.js';
+import { createFileTools } from './tools/file/index.js';
 
 dotenv.config();
 
@@ -30,14 +30,18 @@ const config = createApiConfig(accessToken);
 const httpClient = createHttpClient(config);
 
 // API エンドポイントの作成
-const filesApi = createFilesApi(httpClient);
-const nodesApi = createNodesApi(httpClient);
 const componentsApi = createComponentsApi(httpClient);
 const stylesApi = createStylesApi(httpClient);
 const imagesApi = createImagesApi(httpClient);
 const commentsApi = createCommentsApi(httpClient);
 const versionsApi = createVersionsApi(httpClient);
 // const teamsApi = createTeamsApi(httpClient);
+
+// APIクライアントの作成
+const apiClient = new FigmaApiClient(accessToken);
+
+// ツールの作成
+const fileTools = createFileTools(apiClient);
 
 // MCPサーバーの設定
 const server = new Server(
@@ -55,49 +59,8 @@ const server = new Server(
 server.setRequestHandler(ListToolsRequestSchema, () => {
   return {
     tools: [
-      {
-        name: 'get_file',
-        description: 'Get Figma file information',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            fileKey: {
-              type: 'string',
-              description: 'The Figma file key',
-            },
-            version: {
-              type: 'string',
-              description: 'A specific version ID to get',
-            },
-            depth: {
-              type: 'number',
-              description: 'Depth of the node tree to traverse',
-            },
-          },
-          required: ['fileKey'],
-        },
-      },
-      {
-        name: 'get_nodes',
-        description: 'Get specific nodes from a Figma file',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            fileKey: {
-              type: 'string',
-              description: 'The Figma file key',
-            },
-            ids: {
-              type: 'array',
-              items: {
-                type: 'string',
-              },
-              description: 'Array of node IDs to retrieve',
-            },
-          },
-          required: ['fileKey', 'ids'],
-        },
-      },
+      fileTools.get_file,
+      fileTools.get_file_nodes,
       {
         name: 'get_components',
         description: 'Get components from a Figma file',
@@ -190,18 +153,12 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const toolArgs = args as Record<string, unknown>;
 
   try {
     switch (name) {
       case 'get_file': {
-        const fileKey = args?.fileKey as string;
-        if (!fileKey) {
-          throw new Error('fileKey is required');
-        }
-        const result = await filesApi.getFile(fileKey, {
-          version: args?.version as string | undefined,
-          depth: args?.depth as number | undefined,
-        });
+        const result = await fileTools.get_file.handler(toolArgs);
         return {
           content: [
             {
@@ -212,15 +169,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      case 'get_nodes': {
-        const fileKey = args?.fileKey as string;
-        const ids = args?.ids as string[];
-        if (!fileKey || !ids) {
-          throw new Error('fileKey and ids are required');
-        }
-        const result = await nodesApi.getNodes(fileKey, {
-          ids,
-        });
+      case 'get_file_nodes': {
+        const result = await fileTools.get_file_nodes.handler(toolArgs);
         return {
           content: [
             {
@@ -232,7 +182,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_components': {
-        const fileKey = args?.fileKey as string;
+        const fileKey = toolArgs?.fileKey as string;
         if (!fileKey) {
           throw new Error('fileKey is required');
         }
@@ -248,7 +198,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_styles': {
-        const fileKey = args?.fileKey as string;
+        const fileKey = toolArgs?.fileKey as string;
         if (!fileKey) {
           throw new Error('fileKey is required');
         }
@@ -264,15 +214,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'export_images': {
-        const fileKey = args?.fileKey as string;
-        const ids = args?.ids as string[];
+        const fileKey = toolArgs?.fileKey as string;
+        const ids = toolArgs?.ids as string[];
         if (!fileKey || !ids) {
           throw new Error('fileKey and ids are required');
         }
         const result = await imagesApi.exportImages(fileKey, {
           ids,
-          format: args?.format as 'jpg' | 'png' | 'svg' | 'pdf' | undefined,
-          scale: args?.scale as number | undefined,
+          format: toolArgs?.format as 'jpg' | 'png' | 'svg' | 'pdf' | undefined,
+          scale: toolArgs?.scale as number | undefined,
         });
         return {
           content: [
@@ -285,7 +235,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_comments': {
-        const fileKey = args?.fileKey as string;
+        const fileKey = toolArgs?.fileKey as string;
         if (!fileKey) {
           throw new Error('fileKey is required');
         }
@@ -301,7 +251,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_versions': {
-        const fileKey = args?.fileKey as string;
+        const fileKey = toolArgs?.fileKey as string;
         if (!fileKey) {
           throw new Error('fileKey is required');
         }

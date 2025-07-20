@@ -26,7 +26,6 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "npm install",
   "remoteUser": "node",
   "containerEnv": {
     "GITHUB_TOKEN": "${localEnv:GITHUB_PERSONAL_ACCESS_TOKEN}"
