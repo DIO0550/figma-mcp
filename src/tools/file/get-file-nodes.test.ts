@@ -29,7 +29,6 @@ describe('get-file-nodes tool', () => {
             visible: true,
           },
           components: {},
-          schemaVersion: 0,
           styles: {},
         },
       },
@@ -37,7 +36,7 @@ describe('get-file-nodes tool', () => {
 
     vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
 
-    const result = await get_file_nodes.handler({
+    const result = await get_file_nodes.execute({
       file_key: 'test-file-key',
       ids: ['1:2'],
     });
@@ -56,11 +55,7 @@ describe('get-file-nodes tool', () => {
       ],
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith(
-      'test-file-key',
-      ['1:2'],
-      {},
-    );
+    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {});
   });
 
   test('複数のノードを取得できる', async () => {
@@ -77,7 +72,6 @@ describe('get-file-nodes tool', () => {
             visible: true,
           },
           components: {},
-          schemaVersion: 0,
           styles: {},
         },
         '3:4': {
@@ -88,7 +82,6 @@ describe('get-file-nodes tool', () => {
             visible: true,
           },
           components: {},
-          schemaVersion: 0,
           styles: {},
         },
       },
@@ -96,7 +89,7 @@ describe('get-file-nodes tool', () => {
 
     vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
 
-    const result = await get_file_nodes.handler({
+    const result = await get_file_nodes.execute({
       file_key: 'test-file-key',
       ids: ['1:2', '3:4'],
     });
@@ -126,25 +119,21 @@ describe('get-file-nodes tool', () => {
 
     vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
 
-    await get_file_nodes.handler({
+    await get_file_nodes.execute({
       file_key: 'test-file-key',
       ids: ['1:2'],
       depth: 3,
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith(
-      'test-file-key',
-      ['1:2'],
-      { depth: 3 },
-    );
+    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { depth: 3 });
   });
 
   test('ノードIDが空の場合はエラーになる', async () => {
     await expect(
-      get_file_nodes.handler({
+      get_file_nodes.execute({
         file_key: 'test-file-key',
         ids: [],
-      }),
+      })
     ).rejects.toThrow('At least one node ID is required');
   });
 });

@@ -2,6 +2,7 @@ import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createHttpClient } from './client';
 import { createApiConfig } from './config';
 import type { ApiConfig } from './config';
+import { createCache } from '../utils/cache';
 
 // fetchのモック
 const mockFetch = vi.fn();
@@ -204,6 +205,155 @@ describe('createHttpClient', () => {
         'https://custom.figma.com/v1/files/test',
         expect.any(Object)
       );
+    });
+  });
+
+  describe('キャッシュ統合', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    test('GETリクエストの結果をキャッシュする', async () => {
+      const cache = createCache({ defaultTtl: 60000 });
+      const client = createHttpClient(config, { cache });
+      
+      const mockResponse = { data: 'test' };
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+        headers: new Headers(),
+      });
+
+      // 1回目のリクエスト
+      const result1 = await client.get('/v1/files/test');
+      expect(result1).toEqual(mockResponse);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      // 2回目のリクエスト（キャッシュから）
+      const result2 = await client.get('/v1/files/test');
+      expect(result2).toEqual(mockResponse);
+      expect(mockFetch).toHaveBeenCalledTimes(1); // fetchは呼ばれない
+    });
+
+    test('異なるURLは別々にキャッシュされる', async () => {
+      const cache = createCache();
+      const client = createHttpClient(config, { cache });
+      
+      const mockResponse1 = { data: 'test1' };
+      const mockResponse2 = { data: 'test2' };
+      
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse1,
+          headers: new Headers(),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse2,
+          headers: new Headers(),
+        });
+
+      const result1 = await client.get('/v1/files/test1');
+      const result2 = await client.get('/v1/files/test2');
+      
+      expect(result1).toEqual(mockResponse1);
+      expect(result2).toEqual(mockResponse2);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    test('POSTリクエストはキャッシュされない', async () => {
+      const cache = createCache();
+      const client = createHttpClient(config, { cache });
+      
+      const mockResponse = { id: '123' };
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => mockResponse,
+        headers: new Headers(),
+      });
+
+      await client.post('/v1/files/test/comments', { message: 'test' });
+      await client.post('/v1/files/test/comments', { message: 'test' });
+      
+      expect(mockFetch).toHaveBeenCalledTimes(2); // 両方ともfetchが呼ばれる
+    });
+
+    test('エラーレスポンスはキャッシュされない', async () => {
+      const cache = createCache();
+      const client = createHttpClient(config, { cache });
+      
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 404,
+          statusText: 'Not Found',
+          json: async () => ({ err: 'Not found' }),
+          headers: new Headers(),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ data: 'found' }),
+          headers: new Headers(),
+        });
+
+      // 1回目（エラー）
+      await expect(client.get('/v1/files/test')).rejects.toThrow();
+      
+      // 2回目（成功）
+      const result = await client.get('/v1/files/test');
+      expect(result).toEqual({ data: 'found' });
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    test('キャッシュのTTLが機能する', async () => {
+      const cache = createCache({ defaultTtl: 1000 });
+      const client = createHttpClient(config, { cache, cacheTtl: 1000 });
+      
+      const mockResponse = { data: 'test' };
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => mockResponse,
+        headers: new Headers(),
+      });
+
+      // 1回目
+      await client.get('/v1/files/test');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      // TTL内
+      vi.advanceTimersByTime(500);
+      await client.get('/v1/files/test');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      // TTL経過後
+      vi.advanceTimersByTime(600);
+      await client.get('/v1/files/test');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    test('cacheKeyPrefixでキャッシュキーをカスタマイズできる', async () => {
+      const cache = createCache();
+      const client = createHttpClient(config, { 
+        cache,
+        cacheKeyPrefix: 'figma-api:'
+      });
+      
+      const mockResponse = { data: 'test' };
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+        headers: new Headers(),
+      });
+
+      await client.get('/v1/files/test');
+      
+      // キャッシュが正しいキーで保存されているか確認
+      expect(cache.has('figma-api:GET:/v1/files/test')).toBe(true);
     });
   });
 });
