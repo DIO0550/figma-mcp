@@ -9,7 +9,6 @@ services:
     container_name: figma-mcp-devcontainer
     volumes:
       - ..:/workspace:cached
-      - node_modules:/workspace/node_modules
       - cargo_cache:/home/node/.cargo
     ports:
       - "8765:8765"
