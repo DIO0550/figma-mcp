@@ -52,7 +52,8 @@ const cache = createCache({
   defaultTtl: 300000, // 5分
 });
 
-const config = createApiConfig(accessToken);
+const baseUrl = process.env.FIGMA_API_BASE_URL;
+const config = createApiConfig(accessToken, baseUrl);
 const httpClient = createHttpClient(config, {
   cache,
   cacheKeyPrefix: 'figma:',
@@ -67,7 +68,7 @@ const versionsApi = createVersionsApi(httpClient);
 // const teamsApi = createTeamsApi(httpClient);
 
 // APIクライアントの作成
-const apiClient = new FigmaApiClient(accessToken);
+const apiClient = new FigmaApiClient(accessToken, baseUrl);
 
 // ツールの作成
 const fileTools = createFileTools(apiClient);
@@ -240,8 +241,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case 'get_file': {
+        const file_key = toolArgs.file_key;
+        if (!file_key || typeof file_key !== 'string') {
+          throw new Error('file_key is required and must be a string');
+        }
         const args: GetFileArgs = {
-          file_key: toolArgs.file_key as string,
+          file_key,
           branch_data: toolArgs.branch_data as boolean | undefined,
           version: toolArgs.version as string | undefined,
           plugin_data: toolArgs.plugin_data as string | undefined,
@@ -258,9 +263,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_file_nodes': {
+        const file_key = toolArgs.file_key as string;
+        const ids = toolArgs.ids as string[];
+        if (!file_key) {
+          throw new Error('file_key is required');
+        }
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+          throw new Error('ids is required and must be a non-empty array');
+        }
         const args: GetFileNodesArgs = {
-          file_key: toolArgs.file_key as string,
-          ids: toolArgs.ids as string[],
+          file_key,
+          ids,
           depth: toolArgs.depth as number | undefined,
           geometry: toolArgs.geometry as 'paths' | 'points' | undefined,
           branch_data: toolArgs.branch_data as boolean | undefined,
@@ -279,9 +292,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_components': {
-        const fileKey = toolArgs?.fileKey as string;
-        if (!fileKey) {
-          throw new Error('fileKey is required');
+        const fileKey = toolArgs?.fileKey;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
         }
         const result = await componentsApi.getComponents(fileKey);
         return {
@@ -295,9 +308,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_styles': {
-        const fileKey = toolArgs?.fileKey as string;
-        if (!fileKey) {
-          throw new Error('fileKey is required');
+        const fileKey = toolArgs?.fileKey;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
         }
         const result = await stylesApi.getStyles(fileKey);
         return {
@@ -311,10 +324,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'export_images': {
-        const fileKey = toolArgs?.fileKey as string;
-        const ids = toolArgs?.ids as string[];
-        if (!fileKey || !ids) {
-          throw new Error('fileKey and ids are required');
+        const fileKey = toolArgs?.fileKey;
+        const ids = toolArgs?.ids;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
+        }
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+          throw new Error('ids is required and must be a non-empty array');
         }
         const result = await imagesApi.exportImages(fileKey, {
           ids,
@@ -332,9 +348,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_comments': {
-        const fileKey = toolArgs?.fileKey as string;
-        if (!fileKey) {
-          throw new Error('fileKey is required');
+        const fileKey = toolArgs?.fileKey;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
         }
         const result = await commentsApi.getComments(fileKey);
         return {
@@ -348,9 +364,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_versions': {
-        const fileKey = toolArgs?.fileKey as string;
-        if (!fileKey) {
-          throw new Error('fileKey is required');
+        const fileKey = toolArgs?.fileKey;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
         }
         const result = await versionsApi.getVersions(fileKey);
         return {
