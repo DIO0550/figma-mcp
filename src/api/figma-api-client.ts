@@ -19,8 +19,8 @@ export class FigmaApiClient {
   public versions: ReturnType<typeof createVersionsApi>;
   public teams: ReturnType<typeof createTeamsApi>;
 
-  constructor(accessToken: string) {
-    const config = createApiConfig(accessToken);
+  constructor(accessToken: string, baseUrl?: string) {
+    const config = createApiConfig(accessToken, baseUrl);
     const httpClient = createHttpClient(config);
 
     this.files = createFilesApi(httpClient);

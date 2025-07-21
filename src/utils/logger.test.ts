@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createLogger, LogLevel } from './logger.js';
 
 describe('Logger', () => {
-  let consoleLogSpy: any;
-  let consoleWarnSpy: any;
-  let consoleErrorSpy: any;
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
+  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -118,7 +118,7 @@ describe('Logger', () => {
       expect(call).toContain('[ERROR]');
       expect(call).toContain('エラー発生');
       // エラーオブジェクトはシリアライズされて第2引数に渡される
-      const context = consoleErrorSpy.mock.calls[0][1] as any;
+      const context = consoleErrorSpy.mock.calls[0][1] as Record<string, unknown>;
       expect(context.error.message).toBe('テストエラー');
       expect(context.error.name).toBe('Error');
     });

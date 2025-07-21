@@ -49,7 +49,7 @@ export function createLogger(options: LoggerOptions = {}): LegacyLogger {
         info: (message: string, context?: unknown) => LoggerNamespace.info(`[${name}] ${message}`, context),
         warn: (message: string, context?: unknown) => LoggerNamespace.warn(`[${name}] ${message}`, context),
         error: (message: string, context?: unknown) => LoggerNamespace.error(`[${name}] ${message}`, context),
-        child: () => { throw new Error('Nested child not supported'); },
+        child: (): LegacyLogger => { throw new Error('Nested child not supported'); },
       }),
     };
   }
