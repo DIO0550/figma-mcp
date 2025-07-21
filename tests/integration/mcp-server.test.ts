@@ -51,7 +51,7 @@ describe('MCP Server Integration', () => {
       expect(Array.isArray(tools.tools)).toBe(true);
       
       // 期待されるツールが登録されていることを確認
-      const toolNames = tools.tools.map((tool: any) => tool.name);
+      const toolNames = tools.tools.map((tool) => tool.name);
       const expectedTools = [
         'get_file',
         'get_file_nodes',
@@ -70,7 +70,7 @@ describe('MCP Server Integration', () => {
     test('各ツールが正しいスキーマを持っている', async () => {
       const tools = await client.listTools();
       
-      tools.tools.forEach((tool: any) => {
+      tools.tools.forEach((tool) => {
         expect(tool).toHaveProperty('name');
         expect(tool).toHaveProperty('description');
         expect(tool).toHaveProperty('inputSchema');

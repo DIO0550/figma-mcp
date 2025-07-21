@@ -180,8 +180,8 @@ describe('createHttpClient', () => {
 
       try {
         await client.get('/v1/files/test');
-      } catch (error: any) {
-        expect(error.rateLimitInfo).toEqual({
+      } catch (error) {
+        expect((error as Error & { rateLimitInfo?: unknown }).rateLimitInfo).toEqual({
           remaining: 0,
           reset: new Date('2024-01-01T00:00:00Z'),
         });

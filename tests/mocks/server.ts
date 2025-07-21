@@ -1,5 +1,6 @@
 import express from 'express';
 import type { Express, Request, Response } from 'express';
+import type { Server } from 'http';
 import { fileHandlers } from './handlers/files.js';
 import { nodeHandlers } from './handlers/nodes.js';
 import { componentHandlers } from './handlers/components.js';
@@ -10,7 +11,7 @@ import { versionHandlers } from './handlers/versions.js';
 
 export class MockFigmaServer {
   private app: Express;
-  private server: any;
+  private server: Server | null = null;
 
   constructor(private port: number = 3001) {
     this.app = express();
@@ -71,7 +72,7 @@ export class MockFigmaServer {
     });
 
     // エラーハンドラー
-    this.app.use((err: Error, req: Request, res: Response, next: any) => {
+    this.app.use((err: Error, req: Request, res: Response, _next: express.NextFunction) => {
       console.error('[MockFigmaServer] Error:', err);
       res.status(500).json({ 
         error: 'Internal Server Error',
