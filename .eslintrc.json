@@ -22,5 +22,5 @@
     "node": true,
     "es2022": true
   },
-  "ignorePatterns": ["**/*.test.ts", "**/*.spec.ts"]
+  "ignorePatterns": ["**/*.test.ts", "**/*.spec.ts", "tests/**/*.ts"]
 }
