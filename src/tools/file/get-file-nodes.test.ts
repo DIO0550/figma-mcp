@@ -136,4 +136,65 @@ describe('get-file-nodes tool', () => {
       })
     ).rejects.toThrow('At least one node ID is required');
   });
+
+  test('geometryオプションでpathsを指定できる', async () => {
+    const mockResponse: GetFileNodesResponse = {
+      name: 'Test File',
+      lastModified: '2024-01-01T00:00:00Z',
+      version: '123456789',
+      nodes: {},
+    };
+
+    vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
+
+    await get_file_nodes.execute({
+      file_key: 'test-file-key',
+      ids: ['1:2'],
+      geometry: 'paths',
+    });
+
+    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { geometry: 'paths' });
+  });
+
+  test('geometryオプションでpointsを指定できる', async () => {
+    const mockResponse: GetFileNodesResponse = {
+      name: 'Test File',
+      lastModified: '2024-01-01T00:00:00Z',
+      version: '123456789',
+      nodes: {},
+    };
+
+    vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
+
+    await get_file_nodes.execute({
+      file_key: 'test-file-key',
+      ids: ['1:2'],
+      geometry: 'points',
+    });
+
+    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { geometry: 'points' });
+  });
+
+  test('geometryとdepthオプションを同時に指定できる', async () => {
+    const mockResponse: GetFileNodesResponse = {
+      name: 'Test File',
+      lastModified: '2024-01-01T00:00:00Z',
+      version: '123456789',
+      nodes: {},
+    };
+
+    vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
+
+    await get_file_nodes.execute({
+      file_key: 'test-file-key',
+      ids: ['1:2'],
+      depth: 2,
+      geometry: 'paths',
+    });
+
+    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { 
+      depth: 2, 
+      geometry: 'paths' 
+    });
+  });
 });
