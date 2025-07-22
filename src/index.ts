@@ -197,6 +197,22 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
               type: 'string',
               description: 'The Figma file key',
             },
+            showResolved: {
+              type: 'boolean',
+              description: 'Include resolved comments (default: true)',
+            },
+            userId: {
+              type: 'string',
+              description: 'Filter comments by user ID',
+            },
+            nodeId: {
+              type: 'string',
+              description: 'Filter comments by node ID',
+            },
+            organizeThreads: {
+              type: 'boolean',
+              description: 'Organize comments into thread structure (default: false)',
+            },
           },
           required: ['fileKey'],
         },
@@ -327,6 +343,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_comments': {
         const args: GetCommentsArgs = {
           fileKey: toolArgs.fileKey as string,
+          showResolved: toolArgs.showResolved as boolean | undefined,
+          userId: toolArgs.userId as string | undefined,
+          nodeId: toolArgs.nodeId as string | undefined,
+          organizeThreads: toolArgs.organizeThreads as boolean | undefined,
         };
         const result = await commentTools.getComments.execute(args);
         return {
