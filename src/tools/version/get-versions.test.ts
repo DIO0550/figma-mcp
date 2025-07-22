@@ -141,6 +141,98 @@ describe('get-versions', () => {
     expect(dates).toEqual(sortedDates);
   });
 
+  test('includeDetailsオプションで詳細情報を取得できる', async () => {
+    // Arrange
+    const fileKey = 'test-file-key';
+    const mockResponse: GetVersionsResponse = {
+      versions: [
+        {
+          id: 'version-1',
+          created_at: '2024-01-01T00:00:00Z',
+          label: 'Release v1.0',
+          description: 'Production ready version',
+          user: { id: 'user-1', handle: 'designer1', img_url: '' },
+          thumbnail_url: 'https://example.com/thumbnail.png',
+          pages_changed: ['Page 1', 'Page 2'],
+          components_changed: 5,
+          styles_changed: 3,
+        },
+      ],
+    };
+
+    vi.mocked(mockApiClient.getVersions).mockResolvedValue(mockResponse);
+
+    // Act
+    const { createVersionTools } = await import('./index.js');
+    const tools = createVersionTools(mockApiClient);
+    const result = await tools.getVersions.execute({ 
+      fileKey,
+      includeDetails: true 
+    });
+
+    // Assert
+    const version = result.versions[0];
+    expect(version.thumbnail_url).toBe('https://example.com/thumbnail.png');
+    expect(version.pages_changed).toEqual(['Page 1', 'Page 2']);
+    expect(version.components_changed).toBe(5);
+    expect(version.styles_changed).toBe(3);
+  });
+
+  test('comparePairオプションで2つのバージョンを比較できる', async () => {
+    // Arrange
+    const fileKey = 'test-file-key';
+    const mockResponse: GetVersionsResponse = {
+      versions: [
+        {
+          id: 'version-2',
+          created_at: '2024-01-02T00:00:00Z',
+          label: 'Version 2',
+          description: 'Updated version',
+          user: { id: 'user-1', handle: 'designer1', img_url: '' },
+        },
+        {
+          id: 'version-1',
+          created_at: '2024-01-01T00:00:00Z',
+          label: 'Version 1',
+          description: 'Initial version',
+          user: { id: 'user-1', handle: 'designer1', img_url: '' },
+        },
+      ],
+      comparison: {
+        from: 'version-1',
+        to: 'version-2',
+        changes: {
+          pages_added: ['New Page'],
+          pages_removed: [],
+          pages_modified: ['Page 1'],
+          components_added: 3,
+          components_removed: 1,
+          components_modified: 2,
+          styles_added: 2,
+          styles_removed: 0,
+          styles_modified: 1,
+        },
+      },
+    };
+
+    vi.mocked(mockApiClient.getVersions).mockResolvedValue(mockResponse);
+
+    // Act
+    const { createVersionTools } = await import('./index.js');
+    const tools = createVersionTools(mockApiClient);
+    const result = await tools.getVersions.execute({ 
+      fileKey,
+      comparePair: ['version-1', 'version-2']
+    });
+
+    // Assert
+    expect(result.comparison).toBeDefined();
+    expect(result.comparison?.from).toBe('version-1');
+    expect(result.comparison?.to).toBe('version-2');
+    // モック実装のため、実際の差分は計算されない
+    expect(result.comparison?.changes).toBeDefined();
+  });
+
   test('バージョンのラベルと説明を取得できる', async () => {
     // Arrange
     const fileKey = 'test-file-key';

@@ -116,6 +116,14 @@ export interface Component {
   description: string;
   componentSetId?: string;
   documentationLinks: DocumentationLink[];
+  // 追加フィールド
+  file_key?: string;
+  node_id?: string;
+  containing_frame?: {
+    page_id: string;
+    page_name: string;
+  };
+  component_set_id?: string;
 }
 
 export interface ComponentSet {
@@ -169,4 +177,9 @@ export interface Version {
   label: string;
   description: string;
   user: FigmaUser;
+  // 詳細情報（オプション）
+  thumbnail_url?: string;
+  pages_changed?: string[];
+  components_changed?: number;
+  styles_changed?: number;
 }
