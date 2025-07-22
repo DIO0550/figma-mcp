@@ -8,6 +8,11 @@ import { createImagesApi } from './endpoints/images.js';
 import { createCommentsApi } from './endpoints/comments.js';
 import { createVersionsApi } from './endpoints/versions.js';
 import { createTeamsApi } from './endpoints/teams.js';
+import type { GetComponentsResponse } from '../types/api/responses/component-responses.js';
+import type { GetStylesResponse } from '../types/api/responses/style-responses.js';
+import type { ExportImageResponse } from '../types/api/responses/image-responses.js';
+import type { GetCommentsResponse } from '../types/api/responses/comment-responses.js';
+import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
 
 export class FigmaApiClient {
   public files: FilesApi;
@@ -31,5 +36,26 @@ export class FigmaApiClient {
     this.comments = createCommentsApi(httpClient);
     this.versions = createVersionsApi(httpClient);
     this.teams = createTeamsApi(httpClient);
+  }
+
+  // ツール互換性のためのエイリアスメソッド
+  getComponents(fileKey: string): Promise<GetComponentsResponse> {
+    return this.components.getComponents(fileKey);
+  }
+
+  getStyles(fileKey: string): Promise<GetStylesResponse> {
+    return this.styles.getStyles(fileKey);
+  }
+
+  exportImages(fileKey: string, options: Parameters<typeof this.images.exportImages>[1]): Promise<ExportImageResponse> {
+    return this.images.exportImages(fileKey, options);
+  }
+
+  getComments(fileKey: string): Promise<GetCommentsResponse> {
+    return this.comments.getComments(fileKey);
+  }
+
+  getVersions(fileKey: string): Promise<GetVersionsResponse> {
+    return this.versions.getVersions(fileKey);
   }
 }

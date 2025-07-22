@@ -5,3 +5,6 @@ export interface ExportImageResponse {
   images: Record<string, string>;
   status?: number;
 }
+
+// エイリアス（互換性のため）
+export type ExportImagesResponse = ExportImageResponse;

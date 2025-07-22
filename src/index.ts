@@ -3,18 +3,19 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import dotenv from 'dotenv';
 
-import { createApiConfig } from './api/config.js';
-import { createHttpClient } from './api/client.js';
-import { createComponentsApi } from './api/endpoints/components.js';
-import { createStylesApi } from './api/endpoints/styles.js';
-import { createImagesApi } from './api/endpoints/images.js';
-import { createCommentsApi } from './api/endpoints/comments.js';
-import { createVersionsApi } from './api/endpoints/versions.js';
-// import { createTeamsApi } from './api/endpoints/teams.js';
 import { FigmaApiClient } from './api/figma-api-client.js';
 import { createFileTools } from './tools/file/index.js';
+import { createComponentTools } from './tools/component/index.js';
+import { createStyleTools } from './tools/style/index.js';
+import { createImageTools } from './tools/image/index.js';
+import { createCommentTools } from './tools/comment/index.js';
+import { createVersionTools } from './tools/version/index.js';
 import type { GetFileArgs, GetFileNodesArgs } from './tools/file/types.js';
-import { createCache } from './utils/cache.js';
+import type { GetComponentsArgs } from './tools/component/types.js';
+import type { GetStylesArgs } from './tools/style/types.js';
+import type { ExportImagesArgs } from './tools/image/types.js';
+import type { GetCommentsArgs } from './tools/comment/types.js';
+import type { GetVersionsArgs } from './tools/version/types.js';
 import { Logger, LogLevel } from './utils/logger/index.js';
 
 dotenv.config();
@@ -46,32 +47,16 @@ if (!accessToken) {
   process.exit(1);
 }
 
-// キャッシュの設定
-const cache = createCache({
-  maxSize: 100,
-  defaultTtl: 300000, // 5分
-});
-
-const baseUrl = process.env.FIGMA_API_BASE_URL;
-const config = createApiConfig(accessToken, baseUrl);
-const httpClient = createHttpClient(config, {
-  cache,
-  cacheKeyPrefix: 'figma:',
-});
-
-// API エンドポイントの作成
-const componentsApi = createComponentsApi(httpClient);
-const stylesApi = createStylesApi(httpClient);
-const imagesApi = createImagesApi(httpClient);
-const commentsApi = createCommentsApi(httpClient);
-const versionsApi = createVersionsApi(httpClient);
-// const teamsApi = createTeamsApi(httpClient);
-
 // APIクライアントの作成
-const apiClient = new FigmaApiClient(accessToken, baseUrl);
+const apiClient = new FigmaApiClient(accessToken);
 
 // ツールの作成
 const fileTools = createFileTools(apiClient);
+const componentTools = createComponentTools(apiClient);
+const styleTools = createStyleTools(apiClient);
+const imageTools = createImageTools(apiClient);
+const commentTools = createCommentTools(apiClient);
+const versionTools = createVersionTools(apiClient);
 
 server.setRequestHandler(ListToolsRequestSchema, () => {
   return {
@@ -145,8 +130,8 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         },
       },
       {
-        name: 'get_components',
-        description: 'Get components from a Figma file',
+        name: componentTools.getComponents.name,
+        description: componentTools.getComponents.description,
         inputSchema: {
           type: 'object',
           properties: {
@@ -159,8 +144,8 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         },
       },
       {
-        name: 'get_styles',
-        description: 'Get styles from a Figma file',
+        name: styleTools.getStyles.name,
+        description: styleTools.getStyles.description,
         inputSchema: {
           type: 'object',
           properties: {
@@ -173,8 +158,8 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         },
       },
       {
-        name: 'export_images',
-        description: 'Export images from a Figma file',
+        name: imageTools.exportImages.name,
+        description: imageTools.exportImages.description,
         inputSchema: {
           type: 'object',
           properties: {
@@ -203,8 +188,8 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         },
       },
       {
-        name: 'get_comments',
-        description: 'Get comments from a Figma file',
+        name: commentTools.getComments.name,
+        description: commentTools.getComments.description,
         inputSchema: {
           type: 'object',
           properties: {
@@ -217,8 +202,8 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         },
       },
       {
-        name: 'get_versions',
-        description: 'Get version history of a Figma file',
+        name: versionTools.getVersions.name,
+        description: versionTools.getVersions.description,
         inputSchema: {
           type: 'object',
           properties: {
@@ -292,11 +277,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_components': {
-        const fileKey = toolArgs?.fileKey;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        const result = await componentsApi.getComponents(fileKey);
+        const args: GetComponentsArgs = {
+          fileKey: toolArgs.fileKey as string,
+        };
+        const result = await componentTools.getComponents.execute(args);
         return {
           content: [
             {
@@ -308,11 +292,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_styles': {
-        const fileKey = toolArgs?.fileKey;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        const result = await stylesApi.getStyles(fileKey);
+        const args: GetStylesArgs = {
+          fileKey: toolArgs.fileKey as string,
+        };
+        const result = await styleTools.getStyles.execute(args);
         return {
           content: [
             {
@@ -324,19 +307,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'export_images': {
-        const fileKey = toolArgs?.fileKey;
-        const ids = toolArgs?.ids;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        if (!ids || !Array.isArray(ids) || ids.length === 0) {
-          throw new Error('ids is required and must be a non-empty array');
-        }
-        const result = await imagesApi.exportImages(fileKey, {
-          ids,
-          format: toolArgs?.format as 'jpg' | 'png' | 'svg' | 'pdf' | undefined,
-          scale: toolArgs?.scale as number | undefined,
-        });
+        const args: ExportImagesArgs = {
+          fileKey: toolArgs.fileKey as string,
+          ids: toolArgs.ids as string[],
+          format: toolArgs.format as 'jpg' | 'png' | 'svg' | 'pdf' | undefined,
+          scale: toolArgs.scale as number | undefined,
+        };
+        const result = await imageTools.exportImages.execute(args);
         return {
           content: [
             {
@@ -348,11 +325,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_comments': {
-        const fileKey = toolArgs?.fileKey;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        const result = await commentsApi.getComments(fileKey);
+        const args: GetCommentsArgs = {
+          fileKey: toolArgs.fileKey as string,
+        };
+        const result = await commentTools.getComments.execute(args);
         return {
           content: [
             {
@@ -364,11 +340,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_versions': {
-        const fileKey = toolArgs?.fileKey;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        const result = await versionsApi.getVersions(fileKey);
+        const args: GetVersionsArgs = {
+          fileKey: toolArgs.fileKey as string,
+        };
+        const result = await versionTools.getVersions.execute(args);
         return {
           content: [
             {

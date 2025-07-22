@@ -12,40 +12,36 @@ export type LoggerType =
   | { type: 'console'; level?: LogLevel }
   | { type: 'mcp'; server: Server; level?: LogLevel };
 
-class LoggerFactory {
-  private static instance: LoggerInterface = new ConsoleLogger();
-
-  static init(config: LoggerType): void {
-    switch (config.type) {
-      case 'console':
-        this.instance = new ConsoleLogger();
-        break;
-      case 'mcp':
-        this.instance = new McpLogger(config.server);
-        break;
-    }
-
-    if (config.level !== undefined) {
-      this.instance.setLevel(config.level);
-    }
-  }
-
-  static getLogger(): LoggerInterface {
-    return this.instance;
-  }
+// 拡張されたLoggerインターフェース
+export interface ExtendedLogger extends LoggerInterface {
+  init(config: LoggerType): void;
 }
 
-// エクスポートするLogger名前空間
-export const Logger = {
-  init: (config: LoggerType): void => {
-    LoggerFactory.init(config);
-  },
+// シングルトンインスタンス（デフォルトはConsoleLogger）
+let instance: LoggerInterface = new ConsoleLogger();
 
-  debug: (message: string, data?: unknown): void => LoggerFactory.getLogger().debug(message, data),
-  info: (message: string, data?: unknown): void => LoggerFactory.getLogger().info(message, data),
-  warn: (message: string, data?: unknown): void => LoggerFactory.getLogger().warn(message, data),
-  error: (message: string, data?: unknown): void => LoggerFactory.getLogger().error(message, data),
-  setLevel: (level: LogLevel): void => LoggerFactory.getLogger().setLevel(level),
+// Loggerオブジェクト
+export const Logger: ExtendedLogger = {
+  debug: (message: string, data?: unknown): void => instance.debug(message, data),
+  info: (message: string, data?: unknown): void => instance.info(message, data),
+  warn: (message: string, data?: unknown): void => instance.warn(message, data),
+  error: (message: string, data?: unknown): void => instance.error(message, data),
+  setLevel: (level: LogLevel): void => instance.setLevel(level),
+
+  init: (config: LoggerType): void => {
+    switch (config.type) {
+      case 'console':
+        instance = new ConsoleLogger();
+        break;
+      case 'mcp':
+        instance = new McpLogger(config.server);
+        break;
+    }
+
+    if (config.level === undefined) return;
+
+    instance.setLevel(config.level);
+  },
 };
 
 // グローバルlogger変数（互換性のため）
