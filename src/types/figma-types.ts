@@ -135,10 +135,13 @@ export interface ComponentSet {
 
 export interface Style {
   key: string;
+  file_key: string;
+  node_id: string;
+  style_type: 'FILL' | 'TEXT' | 'EFFECT' | 'GRID';
   name: string;
   description: string;
-  remote: boolean;
-  type: 'FILL' | 'TEXT' | 'EFFECT' | 'GRID';
+  remote?: boolean;
+  sort_position?: string;
 }
 
 export interface DocumentationLink {
@@ -160,7 +163,11 @@ export interface Comment {
   created_at: string;
   resolved_at?: string;
   message: string;
-  client_meta: Vector;
+  client_meta: {
+    node_id?: string[];
+    node_offset?: Vector;
+    [key: string]: unknown;
+  };
   order_id: string;
   reactions?: Reaction[];
 }
