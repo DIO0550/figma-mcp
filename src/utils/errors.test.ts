@@ -28,7 +28,7 @@ describe('createFigmaError', () => {
 describe('parseFigmaErrorResponse', () => {
   test('JSONレスポンスからエラーメッセージを抽出できる', async () => {
     const mockResponse = {
-      json: () => ({ err: 'File not found' }),
+      json: () => Promise.resolve({ err: 'File not found' }),
       status: 404,
       statusText: 'Not Found',
     } as Response;
@@ -39,7 +39,7 @@ describe('parseFigmaErrorResponse', () => {
 
   test('JSONにerrフィールドがない場合はHTTPステータスを返す', async () => {
     const mockResponse = {
-      json: () => ({ message: 'Something went wrong' }),
+      json: () => Promise.resolve({ message: 'Something went wrong' }),
       status: 500,
       statusText: 'Internal Server Error',
     } as Response;
