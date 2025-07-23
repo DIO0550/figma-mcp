@@ -4,7 +4,6 @@ import type { GetStylesResponse } from '../../types/api/responses/style-response
 
 describe('get-styles', () => {
   let mockApiClient: FigmaApiClient;
-  let getStyles: any;
 
   beforeEach(() => {
     // APIクライアントのモック作成
@@ -49,7 +48,7 @@ describe('get-styles', () => {
       },
     };
 
-    vi.mocked(mockApiClient.getStyles).mockResolvedValue(mockResponse);
+    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createStyleTools } = await import('./index.js');
@@ -67,7 +66,7 @@ describe('get-styles', () => {
     const fileKey = 'test-file-key';
     const mockError = new Error('API Error: 403 Forbidden');
 
-    vi.mocked(mockApiClient.getStyles).mockRejectedValue(mockError);
+    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
     // Act & Assert
     const { createStyleTools } = await import('./index.js');
@@ -87,7 +86,7 @@ describe('get-styles', () => {
       },
     };
 
-    vi.mocked(mockApiClient.getStyles).mockResolvedValue(mockResponse);
+    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createStyleTools } = await import('./index.js');
@@ -163,7 +162,7 @@ describe('get-styles', () => {
       },
     };
 
-    vi.mocked(mockApiClient.getStyles).mockResolvedValue(mockResponse);
+    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createStyleTools } = await import('./index.js');
@@ -208,7 +207,7 @@ describe('get-styles', () => {
       },
     };
 
-    vi.mocked(mockApiClient.getStyles).mockResolvedValue(mockResponse);
+    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createStyleTools } = await import('./index.js');

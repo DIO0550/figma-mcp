@@ -1,10 +1,10 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetCommentsResponse } from '../../types/api/responses/comment-responses.js';
+import type { CommentWithReplies } from './types.js';
 
 describe('get-comments', () => {
   let mockApiClient: FigmaApiClient;
-  let getComments: any;
 
   beforeEach(() => {
     // APIクライアントのモック作成
@@ -65,7 +65,7 @@ describe('get-comments', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getComments).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -83,7 +83,7 @@ describe('get-comments', () => {
     const fileKey = 'test-file-key';
     const mockError = new Error('API Error: 401 Unauthorized');
 
-    vi.mocked(mockApiClient.getComments).mockRejectedValue(mockError);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
     // Act & Assert
     const { createCommentTools } = await import('./index.js');
@@ -99,7 +99,7 @@ describe('get-comments', () => {
       comments: [],
     };
 
-    vi.mocked(mockApiClient.getComments).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -140,7 +140,7 @@ describe('get-comments', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getComments).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -185,7 +185,7 @@ describe('get-comments', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getComments).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -230,7 +230,7 @@ describe('get-comments', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getComments).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act - showResolved: false
     const { createCommentTools } = await import('./index.js');
@@ -281,7 +281,7 @@ describe('get-comments', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getComments).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -326,7 +326,7 @@ describe('get-comments', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getComments).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -382,7 +382,7 @@ describe('get-comments', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getComments).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -395,9 +395,12 @@ describe('get-comments', () => {
     // Assert
     expect(result.comments).toHaveLength(1); // Only parent comment at top level
     expect(result.comments[0].id).toBe('comment-parent');
-    expect(result.comments[0].replies).toHaveLength(2);
-    expect(result.comments[0].replies?.[0].id).toBe('comment-reply1');
-    expect(result.comments[0].replies?.[1].id).toBe('comment-reply2');
+    
+    // organizeThreadsオプションを使用した場合、コメントはCommentWithReplies型として扱われる
+    const parentComment = result.comments[0] as CommentWithReplies;
+    expect(parentComment.replies).toHaveLength(2);
+    expect(parentComment.replies?.[0].id).toBe('comment-reply1');
+    expect(parentComment.replies?.[1].id).toBe('comment-reply2');
   });
 
   test('複数のフィルタオプションを組み合わせて使用できる', async () => {
@@ -441,7 +444,7 @@ describe('get-comments', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getComments).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createCommentTools } = await import('./index.js');

@@ -1,6 +1,7 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetComponentsArgs } from './types.js';
-import type { GetComponentsResponse } from '../../types/api/responses/component-responses.js';
+import type { GetComponentsResponse, ComponentAnalysis, VariantSet } from '../../types/api/responses/component-responses.js';
+import type { Component } from '../../types/figma-types.js';
 
 export interface ComponentTool {
   name: string;
@@ -14,7 +15,7 @@ export const createGetComponentsTool = (apiClient: FigmaApiClient): ComponentToo
     description: 'Get components from a Figma file with optional metadata analysis',
     execute: async (args: GetComponentsArgs): Promise<GetComponentsResponse> => {
       const response = await apiClient.getComponents(args.fileKey);
-      let result = { ...response };
+      const result = { ...response };
       
       if (args.analyzeMetadata && response.meta.components.length > 0) {
         result.analysis = analyzeComponents(response.meta.components);
@@ -30,7 +31,7 @@ export const createGetComponentsTool = (apiClient: FigmaApiClient): ComponentToo
 };
 
 // コンポーネントのメタデータを解析する関数
-function analyzeComponents(components: any[]): any {
+function analyzeComponents(components: Component[]): ComponentAnalysis {
   const categories: Record<string, number> = {};
   const namingPatterns: Record<string, number> = {};
   const pagesDistribution: Record<string, number> = {};
@@ -77,8 +78,8 @@ function analyzeComponents(components: any[]): any {
 }
 
 // バリアント情報を整理する関数
-function organizeVariants(components: any[]): Record<string, any> {
-  const variantSets: Record<string, any> = {};
+function organizeVariants(components: Component[]): Record<string, VariantSet> {
+  const variantSets: Record<string, VariantSet> = {};
   
   // コンポーネントセットごとにグループ化
   components.forEach(component => {

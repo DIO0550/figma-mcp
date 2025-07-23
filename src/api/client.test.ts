@@ -25,7 +25,7 @@ describe('createHttpClient', () => {
       const mockResponse = { data: 'test' };
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
         headers: new Headers(),
       });
 
@@ -47,7 +47,7 @@ describe('createHttpClient', () => {
     test('URLSearchParamsを使用してクエリパラメータを追加できる', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: 'test' }),
+        json: () => Promise.resolve({ data: 'test' }),
         headers: new Headers(),
       });
 
@@ -69,7 +69,7 @@ describe('createHttpClient', () => {
       
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
         headers: new Headers(),
       });
 
@@ -97,7 +97,7 @@ describe('createHttpClient', () => {
         ok: false,
         status: 404,
         statusText: 'Not Found',
-        json: async () => ({ err: 'File not found' }),
+        json: () => Promise.resolve({ err: 'File not found' }),
         headers: new Headers(),
       });
 
@@ -111,7 +111,7 @@ describe('createHttpClient', () => {
         ok: false,
         status: 429,
         statusText: 'Too Many Requests',
-        json: async () => ({ err: 'Rate limit exceeded' }),
+        json: () => Promise.resolve({ err: 'Rate limit exceeded' }),
         headers: new Headers({
           'Retry-After': '60',
           'X-RateLimit-Remaining': '0',
@@ -131,7 +131,7 @@ describe('createHttpClient', () => {
         ok: false,
         status: 500,
         statusText: 'Internal Server Error',
-        json: async () => { throw new Error('Invalid JSON'); },
+        json: () => { throw new Error('Invalid JSON'); },
         headers: new Headers(),
       });
 
@@ -147,7 +147,7 @@ describe('createHttpClient', () => {
     test('レート制限ヘッダーからコンテキスト情報を更新する', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: 'test' }),
+        json: () => Promise.resolve({ data: 'test' }),
         headers: new Headers({
           'X-RateLimit-Remaining': '99',
           'X-RateLimit-Reset': '1704067200',
@@ -169,7 +169,7 @@ describe('createHttpClient', () => {
         ok: false,
         status: 429,
         statusText: 'Too Many Requests',
-        json: async () => ({ err: 'Rate limit' }),
+        json: () => Promise.resolve({ err: 'Rate limit' }),
         headers: new Headers({
           'X-RateLimit-Remaining': '0',
           'X-RateLimit-Reset': '1704067200',
@@ -194,7 +194,7 @@ describe('createHttpClient', () => {
       const customConfig = createApiConfig('test-token', 'https://custom.figma.com');
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: 'test' }),
+        json: () => Promise.resolve({ data: 'test' }),
         headers: new Headers(),
       });
 
@@ -224,7 +224,7 @@ describe('createHttpClient', () => {
       const mockResponse = { data: 'test' };
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
         headers: new Headers(),
       });
 
@@ -249,12 +249,12 @@ describe('createHttpClient', () => {
       mockFetch
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => mockResponse1,
+          json: () => Promise.resolve(mockResponse1),
           headers: new Headers(),
         })
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => mockResponse2,
+          json: () => Promise.resolve(mockResponse2),
           headers: new Headers(),
         });
 
@@ -273,7 +273,7 @@ describe('createHttpClient', () => {
       const mockResponse = { id: '123' };
       mockFetch.mockResolvedValue({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
         headers: new Headers(),
       });
 
@@ -292,12 +292,12 @@ describe('createHttpClient', () => {
           ok: false,
           status: 404,
           statusText: 'Not Found',
-          json: async () => ({ err: 'Not found' }),
+          json: () => Promise.resolve({ err: 'Not found' }),
           headers: new Headers(),
         })
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ data: 'found' }),
+          json: () => Promise.resolve({ data: 'found' }),
           headers: new Headers(),
         });
 
@@ -317,7 +317,7 @@ describe('createHttpClient', () => {
       const mockResponse = { data: 'test' };
       mockFetch.mockResolvedValue({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
         headers: new Headers(),
       });
 
@@ -346,7 +346,7 @@ describe('createHttpClient', () => {
       const mockResponse = { data: 'test' };
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
         headers: new Headers(),
       });
 

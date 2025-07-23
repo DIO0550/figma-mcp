@@ -4,7 +4,6 @@ import type { GetVersionsResponse } from '../../types/api/responses/version-resp
 
 describe('get-versions', () => {
   let mockApiClient: FigmaApiClient;
-  let getVersions: any;
 
   beforeEach(() => {
     // APIクライアントのモック作成
@@ -54,7 +53,7 @@ describe('get-versions', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getVersions).mockResolvedValue(mockResponse);
+    (mockApiClient.getVersions as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createVersionTools } = await import('./index.js');
@@ -72,7 +71,7 @@ describe('get-versions', () => {
     const fileKey = 'test-file-key';
     const mockError = new Error('API Error: 404 Not Found');
 
-    vi.mocked(mockApiClient.getVersions).mockRejectedValue(mockError);
+    (mockApiClient.getVersions as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
     // Act & Assert
     const { createVersionTools } = await import('./index.js');
@@ -88,7 +87,7 @@ describe('get-versions', () => {
       versions: [],
     };
 
-    vi.mocked(mockApiClient.getVersions).mockResolvedValue(mockResponse);
+    (mockApiClient.getVersions as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createVersionTools } = await import('./index.js');
@@ -128,7 +127,7 @@ describe('get-versions', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getVersions).mockResolvedValue(mockResponse);
+    (mockApiClient.getVersions as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createVersionTools } = await import('./index.js');
@@ -160,7 +159,7 @@ describe('get-versions', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getVersions).mockResolvedValue(mockResponse);
+    (mockApiClient.getVersions as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createVersionTools } = await import('./index.js');
@@ -215,7 +214,7 @@ describe('get-versions', () => {
       },
     };
 
-    vi.mocked(mockApiClient.getVersions).mockResolvedValue(mockResponse);
+    (mockApiClient.getVersions as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createVersionTools } = await import('./index.js');
@@ -248,7 +247,7 @@ describe('get-versions', () => {
       ],
     };
 
-    vi.mocked(mockApiClient.getVersions).mockResolvedValue(mockResponse);
+    (mockApiClient.getVersions as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createVersionTools } = await import('./index.js');

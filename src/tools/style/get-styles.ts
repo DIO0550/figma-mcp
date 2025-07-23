@@ -1,6 +1,7 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetStylesArgs } from './types.js';
-import type { GetStylesResponse } from '../../types/api/responses/style-responses.js';
+import type { GetStylesResponse, StyleStatistics } from '../../types/api/responses/style-responses.js';
+import type { Style } from '../../types/figma-types.js';
 
 export interface StyleTool {
   name: string;
@@ -30,13 +31,13 @@ export const createGetStylesTool = (apiClient: FigmaApiClient): StyleTool => {
 };
 
 // スタイルを分類する関数
-function categorizeStyles(styles: any[]): { categorized: any; statistics: any } {
+function categorizeStyles(styles: Style[]): { categorized: Record<string, Record<string, string[]>>; statistics: StyleStatistics } {
   const categorized: Record<string, Record<string, string[]>> = {};
   const byType: Record<string, number> = {};
   let hierarchicalCount = 0;
   
   styles.forEach(style => {
-    const styleType = style.style_type || 'UNKNOWN';
+    const styleType = style.style_type;
     
     // タイプ別のカウント
     byType[styleType] = (byType[styleType] || 0) + 1;

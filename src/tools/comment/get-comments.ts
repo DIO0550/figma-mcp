@@ -29,8 +29,9 @@ export const createGetCommentsTool = (apiClient: FigmaApiClient): CommentTool =>
       
       // nodeIdが指定されている場合、そのノードに関連するコメントのみを返す
       if (args.nodeId) {
+        const nodeId = args.nodeId;
         filteredComments = filteredComments.filter(comment => 
-          comment.client_meta?.node_id?.includes(args.nodeId)
+          comment.client_meta?.node_id?.includes(nodeId) ?? false
         );
       }
       
