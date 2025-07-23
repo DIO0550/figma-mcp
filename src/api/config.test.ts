@@ -32,11 +32,11 @@ describe('createApiConfig', () => {
   });
 
   test('アクセストークンがundefinedの場合はエラーを投げる', () => {
-    expect(() => createApiConfig(undefined as any)).toThrow('Figma access token is required');
+    expect(() => createApiConfig(undefined as unknown as string)).toThrow('Figma access token is required');
   });
 
   test('アクセストークンがnullの場合はエラーを投げる', () => {
-    expect(() => createApiConfig(null as any)).toThrow('Figma access token is required');
+    expect(() => createApiConfig(null as unknown as string)).toThrow('Figma access token is required');
   });
 });
 

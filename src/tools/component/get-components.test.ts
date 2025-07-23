@@ -4,7 +4,6 @@ import type { GetComponentsResponse } from '../../types/api/responses/component-
 
 describe('get-components', () => {
   let mockApiClient: FigmaApiClient;
-  let getComponents: any;
 
   beforeEach(() => {
     // APIクライアントのモック作成
@@ -47,7 +46,7 @@ describe('get-components', () => {
       },
     };
 
-    vi.mocked(mockApiClient.getComponents).mockResolvedValue(mockResponse);
+    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     // ここでget_componentsツールを呼び出す（まだ実装されていないのでエラーになるはず）
@@ -65,7 +64,7 @@ describe('get-components', () => {
     const fileKey = 'test-file-key';
     const mockError = new Error('API Error: 404 Not Found');
 
-    vi.mocked(mockApiClient.getComponents).mockRejectedValue(mockError);
+    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
     // Act & Assert
     const { createComponentTools } = await import('./index.js');
@@ -121,7 +120,7 @@ describe('get-components', () => {
       },
     };
 
-    vi.mocked(mockApiClient.getComponents).mockResolvedValue(mockResponse);
+    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createComponentTools } = await import('./index.js');
@@ -202,7 +201,7 @@ describe('get-components', () => {
       },
     };
 
-    vi.mocked(mockApiClient.getComponents).mockResolvedValue(mockResponse);
+    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createComponentTools } = await import('./index.js');
@@ -231,7 +230,7 @@ describe('get-components', () => {
       },
     };
 
-    vi.mocked(mockApiClient.getComponents).mockResolvedValue(mockResponse);
+    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createComponentTools } = await import('./index.js');
