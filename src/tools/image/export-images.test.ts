@@ -4,7 +4,6 @@ import type { ExportImagesResponse } from '../../types/api/responses/image-respo
 
 describe('export-images', () => {
   let mockApiClient: FigmaApiClient;
-  let exportImages: any;
 
   beforeEach(() => {
     // APIクライアントのモック作成
@@ -28,7 +27,7 @@ describe('export-images', () => {
       },
     };
 
-    vi.mocked(mockApiClient.exportImages).mockResolvedValue(mockResponse);
+    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createImageTools } = await import('./index.js');
@@ -53,7 +52,7 @@ describe('export-images', () => {
       },
     };
 
-    vi.mocked(mockApiClient.exportImages).mockResolvedValue(mockResponse);
+    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createImageTools } = await import('./index.js');
@@ -78,7 +77,7 @@ describe('export-images', () => {
       },
     };
 
-    vi.mocked(mockApiClient.exportImages).mockResolvedValue(mockResponse);
+    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createImageTools } = await import('./index.js');
@@ -96,7 +95,7 @@ describe('export-images', () => {
     const ids = ['1:2'];
     const mockError = new Error('API Error: 400 Bad Request');
 
-    vi.mocked(mockApiClient.exportImages).mockRejectedValue(mockError);
+    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
     // Act & Assert
     const { createImageTools } = await import('./index.js');
@@ -115,7 +114,7 @@ describe('export-images', () => {
       images: {},
     };
 
-    vi.mocked(mockApiClient.exportImages).mockResolvedValue(mockResponse);
+    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createImageTools } = await import('./index.js');
@@ -146,7 +145,7 @@ describe('export-images', () => {
     const tools = createImageTools(mockApiClient);
     
     for (let i = 0; i < scales.length; i++) {
-      vi.mocked(mockApiClient.exportImages).mockResolvedValueOnce(mockResponses[i]);
+      (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mockResponses[i]);
       const result = await tools.exportImages.execute({ fileKey, ids, format, scale: scales[i] });
       
       // Assert
