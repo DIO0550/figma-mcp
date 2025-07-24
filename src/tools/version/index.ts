@@ -1,6 +1,6 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import { createGetVersionsTool } from './get-versions.js';
-import type { VersionTool } from './get-versions.js';
+import { createGetVersionsTool } from './list.js';
+import type { VersionTool } from './list.js';
 
 interface VersionTools {
   getVersions: VersionTool;

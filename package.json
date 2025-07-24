@@ -11,7 +11,7 @@
     "lint": "eslint src --ext .ts",
     "check": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\"",
-    "test": "vitest"
+    "test": "vitest --no-watch"
   },
   "keywords": [
     "mcp",

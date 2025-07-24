@@ -1,9 +1,9 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { createGetFileTool } from './get-file.js';
+import { createGetFileTool } from './info.js';
 import type { FilesApi } from '../../api/endpoints/files.js';
 import type { FigmaFile } from '../../types/api/responses/index.js';
 
-describe('get-file tool', () => {
+describe('info tool', () => {
   let filesApi: FilesApi;
   let get_file: ReturnType<typeof createGetFileTool>;
 
