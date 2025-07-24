@@ -48,7 +48,7 @@ if (!accessToken) {
 }
 
 // APIクライアントの作成
-const apiClient = new FigmaApiClient(accessToken);
+const apiClient = new FigmaApiClient(accessToken, process.env.FIGMA_API_BASE_URL);
 
 // ツールの作成
 const fileTools = createFileTools(apiClient);
@@ -293,8 +293,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_components': {
+        const fileKey = toolArgs.fileKey;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
+        }
         const args: GetComponentsArgs = {
-          fileKey: toolArgs.fileKey as string,
+          fileKey,
         };
         const result = await componentTools.getComponents.execute(args);
         return {
@@ -308,8 +312,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_styles': {
+        const fileKey = toolArgs.fileKey;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
+        }
         const args: GetStylesArgs = {
-          fileKey: toolArgs.fileKey as string,
+          fileKey,
         };
         const result = await styleTools.getStyles.execute(args);
         return {
@@ -323,9 +331,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'export_images': {
+        const fileKey = toolArgs.fileKey;
+        const ids = toolArgs.ids;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
+        }
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+          throw new Error('ids is required and must be a non-empty array');
+        }
         const args: ExportImagesArgs = {
-          fileKey: toolArgs.fileKey as string,
-          ids: toolArgs.ids as string[],
+          fileKey,
+          ids,
           format: toolArgs.format as 'jpg' | 'png' | 'svg' | 'pdf' | undefined,
           scale: toolArgs.scale as number | undefined,
         };
@@ -341,8 +357,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_comments': {
+        const fileKey = toolArgs.fileKey;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
+        }
         const args: GetCommentsArgs = {
-          fileKey: toolArgs.fileKey as string,
+          fileKey,
           showResolved: toolArgs.showResolved as boolean | undefined,
           userId: toolArgs.userId as string | undefined,
           nodeId: toolArgs.nodeId as string | undefined,
@@ -360,8 +380,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_versions': {
+        const fileKey = toolArgs.fileKey;
+        if (!fileKey || typeof fileKey !== 'string') {
+          throw new Error('fileKey is required and must be a string');
+        }
         const args: GetVersionsArgs = {
-          fileKey: toolArgs.fileKey as string,
+          fileKey,
         };
         const result = await versionTools.getVersions.execute(args);
         return {
