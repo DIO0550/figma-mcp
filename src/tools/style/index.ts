@@ -1,6 +1,6 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import { createGetStylesTool } from './get-styles.js';
-import type { StyleTool } from './get-styles.js';
+import { createGetStylesTool } from './list.js';
+import type { StyleTool } from './list.js';
 
 interface StyleTools {
   getStyles: StyleTool;

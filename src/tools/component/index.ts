@@ -1,6 +1,6 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import { createGetComponentsTool } from './get-components.js';
-import type { ComponentTool } from './get-components.js';
+import { createGetComponentsTool } from './list.js';
+import type { ComponentTool } from './list.js';
 
 interface ComponentTools {
   getComponents: ComponentTool;

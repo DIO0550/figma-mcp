@@ -3,7 +3,7 @@ import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetCommentsResponse } from '../../types/api/responses/comment-responses.js';
 import type { CommentWithReplies } from './types.js';
 
-describe('get-comments', () => {
+describe('list', () => {
   let mockApiClient: FigmaApiClient;
 
   beforeEach(() => {

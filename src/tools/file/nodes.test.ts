@@ -1,9 +1,9 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { createGetFileNodesTool } from './get-file-nodes.js';
+import { createGetFileNodesTool } from './nodes.js';
 import type { FilesApi } from '../../api/endpoints/files.js';
 import type { GetFileNodesResponse } from '../../types/api/responses/index.js';
 
-describe('get-file-nodes tool', () => {
+describe('nodes tool', () => {
   let filesApi: FilesApi;
   let get_file_nodes: ReturnType<typeof createGetFileNodesTool>;
 
