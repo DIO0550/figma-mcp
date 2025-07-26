@@ -1,28 +1,13 @@
 import type { Node, Component, Style } from '../../types/index.js';
+import type { ToolDefinition } from '../types.js';
+import type { GetFileArgs } from './get-file-args.js';
+import type { GetFileNodesArgs } from './get-file-nodes-args.js';
 
 // 内部実装用の型定義（MCPから独立）
-export interface FigmaTool<TArgs = unknown, TResult = unknown> {
+export interface FigmaTool<TArgs = unknown, TResult = unknown> extends ToolDefinition<TArgs, TResult> {
   name: string;
   description: string;
   execute: (args: TArgs) => Promise<TResult>;
-}
-
-// ファイル関連ツールの引数型
-export interface GetFileArgs {
-  file_key: string;
-  branch_data?: boolean;
-  version?: string;
-  plugin_data?: string;
-}
-
-export interface GetFileNodesArgs {
-  file_key: string;
-  ids: string[];
-  depth?: number;
-  geometry?: 'paths' | 'points';
-  branch_data?: boolean;
-  version?: string;
-  plugin_data?: string;
 }
 
 // 具体的なツール型

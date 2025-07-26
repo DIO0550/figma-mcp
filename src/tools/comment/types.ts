@@ -1,13 +1,10 @@
 import type { Comment } from '../../types/figma-types.js';
-
-export interface GetCommentsArgs {
-  fileKey: string;
-  showResolved?: boolean;
-  userId?: string;
-  nodeId?: string;
-  organizeThreads?: boolean;
-}
+import type { ToolDefinition } from '../types.js';
+import type { GetCommentsResponse } from '../../types/api/responses/comment-responses.js';
+import type { GetCommentsArgs } from './get-comments-args.js';
 
 export interface CommentWithReplies extends Comment {
   replies?: CommentWithReplies[];
 }
+
+export type CommentTool = ToolDefinition<GetCommentsArgs, GetCommentsResponse>;
