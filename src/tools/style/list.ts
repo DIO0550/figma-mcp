@@ -1,18 +1,15 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetStylesArgs } from './types.js';
+import type { StyleTool } from './types.js';
 import type { GetStylesResponse, StyleStatistics } from '../../types/api/responses/style-responses.js';
 import type { Style } from '../../types/figma-types.js';
-
-export interface StyleTool {
-  name: string;
-  description: string;
-  execute: (args: GetStylesArgs) => Promise<GetStylesResponse>;
-}
+import { GetStylesArgsSchema, type GetStylesArgs } from './get-styles-args.js';
+import { JsonSchema } from '../types.js';
 
 export const createGetStylesTool = (apiClient: FigmaApiClient): StyleTool => {
   return {
     name: 'get_styles',
     description: 'Get styles from a Figma file with optional categorization',
+    inputSchema: JsonSchema.from(GetStylesArgsSchema),
     execute: async (args: GetStylesArgs): Promise<GetStylesResponse> => {
       const response = await apiClient.getStyles(args.fileKey);
       

@@ -1,18 +1,15 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetCommentsArgs, CommentWithReplies } from './types.js';
+import type { CommentWithReplies, CommentTool } from './types.js';
 import type { GetCommentsResponse } from '../../types/api/responses/comment-responses.js';
 import type { Comment } from '../../types/figma-types.js';
-
-export interface CommentTool {
-  name: string;
-  description: string;
-  execute: (args: GetCommentsArgs) => Promise<GetCommentsResponse>;
-}
+import { GetCommentsArgsSchema, type GetCommentsArgs } from './get-comments-args.js';
+import { JsonSchema } from '../types.js';
 
 export const createGetCommentsTool = (apiClient: FigmaApiClient): CommentTool => {
   return {
     name: 'get_comments',
     description: 'Get comments from a Figma file with optional filtering',
+    inputSchema: JsonSchema.from(GetCommentsArgsSchema),
     execute: async (args: GetCommentsArgs): Promise<GetCommentsResponse> => {
       const response = await apiClient.getComments(args.fileKey);
       

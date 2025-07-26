@@ -1,11 +1,15 @@
 import type { GetFileOptions } from '../../types/index.js';
 import type { FilesApi } from '../../api/endpoints/files.js';
-import type { GetFileTool, GetFileArgs, FileResponse } from './types.js';
+import type { GetFileTool, FileResponse } from './types.js';
+import type { ToolDefinition } from '../types.js';
+import { GetFileArgsSchema, type GetFileArgs } from './get-file-args.js';
+import { JsonSchema } from '../types.js';
 
-export function createGetFileTool(filesApi: FilesApi): GetFileTool {
+export function createGetFileTool(filesApi: FilesApi): GetFileTool & ToolDefinition<GetFileArgs, FileResponse> {
   return {
     name: 'get_file',
     description: 'Get Figma file information including metadata and structure',
+    inputSchema: JsonSchema.from(GetFileArgsSchema),
     execute: async (args: GetFileArgs): Promise<FileResponse> => {
       const options: GetFileOptions = {
         branch_data: args.branch_data,
