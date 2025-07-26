@@ -1,6 +1,6 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import { createGetCommentsTool } from './list.js';
-import type { CommentTool } from './list.js';
+import type { CommentTool } from './types.js';
 
 interface CommentTools {
   getComments: CommentTool;
