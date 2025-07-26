@@ -1,18 +1,15 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetComponentsArgs } from './types.js';
+import type { ComponentTool } from './types.js';
 import type { GetComponentsResponse, ComponentAnalysis, VariantSet } from '../../types/api/responses/component-responses.js';
 import type { Component } from '../../types/figma-types.js';
-
-export interface ComponentTool {
-  name: string;
-  description: string;
-  execute: (args: GetComponentsArgs) => Promise<GetComponentsResponse>;
-}
+import { GetComponentsArgsSchema, type GetComponentsArgs } from './get-components-args.js';
+import { JsonSchema } from '../types.js';
 
 export const createGetComponentsTool = (apiClient: FigmaApiClient): ComponentTool => {
   return {
     name: 'get_components',
     description: 'Get components from a Figma file with optional metadata analysis',
+    inputSchema: JsonSchema.from(GetComponentsArgsSchema),
     execute: async (args: GetComponentsArgs): Promise<GetComponentsResponse> => {
       const response = await apiClient.getComponents(args.fileKey);
       const result = { ...response };

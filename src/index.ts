@@ -10,13 +10,16 @@ import { createStyleTools } from './tools/style/index.js';
 import { createImageTools } from './tools/image/index.js';
 import { createCommentTools } from './tools/comment/index.js';
 import { createVersionTools } from './tools/version/index.js';
-import type { GetFileArgs, GetFileNodesArgs } from './tools/file/types.js';
-import type { GetComponentsArgs } from './tools/component/types.js';
-import type { GetStylesArgs } from './tools/style/types.js';
-import type { ExportImagesArgs } from './tools/image/types.js';
-import type { GetCommentsArgs } from './tools/comment/types.js';
-import type { GetVersionsArgs } from './tools/version/types.js';
 import { Logger, LogLevel } from './utils/logger/index.js';
+
+// Args schemas for parsing
+import { GetFileArgsSchema } from './tools/file/get-file-args.js';
+import { GetFileNodesArgsSchema } from './tools/file/get-file-nodes-args.js';
+import { GetComponentsArgsSchema } from './tools/component/get-components-args.js';
+import { GetStylesArgsSchema } from './tools/style/get-styles-args.js';
+import { ExportImagesArgsSchema } from './tools/image/export-images-args.js';
+import { GetCommentsArgsSchema } from './tools/comment/get-comments-args.js';
+import { GetVersionsArgsSchema } from './tools/version/get-versions-args.js';
 
 dotenv.config();
 
@@ -64,172 +67,37 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
       {
         name: fileTools.getFile.name,
         description: fileTools.getFile.description,
-        inputSchema: {
-          type: 'object',
-          properties: {
-            file_key: {
-              type: 'string',
-              description: 'The Figma file key',
-            },
-            branch_data: {
-              type: 'boolean',
-              description: 'Include branch data',
-            },
-            version: {
-              type: 'string',
-              description: 'Version ID to fetch',
-            },
-            plugin_data: {
-              type: 'string',
-              description: 'Plugin data to include',
-            },
-          },
-          required: ['file_key'],
-        },
+        inputSchema: fileTools.getFile.inputSchema,
       },
       {
         name: fileTools.getFileNodes.name,
         description: fileTools.getFileNodes.description,
-        inputSchema: {
-          type: 'object',
-          properties: {
-            file_key: {
-              type: 'string',
-              description: 'The Figma file key',
-            },
-            ids: {
-              type: 'array',
-              items: {
-                type: 'string',
-              },
-              description: 'Array of node IDs to fetch',
-            },
-            depth: {
-              type: 'number',
-              description: 'Depth of nodes to fetch',
-            },
-            geometry: {
-              type: 'string',
-              enum: ['paths', 'points'],
-              description: 'Geometry type to include',
-            },
-            branch_data: {
-              type: 'boolean',
-              description: 'Include branch data',
-            },
-            version: {
-              type: 'string',
-              description: 'Version ID to fetch',
-            },
-            plugin_data: {
-              type: 'string',
-              description: 'Plugin data to include',
-            },
-          },
-          required: ['file_key', 'ids'],
-        },
+        inputSchema: fileTools.getFileNodes.inputSchema,
       },
       {
         name: componentTools.getComponents.name,
         description: componentTools.getComponents.description,
-        inputSchema: {
-          type: 'object',
-          properties: {
-            fileKey: {
-              type: 'string',
-              description: 'The Figma file key',
-            },
-          },
-          required: ['fileKey'],
-        },
+        inputSchema: componentTools.getComponents.inputSchema,
       },
       {
         name: styleTools.getStyles.name,
         description: styleTools.getStyles.description,
-        inputSchema: {
-          type: 'object',
-          properties: {
-            fileKey: {
-              type: 'string',
-              description: 'The Figma file key',
-            },
-          },
-          required: ['fileKey'],
-        },
+        inputSchema: styleTools.getStyles.inputSchema,
       },
       {
         name: imageTools.exportImages.name,
         description: imageTools.exportImages.description,
-        inputSchema: {
-          type: 'object',
-          properties: {
-            fileKey: {
-              type: 'string',
-              description: 'The Figma file key',
-            },
-            ids: {
-              type: 'array',
-              items: {
-                type: 'string',
-              },
-              description: 'Array of node IDs to export',
-            },
-            format: {
-              type: 'string',
-              enum: ['jpg', 'png', 'svg', 'pdf'],
-              description: 'Export format',
-            },
-            scale: {
-              type: 'number',
-              description: 'Scale of the exported image',
-            },
-          },
-          required: ['fileKey', 'ids'],
-        },
+        inputSchema: imageTools.exportImages.inputSchema,
       },
       {
         name: commentTools.getComments.name,
         description: commentTools.getComments.description,
-        inputSchema: {
-          type: 'object',
-          properties: {
-            fileKey: {
-              type: 'string',
-              description: 'The Figma file key',
-            },
-            showResolved: {
-              type: 'boolean',
-              description: 'Include resolved comments (default: true)',
-            },
-            userId: {
-              type: 'string',
-              description: 'Filter comments by user ID',
-            },
-            nodeId: {
-              type: 'string',
-              description: 'Filter comments by node ID',
-            },
-            organizeThreads: {
-              type: 'boolean',
-              description: 'Organize comments into thread structure (default: false)',
-            },
-          },
-          required: ['fileKey'],
-        },
+        inputSchema: commentTools.getComments.inputSchema,
       },
       {
         name: versionTools.getVersions.name,
         description: versionTools.getVersions.description,
-        inputSchema: {
-          type: 'object',
-          properties: {
-            fileKey: {
-              type: 'string',
-              description: 'The Figma file key',
-            },
-          },
-          required: ['fileKey'],
-        },
+        inputSchema: versionTools.getVersions.inputSchema,
       },
     ],
   };
@@ -237,22 +105,12 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-  const toolArgs = args as Record<string, unknown>;
 
   try {
     switch (name) {
       case 'get_file': {
-        const file_key = toolArgs.file_key;
-        if (!file_key || typeof file_key !== 'string') {
-          throw new Error('file_key is required and must be a string');
-        }
-        const args: GetFileArgs = {
-          file_key,
-          branch_data: toolArgs.branch_data as boolean | undefined,
-          version: toolArgs.version as string | undefined,
-          plugin_data: toolArgs.plugin_data as string | undefined,
-        };
-        const result = await fileTools.getFile.execute(args);
+        const validatedArgs = GetFileArgsSchema.parse(args);
+        const result = await fileTools.getFile.execute(validatedArgs);
         return {
           content: [
             {
@@ -264,24 +122,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_file_nodes': {
-        const file_key = toolArgs.file_key as string;
-        const ids = toolArgs.ids as string[];
-        if (!file_key) {
-          throw new Error('file_key is required');
-        }
-        if (!ids || !Array.isArray(ids) || ids.length === 0) {
-          throw new Error('ids is required and must be a non-empty array');
-        }
-        const args: GetFileNodesArgs = {
-          file_key,
-          ids,
-          depth: toolArgs.depth as number | undefined,
-          geometry: toolArgs.geometry as 'paths' | 'points' | undefined,
-          branch_data: toolArgs.branch_data as boolean | undefined,
-          version: toolArgs.version as string | undefined,
-          plugin_data: toolArgs.plugin_data as string | undefined,
-        };
-        const result = await fileTools.getFileNodes.execute(args);
+        const validatedArgs = GetFileNodesArgsSchema.parse(args);
+        const result = await fileTools.getFileNodes.execute(validatedArgs);
         return {
           content: [
             {
@@ -293,14 +135,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_components': {
-        const fileKey = toolArgs.fileKey;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        const args: GetComponentsArgs = {
-          fileKey,
-        };
-        const result = await componentTools.getComponents.execute(args);
+        const validatedArgs = GetComponentsArgsSchema.parse(args);
+        const result = await componentTools.getComponents.execute(validatedArgs);
         return {
           content: [
             {
@@ -312,14 +148,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_styles': {
-        const fileKey = toolArgs.fileKey;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        const args: GetStylesArgs = {
-          fileKey,
-        };
-        const result = await styleTools.getStyles.execute(args);
+        const validatedArgs = GetStylesArgsSchema.parse(args);
+        const result = await styleTools.getStyles.execute(validatedArgs);
         return {
           content: [
             {
@@ -331,21 +161,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'export_images': {
-        const fileKey = toolArgs.fileKey;
-        const ids = toolArgs.ids;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        if (!ids || !Array.isArray(ids) || ids.length === 0) {
-          throw new Error('ids is required and must be a non-empty array');
-        }
-        const args: ExportImagesArgs = {
-          fileKey,
-          ids,
-          format: toolArgs.format as 'jpg' | 'png' | 'svg' | 'pdf' | undefined,
-          scale: toolArgs.scale as number | undefined,
-        };
-        const result = await imageTools.exportImages.execute(args);
+        const validatedArgs = ExportImagesArgsSchema.parse(args);
+        const result = await imageTools.exportImages.execute(validatedArgs);
         return {
           content: [
             {
@@ -357,18 +174,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_comments': {
-        const fileKey = toolArgs.fileKey;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        const args: GetCommentsArgs = {
-          fileKey,
-          showResolved: toolArgs.showResolved as boolean | undefined,
-          userId: toolArgs.userId as string | undefined,
-          nodeId: toolArgs.nodeId as string | undefined,
-          organizeThreads: toolArgs.organizeThreads as boolean | undefined,
-        };
-        const result = await commentTools.getComments.execute(args);
+        const validatedArgs = GetCommentsArgsSchema.parse(args);
+        const result = await commentTools.getComments.execute(validatedArgs);
         return {
           content: [
             {
@@ -380,14 +187,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_versions': {
-        const fileKey = toolArgs.fileKey;
-        if (!fileKey || typeof fileKey !== 'string') {
-          throw new Error('fileKey is required and must be a string');
-        }
-        const args: GetVersionsArgs = {
-          fileKey,
-        };
-        const result = await versionTools.getVersions.execute(args);
+        const validatedArgs = GetVersionsArgsSchema.parse(args);
+        const result = await versionTools.getVersions.execute(validatedArgs);
         return {
           content: [
             {

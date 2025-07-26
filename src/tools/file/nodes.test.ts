@@ -2,6 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { createGetFileNodesTool } from './nodes.js';
 import type { FilesApi } from '../../api/endpoints/files.js';
 import type { GetFileNodesResponse } from '../../types/api/responses/index.js';
+import { GetFileNodesArgsSchema } from './get-file-nodes-args.js';
 
 describe('nodes tool', () => {
   let filesApi: FilesApi;
@@ -128,13 +129,14 @@ describe('nodes tool', () => {
     expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { depth: 3 });
   });
 
-  test('ノードIDが空の場合はエラーになる', async () => {
-    await expect(
-      get_file_nodes.execute({
+  test('ノードIDが空の場合はエラーになる', () => {
+    // バリデーション関数を直接テスト
+    expect(() => {
+      GetFileNodesArgsSchema.parse({
         file_key: 'test-file-key',
         ids: [],
-      })
-    ).rejects.toThrow('At least one node ID is required');
+      });
+    }).toThrow();
   });
 
   test('geometryオプションでpathsを指定できる', async () => {

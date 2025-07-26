@@ -1,17 +1,14 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetVersionsArgs } from './types.js';
+import type { VersionTool } from './types.js';
 import type { GetVersionsResponse } from '../../types/api/responses/version-responses.js';
-
-export interface VersionTool {
-  name: string;
-  description: string;
-  execute: (args: GetVersionsArgs) => Promise<GetVersionsResponse>;
-}
+import { GetVersionsArgsSchema, type GetVersionsArgs } from './get-versions-args.js';
+import { JsonSchema } from '../types.js';
 
 export const createGetVersionsTool = (apiClient: FigmaApiClient): VersionTool => {
   return {
     name: 'get_versions',
     description: 'Get version history of a Figma file with optional details',
+    inputSchema: JsonSchema.from(GetVersionsArgsSchema),
     execute: async (args: GetVersionsArgs): Promise<GetVersionsResponse> => {
       const response = await apiClient.getVersions(args.fileKey);
       

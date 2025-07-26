@@ -1,15 +1,16 @@
 import type { GetFileOptions } from '../../types/index.js';
 import type { FilesApi } from '../../api/endpoints/files.js';
-import type { GetFileNodesTool, GetFileNodesArgs, NodeEntry, FileNodesResponse } from './types.js';
+import type { GetFileNodesTool, NodeEntry, FileNodesResponse } from './types.js';
+import type { ToolDefinition } from '../types.js';
+import { GetFileNodesArgsSchema, type GetFileNodesArgs } from './get-file-nodes-args.js';
+import { JsonSchema } from '../types.js';
 
-export function createGetFileNodesTool(filesApi: FilesApi): GetFileNodesTool {
+export function createGetFileNodesTool(filesApi: FilesApi): GetFileNodesTool & ToolDefinition<GetFileNodesArgs, FileNodesResponse> {
   return {
     name: 'get_file_nodes',
     description: 'Get specific nodes from a Figma file with optional depth and geometry',
+    inputSchema: JsonSchema.from(GetFileNodesArgsSchema),
     execute: async (args: GetFileNodesArgs): Promise<FileNodesResponse> => {
-      if (!args.ids || args.ids.length === 0) {
-        throw new Error('At least one node ID is required');
-      }
 
       const options: GetFileOptions = {
         depth: args.depth,
