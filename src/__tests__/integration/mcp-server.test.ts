@@ -1,5 +1,9 @@
 import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
-import { setupTestEnvironment, teardownTestEnvironment, type TestContext } from '../helpers/setup.js';
+import {
+  setupTestEnvironment,
+  teardownTestEnvironment,
+  type TestContext,
+} from '../helpers/setup.js';
 import { MCPTestClient } from '../helpers/mcp-client.js';
 import { join } from 'path';
 
@@ -34,7 +38,7 @@ describe('MCP Server Integration', () => {
         FIGMA_ACCESS_TOKEN: 'test-token',
         FIGMA_API_BASE_URL: 'http://localhost:3001',
       });
-      
+
       await client2.connect();
       const initResult = await client2.initialize('0.1.0');
       expect(initResult).toBeDefined();
@@ -46,10 +50,10 @@ describe('MCP Server Integration', () => {
   describe('Tool Registration', () => {
     test('利用可能なツール一覧を取得できる', async () => {
       const tools = await client.listTools();
-      
+
       expect(tools).toHaveProperty('tools');
       expect(Array.isArray(tools.tools)).toBe(true);
-      
+
       // 期待されるツールが登録されていることを確認
       const toolNames = tools.tools.map((tool) => tool.name);
       const expectedTools = [
@@ -60,25 +64,27 @@ describe('MCP Server Integration', () => {
         'export_images',
         'get_comments',
         'get_versions',
+        'set_config',
       ];
-      
-      expectedTools.forEach(toolName => {
+
+      expectedTools.forEach((toolName) => {
         expect(toolNames).toContain(toolName);
       });
     });
 
     test('各ツールが正しいスキーマを持っている', async () => {
       const tools = await client.listTools();
-      
+
       tools.tools.forEach((tool) => {
         expect(tool).toHaveProperty('name');
         expect(tool).toHaveProperty('description');
         expect(tool).toHaveProperty('inputSchema');
-        
+
         // inputSchemaが有効なJSONスキーマであることを確認
         const schema = tool.inputSchema;
         expect(schema).toHaveProperty('type');
         expect(schema).toHaveProperty('properties');
+        
         expect(schema).toHaveProperty('required');
       });
     });
@@ -126,16 +132,16 @@ describe('MCP Server Integration', () => {
         FIGMA_ACCESS_TOKEN: 'invalid-token',
         FIGMA_API_BASE_URL: 'http://localhost:3001',
       });
-      
+
       await invalidClient.connect();
       await invalidClient.initialize();
-      
+
       const result = await invalidClient.callTool('get_file', {
         file_key: 'test-file-key',
       });
       expect(result).toHaveProperty('isError', true);
       expect(result.content[0].text).toContain('Error');
-      
+
       invalidClient.disconnect();
     });
   });

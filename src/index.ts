@@ -10,6 +10,7 @@ import { createStyleTools } from './tools/style/index.js';
 import { createImageTools } from './tools/image/index.js';
 import { createCommentTools } from './tools/comment/index.js';
 import { createVersionTools } from './tools/version/index.js';
+import { createConfigTools } from './tools/config/index.js';
 import { Logger, LogLevel } from './utils/logger/index.js';
 
 // Args schemas for parsing
@@ -20,6 +21,7 @@ import { GetStylesArgsSchema } from './tools/style/get-styles-args.js';
 import { ExportImagesArgsSchema } from './tools/image/export-images-args.js';
 import { GetCommentsArgsSchema } from './tools/comment/get-comments-args.js';
 import { GetVersionsArgsSchema } from './tools/version/get-versions-args.js';
+import { SetConfigArgsSchema } from './tools/config/set-config-args.js';
 
 dotenv.config();
 
@@ -60,6 +62,7 @@ const styleTools = createStyleTools(apiClient);
 const imageTools = createImageTools(apiClient);
 const commentTools = createCommentTools(apiClient);
 const versionTools = createVersionTools(apiClient);
+const configTools = createConfigTools();
 
 server.setRequestHandler(ListToolsRequestSchema, () => {
   return {
@@ -98,6 +101,11 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         name: versionTools.getVersions.name,
         description: versionTools.getVersions.description,
         inputSchema: versionTools.getVersions.inputSchema,
+      },
+      {
+        name: configTools.setConfig.name,
+        description: configTools.setConfig.description,
+        inputSchema: configTools.setConfig.inputSchema,
       },
     ],
   };
@@ -189,6 +197,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_versions': {
         const validatedArgs = GetVersionsArgsSchema.parse(args);
         const result = await versionTools.getVersions.execute(validatedArgs);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'set_config': {
+        const validatedArgs = SetConfigArgsSchema.parse(args);
+        const result = await configTools.setConfig.execute(validatedArgs);
+
+        // Reinitialize apiClient with new config
+        apiClient.reinitialize();
+
         return {
           content: [
             {
