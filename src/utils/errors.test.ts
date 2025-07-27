@@ -53,7 +53,7 @@ describe('parseFigmaErrorResponse', () => {
       json: () => { throw new Error('Invalid JSON'); },
       status: 502,
       statusText: 'Bad Gateway',
-    } as Response;
+    } as unknown as Response;
 
     const message = await parseFigmaErrorResponse(mockResponse);
     expect(message).toBe('HTTP 502: Bad Gateway');

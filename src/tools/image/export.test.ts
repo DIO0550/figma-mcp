@@ -20,7 +20,7 @@ describe('export-images', () => {
     const scale = 2;
     
     const mockResponse: ExportImagesResponse = {
-      err: null,
+      err: undefined,
       images: {
         '1:2': 'https://figma-export.com/image1.png',
         '3:4': 'https://figma-export.com/image2.png',
@@ -46,7 +46,7 @@ describe('export-images', () => {
     const ids = ['1:2'];
     
     const mockResponse: ExportImagesResponse = {
-      err: null,
+      err: undefined,
       images: {
         '1:2': 'https://figma-export.com/image1.png',
       },
@@ -71,7 +71,7 @@ describe('export-images', () => {
     const format = 'svg';
     
     const mockResponse: ExportImagesResponse = {
-      err: null,
+      err: undefined,
       images: {
         '1:2': 'https://figma-export.com/image1.svg',
       },
@@ -134,7 +134,7 @@ describe('export-images', () => {
     const scales = [1, 2, 3];
     
     const mockResponses = scales.map(scale => ({
-      err: null,
+      err: undefined,
       images: {
         '1:2': `https://figma-export.com/image1@${scale}x.png`,
       },

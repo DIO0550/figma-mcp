@@ -42,7 +42,7 @@ interface MCPInitializeResponse {
 }
 
 export class MCPTestClient extends EventEmitter {
-  private process: ChildProcess;
+  private process!: ChildProcess;
   private messageBuffer: string = '';
   private pendingRequests: Map<number, {
     resolve: (value: unknown) => void;

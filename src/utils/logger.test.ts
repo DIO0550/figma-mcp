@@ -119,8 +119,8 @@ describe('Logger', () => {
       expect(call).toContain('エラー発生');
       // エラーオブジェクトはシリアライズされて第2引数に渡される
       const context = consoleErrorSpy.mock.calls[0][1] as Record<string, unknown>;
-      expect(context.error.message).toBe('テストエラー');
-      expect(context.error.name).toBe('Error');
+      expect((context.error as Error).message).toBe('テストエラー');
+      expect((context.error as Error).name).toBe('Error');
     });
   });
 
@@ -161,7 +161,7 @@ describe('Logger', () => {
   describe('フィルタリング', () => {
     it('カスタムフィルターでログを制御できる', () => {
       const logger = createLogger({
-        filter: (level, message) => !message.includes('無視')
+        filter: (_level, message) => !message.includes('無視')
       });
       
       logger.info('表示されるメッセージ');

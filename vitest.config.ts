@@ -13,10 +13,10 @@ export default defineConfig({
         '**/*.config.ts',
         '**/*.d.ts',
         'src/index.ts', // MCPサーバーのエントリポイントは除外
-        'tests/mocks/**/*', // モックサーバーは除外
+        'src/__tests__/mocks/**/*', // モックサーバーは除外
       ],
     },
-    include: ['src/**/*.test.ts', 'tests/**/*.test.ts'],
+    include: ['src/**/*.test.ts'],
     testTimeout: 30000, // 統合テスト用に30秒のタイムアウト
     hookTimeout: 30000, // フック用のタイムアウト
   },

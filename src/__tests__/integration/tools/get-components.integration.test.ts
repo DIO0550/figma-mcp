@@ -1,13 +1,13 @@
 import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
-import { setupTestEnvironment, teardownTestEnvironment, type TestContext } from '../helpers/setup.js';
-import { MCPTestClient } from '../helpers/mcp-client.js';
+import { setupTestEnvironment, teardownTestEnvironment, type TestContext } from '../../helpers/setup.js';
+import type { MCPTestClient } from '../../helpers/mcp-client.js';
 
 // モックサーバーを使用するために環境変数を設定
 vi.stubEnv('FIGMA_API_BASE_URL', 'http://localhost:3001');
 
 describe('get_components Tool Integration', () => {
   let context: TestContext;
-  let client: MCPTestClient;
+  let client!: MCPTestClient;
 
   beforeAll(async () => {
     context = await setupTestEnvironment();
@@ -27,7 +27,7 @@ describe('get_components Tool Integration', () => {
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
     
-    const content = JSON.parse(result.content[0].text);
+    const content = JSON.parse(result.content[0].text) as { meta: { components: Array<Record<string, unknown>> } };
     expect(content).toHaveProperty('meta');
     expect(content.meta).toHaveProperty('components');
     expect(Array.isArray(content.meta.components)).toBe(true);
@@ -46,7 +46,7 @@ describe('get_components Tool Integration', () => {
     });
 
     expect(result).toHaveProperty('content');
-    const content = JSON.parse(result.content[0].text);
+    const content = JSON.parse(result.content[0].text) as { meta: { components: unknown } };
     expect(content.meta.components).toBeDefined();
   });
 

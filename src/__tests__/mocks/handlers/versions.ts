@@ -1,8 +1,7 @@
 import type { Request, Response } from 'express';
 
 export const versionHandlers = {
-  getVersions: (req: Request, res: Response): void => {
-    const { fileKey } = req.params;
+  getVersions: (_req: Request, res: Response): void => {
     
     const mockResponse = {
       versions: [
