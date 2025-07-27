@@ -8,6 +8,7 @@ import { createImagesApi } from './endpoints/images.js';
 import { createCommentsApi } from './endpoints/comments.js';
 import { createVersionsApi } from './endpoints/versions.js';
 import { createTeamsApi } from './endpoints/teams.js';
+import { getRuntimeConfig } from '../config/runtime-config.js';
 import type { GetComponentsResponse } from '../types/api/responses/component-responses.js';
 import type { GetStylesResponse } from '../types/api/responses/style-responses.js';
 import type { ExportImageResponse } from '../types/api/responses/image-responses.js';
@@ -15,17 +16,30 @@ import type { GetCommentsResponse } from '../types/api/responses/comment-respons
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
 
 export class FigmaApiClient {
-  public files: FilesApi;
-  public nodes: ReturnType<typeof createNodesApi>;
-  public components: ReturnType<typeof createComponentsApi>;
-  public styles: ReturnType<typeof createStylesApi>;
-  public images: ReturnType<typeof createImagesApi>;
-  public comments: ReturnType<typeof createCommentsApi>;
-  public versions: ReturnType<typeof createVersionsApi>;
-  public teams: ReturnType<typeof createTeamsApi>;
+  public files!: FilesApi;
+  public nodes!: ReturnType<typeof createNodesApi>;
+  public components!: ReturnType<typeof createComponentsApi>;
+  public styles!: ReturnType<typeof createStylesApi>;
+  public images!: ReturnType<typeof createImagesApi>;
+  public comments!: ReturnType<typeof createCommentsApi>;
+  public versions!: ReturnType<typeof createVersionsApi>;
+  public teams!: ReturnType<typeof createTeamsApi>;
+
+  private accessToken: string;
+  private defaultBaseUrl?: string;
 
   constructor(accessToken: string, baseUrl?: string) {
-    const config = createApiConfig(accessToken, baseUrl);
+    this.accessToken = accessToken;
+    this.defaultBaseUrl = baseUrl;
+    this.reinitialize();
+  }
+
+  public reinitialize(): void {
+    // Get runtime config, prioritizing it over constructor-provided baseUrl
+    const runtimeConfig = getRuntimeConfig();
+    const baseUrl = runtimeConfig.baseUrl || this.defaultBaseUrl;
+
+    const config = createApiConfig(this.accessToken, baseUrl);
     const httpClient = createHttpClient(config);
 
     this.files = createFilesApi(httpClient);
@@ -47,7 +61,10 @@ export class FigmaApiClient {
     return this.styles.getStyles(fileKey);
   }
 
-  exportImages(fileKey: string, options: Parameters<typeof this.images.exportImages>[1]): Promise<ExportImageResponse> {
+  exportImages(
+    fileKey: string,
+    options: Parameters<typeof this.images.exportImages>[1]
+  ): Promise<ExportImageResponse> {
     return this.images.exportImages(fileKey, options);
   }
 
