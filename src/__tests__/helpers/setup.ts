@@ -1,4 +1,4 @@
-import { MockFigmaServer } from '../../mocks/server.js';
+import { MockFigmaServer } from '../mocks/server.js';
 import { MCPTestClient } from './mcp-client.js';
 import { join } from 'path';
 
@@ -6,6 +6,9 @@ export interface TestContext {
   mockServer: MockFigmaServer;
   mcpClient: MCPTestClient;
 }
+
+// Re-export MCPTestClient to avoid ESLint import issues
+export { MCPTestClient } from './mcp-client.js';
 
 export async function setupTestEnvironment(): Promise<TestContext> {
   // モックサーバーを起動
@@ -31,7 +34,7 @@ export async function setupTestEnvironment(): Promise<TestContext> {
 export async function teardownTestEnvironment(context: TestContext): Promise<void> {
   // クライアントを切断
   if (context.mcpClient) {
-    await context.mcpClient.disconnect();
+    context.mcpClient.disconnect();
   }
 
   // モックサーバーを停止

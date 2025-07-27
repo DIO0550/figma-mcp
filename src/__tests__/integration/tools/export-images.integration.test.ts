@@ -1,13 +1,13 @@
 import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
-import { setupTestEnvironment, teardownTestEnvironment, type TestContext } from '../helpers/setup.js';
-import { MCPTestClient } from '../helpers/mcp-client.js';
+import { setupTestEnvironment, teardownTestEnvironment, type TestContext } from '../../helpers/setup.js';
+import type { MCPTestClient } from '../../helpers/mcp-client.js';
 
 // モックサーバーを使用するために環境変数を設定
 vi.stubEnv('FIGMA_API_BASE_URL', 'http://localhost:3001');
 
 describe('export_images Tool Integration', () => {
   let context: TestContext;
-  let client: MCPTestClient;
+  let client!: MCPTestClient;
 
   beforeAll(async () => {
     context = await setupTestEnvironment();
@@ -28,7 +28,7 @@ describe('export_images Tool Integration', () => {
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
     
-    const content = JSON.parse(result.content[0].text);
+    const content = JSON.parse(result.content[0].text) as { images: Record<string, string> };
     expect(content).toHaveProperty('images');
     expect(content.images).toHaveProperty('2:3');
     expect(content.images['2:3']).toMatch(/^https:\/\/example\.com\/export\/test-file-key\/2:3\.png/);
@@ -40,7 +40,7 @@ describe('export_images Tool Integration', () => {
       ids: ['2:3', '2:4', '2:5'],
     });
 
-    const content = JSON.parse(result.content[0].text);
+    const content = JSON.parse(result.content[0].text) as { images: Record<string, string> };
     expect(content.images).toHaveProperty('2:3');
     expect(content.images).toHaveProperty('2:4');
     expect(content.images).toHaveProperty('2:5');
@@ -54,7 +54,7 @@ describe('export_images Tool Integration', () => {
       format: 'svg',
     });
 
-    const content = JSON.parse(result.content[0].text);
+    const content = JSON.parse(result.content[0].text) as { images: Record<string, string> };
     expect(content.images['2:3']).toMatch(/\.svg\?/);
   });
 
@@ -65,7 +65,7 @@ describe('export_images Tool Integration', () => {
       scale: 2,
     });
 
-    const content = JSON.parse(result.content[0].text);
+    const content = JSON.parse(result.content[0].text) as { images: Record<string, string> };
     expect(content.images).toHaveProperty('2:3');
     // モックサーバーではスケールの効果はシミュレートしていないが、
     // エラーなく処理されることを確認

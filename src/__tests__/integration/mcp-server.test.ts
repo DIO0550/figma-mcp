@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
-import { setupTestEnvironment, teardownTestEnvironment, type TestContext } from './helpers/setup.js';
-import { MCPTestClient } from './helpers/mcp-client.js';
+import { setupTestEnvironment, teardownTestEnvironment, type TestContext } from '../helpers/setup.js';
+import { MCPTestClient } from '../helpers/mcp-client.js';
 import { join } from 'path';
 
 // モックサーバーを使用するために環境変数を設定
@@ -39,7 +39,7 @@ describe('MCP Server Integration', () => {
       const initResult = await client2.initialize('0.1.0');
       expect(initResult).toBeDefined();
       expect(initResult).toHaveProperty('protocolVersion');
-      await client2.disconnect();
+      client2.disconnect();
     });
   });
 
@@ -136,7 +136,7 @@ describe('MCP Server Integration', () => {
       expect(result).toHaveProperty('isError', true);
       expect(result.content[0].text).toContain('Error');
       
-      await invalidClient.disconnect();
+      invalidClient.disconnect();
     });
   });
 });

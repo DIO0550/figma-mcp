@@ -26,22 +26,24 @@ export class MockFigmaServer {
     this.app.use((req: Request, res: Response, next) => {
       const token = req.headers['x-figma-token'];
       if (!token) {
-        return res.status(401).json({ 
+        res.status(401).json({ 
           error: 'Unauthorized',
           message: 'Missing authentication token' 
         });
+        return;
       }
       if (token === 'invalid-token') {
-        return res.status(401).json({ 
+        res.status(401).json({ 
           error: 'Unauthorized',
           message: 'Invalid authentication token' 
         });
+        return;
       }
       next();
     });
 
     // ロギングミドルウェア
-    this.app.use((req: Request, res: Response, next) => {
+    this.app.use((req: Request, _res: Response, next) => {
       console.log(`[MockFigmaServer] ${req.method} ${req.path}`);
       next();
     });
@@ -72,7 +74,7 @@ export class MockFigmaServer {
     });
 
     // エラーハンドラー
-    this.app.use((err: Error, req: Request, res: Response, _next: express.NextFunction) => {
+    this.app.use((err: Error, _req: Request, res: Response, _next: express.NextFunction) => {
       console.error('[MockFigmaServer] Error:', err);
       res.status(500).json({ 
         error: 'Internal Server Error',
@@ -104,14 +106,14 @@ export class MockFigmaServer {
   }
 }
 
-// CLIから直接実行する場合
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const server = new MockFigmaServer();
-  server.start().catch(console.error);
-
-  // グレースフルシャットダウン
-  process.on('SIGINT', async () => {
-    await server.stop();
-    process.exit(0);
-  });
-}
+// CLIから直接実行する場合はコメントアウト
+// if (import.meta.url === `file://${process.argv[1]}`) {
+//   const server = new MockFigmaServer();
+//   server.start().catch(console.error);
+//
+//   // グレースフルシャットダウン
+//   process.on('SIGINT', async () => {
+//     await server.stop();
+//     process.exit(0);
+//   });
+// }
