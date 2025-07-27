@@ -8,8 +8,8 @@ describe('createFilesApi', () => {
 
   beforeEach(() => {
     mockHttpClient = {
-      get: vi.fn<Parameters<HttpClient['get']>, ReturnType<HttpClient['get']>>(),
-      post: vi.fn<Parameters<HttpClient['post']>, ReturnType<HttpClient['post']>>(),
+      get: vi.fn().mockImplementation(() => Promise.resolve()),
+      post: vi.fn().mockImplementation(() => Promise.resolve()),
     };
     vi.clearAllMocks();
   });

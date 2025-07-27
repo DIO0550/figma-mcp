@@ -30,6 +30,7 @@ describe('get-components', () => {
               page_id: 'page-1',
               page_name: 'Page 1',
             },
+            documentationLinks: [],
           },
           {
             key: 'component-2',
@@ -41,6 +42,7 @@ describe('get-components', () => {
               page_id: 'page-1',
               page_name: 'Page 1',
             },
+            documentationLinks: [],
           },
         ],
       },
@@ -91,6 +93,7 @@ describe('get-components', () => {
               page_id: 'page-1',
               page_name: 'Components',
             },
+            documentationLinks: [],
           },
           {
             key: 'component-2',
@@ -102,6 +105,7 @@ describe('get-components', () => {
               page_id: 'page-1',
               page_name: 'Components',
             },
+            documentationLinks: [],
           },
         ],
       },
@@ -156,6 +160,7 @@ describe('get-components', () => {
               page_name: 'Components',
             },
             component_set_id: 'set-1',
+            documentationLinks: [],
           },
           {
             key: 'component-2',
@@ -168,6 +173,7 @@ describe('get-components', () => {
               page_name: 'Components',
             },
             component_set_id: 'set-1',
+            documentationLinks: [],
           },
           {
             key: 'component-3',
@@ -180,6 +186,7 @@ describe('get-components', () => {
               page_name: 'Components',
             },
             component_set_id: 'set-2',
+            documentationLinks: [],
           },
         ],
       },
