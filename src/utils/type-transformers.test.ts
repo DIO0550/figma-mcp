@@ -59,6 +59,35 @@ describe('type-transformers', () => {
       type Test = CamelToSnakeCase<''>;
       expectTypeOf<Test>().toEqualTypeOf<''>();
     });
+
+    it('should handle consecutive uppercase letters (acronyms)', () => {
+      // アクロニムが正しく処理される
+      type Test1 = CamelToSnakeCase<'XMLHttpRequest'>;
+      expectTypeOf<Test1>().toEqualTypeOf<'xml_http_request'>();
+
+      type Test2 = CamelToSnakeCase<'IOError'>;
+      expectTypeOf<Test2>().toEqualTypeOf<'io_error'>();
+
+      type Test3 = CamelToSnakeCase<'HTTPSConnection'>;
+      expectTypeOf<Test3>().toEqualTypeOf<'https_connection'>();
+
+      type Test4 = CamelToSnakeCase<'URLPattern'>;
+      expectTypeOf<Test4>().toEqualTypeOf<'url_pattern'>();
+
+      // 一般的なキャメルケースでも正しく動作
+      type Test5 = CamelToSnakeCase<'apiKey'>;
+      expectTypeOf<Test5>().toEqualTypeOf<'api_key'>();
+
+      type Test6 = CamelToSnakeCase<'httpStatus'>;
+      expectTypeOf<Test6>().toEqualTypeOf<'http_status'>();
+
+      // 複数のアクロニムを含むケース
+      type Test7 = CamelToSnakeCase<'getAPIKeyFromJSON'>;
+      expectTypeOf<Test7>().toEqualTypeOf<'get_api_key_from_json'>();
+
+      type Test8 = CamelToSnakeCase<'parseXMLToJSON'>;
+      expectTypeOf<Test8>().toEqualTypeOf<'parse_xml_to_json'>();
+    });
   });
 
   describe('CamelCaseKeys', () => {
