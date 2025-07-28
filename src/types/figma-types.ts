@@ -38,7 +38,14 @@ export interface SizeConstraint {
 }
 
 export interface Paint {
-  type: 'SOLID' | 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' | 'GRADIENT_DIAMOND' | 'IMAGE' | 'EMOJI';
+  type:
+    | 'SOLID'
+    | 'GRADIENT_LINEAR'
+    | 'GRADIENT_RADIAL'
+    | 'GRADIENT_ANGULAR'
+    | 'GRADIENT_DIAMOND'
+    | 'IMAGE'
+    | 'EMOJI';
   visible?: boolean;
   opacity?: number;
   color?: Color;
@@ -63,7 +70,7 @@ export interface Effect {
   spread?: number;
 }
 
-export type BlendMode = 
+export type BlendMode =
   | 'PASS_THROUGH'
   | 'NORMAL'
   | 'DARKEN'
