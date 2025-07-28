@@ -1,10 +1,5 @@
 import { describe, test, expect, vi } from 'vitest';
-import {
-  parseRateLimitHeaders,
-  getRetryAfter,
-  shouldRetry,
-  withRetry,
-} from './rate-limit';
+import { parseRateLimitHeaders, getRetryAfter, shouldRetry, withRetry } from './rate-limit';
 
 describe('parseRateLimitHeaders', () => {
   test('レート制限ヘッダーがある場合はRateLimitInfoを返す', () => {
@@ -103,7 +98,8 @@ describe('withRetry', () => {
 
   test('リトライ可能なエラーは指定回数まで再実行される', async () => {
     const error = Object.assign(new Error('Server Error'), { status: 500 });
-    const mockFn = vi.fn()
+    const mockFn = vi
+      .fn()
       .mockRejectedValueOnce(error)
       .mockRejectedValueOnce(error)
       .mockResolvedValueOnce('success');
@@ -132,7 +128,8 @@ describe('withRetry', () => {
 
   test('エクスポネンシャルバックオフで遅延が増加する', async () => {
     const error = Object.assign(new Error('Server Error'), { status: 500 });
-    const mockFn = vi.fn()
+    const mockFn = vi
+      .fn()
       .mockRejectedValueOnce(error)
       .mockRejectedValueOnce(error)
       .mockResolvedValueOnce('success');

@@ -5,7 +5,7 @@ import type { RateLimitInfo } from '../types';
 describe('createFigmaError', () => {
   test('エラーメッセージとステータスコードを持つFigmaErrorを作成できる', () => {
     const error = createFigmaError('API Error', 400);
-    
+
     expect(error).toBeInstanceOf(Error);
     expect(error.name).toBe('FigmaError');
     expect(error.message).toBe('API Error');
@@ -19,7 +19,7 @@ describe('createFigmaError', () => {
       reset: new Date('2024-01-01T00:00:00Z'),
     };
     const error = createFigmaError('Rate limit exceeded', 429, rateLimitInfo);
-    
+
     expect(error.status).toBe(429);
     expect(error.rateLimitInfo).toEqual(rateLimitInfo);
   });
@@ -50,7 +50,9 @@ describe('parseFigmaErrorResponse', () => {
 
   test('JSON解析に失敗した場合はHTTPステータスを返す', async () => {
     const mockResponse = {
-      json: () => { throw new Error('Invalid JSON'); },
+      json: () => {
+        throw new Error('Invalid JSON');
+      },
       status: 502,
       statusText: 'Bad Gateway',
     } as unknown as Response;
