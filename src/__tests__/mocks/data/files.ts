@@ -66,7 +66,7 @@ export const mockFileData: Record<string, MockFileResponse> = {
     schemaVersion: 0,
     styles: {},
   },
-  
+
   default: {
     name: 'Default Mock File',
     lastModified: new Date().toISOString(),

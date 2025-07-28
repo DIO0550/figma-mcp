@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 export const commentHandlers = {
   getComments: (req: Request, res: Response): void => {
     const { fileKey } = req.params;
-    
+
     const mockResponse = {
       comments: [
         {

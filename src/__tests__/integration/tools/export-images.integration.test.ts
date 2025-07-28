@@ -1,5 +1,9 @@
 import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
-import { setupTestEnvironment, teardownTestEnvironment, type TestContext } from '../../helpers/setup.js';
+import {
+  setupTestEnvironment,
+  teardownTestEnvironment,
+  type TestContext,
+} from '../../helpers/setup.js';
 import type { MCPTestClient } from '../../helpers/mcp-client.js';
 
 // モックサーバーを使用するために環境変数を設定
@@ -27,11 +31,13 @@ describe('export_images Tool Integration', () => {
     expect(result).toHaveProperty('content');
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
-    
+
     const content = JSON.parse(result.content[0].text) as { images: Record<string, string> };
     expect(content).toHaveProperty('images');
     expect(content.images).toHaveProperty('2:3');
-    expect(content.images['2:3']).toMatch(/^https:\/\/example\.com\/export\/test-file-key\/2:3\.png/);
+    expect(content.images['2:3']).toMatch(
+      /^https:\/\/example\.com\/export\/test-file-key\/2:3\.png/
+    );
   });
 
   test('複数のノードを一度にエクスポートできる', async () => {
