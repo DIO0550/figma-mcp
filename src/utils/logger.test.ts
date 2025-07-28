@@ -19,9 +19,9 @@ describe('Logger', () => {
   describe('基本機能', () => {
     it('デバッグメッセージをログ出力できる', () => {
       const logger = createLogger({ level: LogLevel.DEBUG });
-      
+
       logger.debug('デバッグメッセージ');
-      
+
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
       const call = consoleLogSpy.mock.calls[0];
       expect(call[0]).toMatch(/\[DEBUG\]/);
@@ -30,9 +30,9 @@ describe('Logger', () => {
 
     it('情報メッセージをログ出力できる', () => {
       const logger = createLogger();
-      
+
       logger.info('情報メッセージ');
-      
+
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
       const call = consoleLogSpy.mock.calls[0];
       expect(call[0]).toMatch(/\[INFO\]/);
@@ -41,9 +41,9 @@ describe('Logger', () => {
 
     it('警告メッセージをログ出力できる', () => {
       const logger = createLogger();
-      
+
       logger.warn('警告メッセージ');
-      
+
       expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
       const call = consoleWarnSpy.mock.calls[0];
       expect(call[0]).toMatch(/\[WARN\]/);
@@ -52,9 +52,9 @@ describe('Logger', () => {
 
     it('エラーメッセージをログ出力できる', () => {
       const logger = createLogger();
-      
+
       logger.error('エラーメッセージ');
-      
+
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
       const call = consoleErrorSpy.mock.calls[0];
       expect(call[0]).toMatch(/\[ERROR\]/);
@@ -65,12 +65,12 @@ describe('Logger', () => {
   describe('ログレベル制御', () => {
     it('ログレベルより低いメッセージは出力されない', () => {
       const logger = createLogger({ level: LogLevel.WARN });
-      
+
       logger.debug('デバッグ');
       logger.info('情報');
       logger.warn('警告');
       logger.error('エラー');
-      
+
       expect(consoleLogSpy).not.toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
@@ -78,12 +78,12 @@ describe('Logger', () => {
 
     it('ログレベルをOFFにすると何も出力されない', () => {
       const logger = createLogger({ level: LogLevel.OFF });
-      
+
       logger.debug('デバッグ');
       logger.info('情報');
       logger.warn('警告');
       logger.error('エラー');
-      
+
       expect(consoleLogSpy).not.toHaveBeenCalled();
       expect(consoleWarnSpy).not.toHaveBeenCalled();
       expect(consoleErrorSpy).not.toHaveBeenCalled();
@@ -94,9 +94,9 @@ describe('Logger', () => {
     it('オブジェクトをJSON形式で出力できる', () => {
       const logger = createLogger({ format: 'json' });
       const data = { userId: 123, action: 'login' };
-      
+
       logger.info('ユーザーログイン', data);
-      
+
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
       const call = consoleLogSpy.mock.calls[0][0];
       // MCPサーバーが設定されていない場合は、通常のコンソール出力
@@ -109,9 +109,9 @@ describe('Logger', () => {
     it('エラーオブジェクトを適切にシリアライズできる', () => {
       const logger = createLogger({ format: 'json' });
       const error = new Error('テストエラー');
-      
+
       logger.error('エラー発生', { error });
-      
+
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
       const call = consoleErrorSpy.mock.calls[0][0];
       // MCPサーバーが設定されていない場合は、通常のコンソール出力
@@ -127,33 +127,33 @@ describe('Logger', () => {
   describe('コンテキスト', () => {
     it('グローバルコンテキストを設定できる', () => {
       const logger = createLogger({
-        context: { service: 'figma-mcp', version: '1.0.0' }
+        context: { service: 'figma-mcp', version: '1.0.0' },
       });
-      
+
       logger.info('起動');
-      
+
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
       const [message, context] = consoleLogSpy.mock.calls[0];
       expect(message).toMatch(/\[INFO\]/);
       expect(message).toMatch(/起動/);
       expect(context).toMatchObject({
         service: 'figma-mcp',
-        version: '1.0.0'
+        version: '1.0.0',
       });
     });
 
     it('ログごとのコンテキストを追加できる', () => {
       const logger = createLogger();
-      
+
       logger.info('API呼び出し', { endpoint: '/v1/files', duration: 250 });
-      
+
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
       const [message, context] = consoleLogSpy.mock.calls[0];
       expect(message).toMatch(/\[INFO\]/);
       expect(message).toMatch(/API呼び出し/);
       expect(context).toMatchObject({
         endpoint: '/v1/files',
-        duration: 250
+        duration: 250,
       });
     });
   });
@@ -161,12 +161,12 @@ describe('Logger', () => {
   describe('フィルタリング', () => {
     it('カスタムフィルターでログを制御できる', () => {
       const logger = createLogger({
-        filter: (_level, message) => !message.includes('無視')
+        filter: (_level, message) => !message.includes('無視'),
       });
-      
+
       logger.info('表示されるメッセージ');
       logger.info('無視されるメッセージ');
-      
+
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
       const call = consoleLogSpy.mock.calls[0];
       expect(call[0]).toMatch(/\[INFO\]/);
@@ -178,9 +178,9 @@ describe('Logger', () => {
     it('名前空間を持つ子ロガーを作成できる', () => {
       const logger = createLogger();
       const childLogger = logger.child('api-client');
-      
+
       childLogger.info('リクエスト送信');
-      
+
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
       const call = consoleLogSpy.mock.calls[0];
       expect(call[0]).toMatch(/\[INFO\]/);
@@ -190,12 +190,12 @@ describe('Logger', () => {
 
     it('子ロガーは親のコンテキストを継承する', () => {
       const logger = createLogger({
-        context: { app: 'figma-mcp' }
+        context: { app: 'figma-mcp' },
       });
       const childLogger = logger.child('http', { module: 'client' });
-      
+
       childLogger.info('通信開始');
-      
+
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
       const [message, context] = consoleLogSpy.mock.calls[0];
       expect(message).toMatch(/\[INFO\]/);
@@ -203,7 +203,7 @@ describe('Logger', () => {
       expect(message).toMatch(/通信開始/);
       expect(context).toMatchObject({
         app: 'figma-mcp',
-        module: 'client'
+        module: 'client',
       });
     });
   });

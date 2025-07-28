@@ -155,7 +155,9 @@ describe('nodes tool', () => {
       geometry: 'paths',
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { geometry: 'paths' });
+    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
+      geometry: 'paths',
+    });
   });
 
   test('geometryオプションでpointsを指定できる', async () => {
@@ -174,7 +176,9 @@ describe('nodes tool', () => {
       geometry: 'points',
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { geometry: 'points' });
+    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
+      geometry: 'points',
+    });
   });
 
   test('geometryとdepthオプションを同時に指定できる', async () => {
@@ -194,9 +198,9 @@ describe('nodes tool', () => {
       geometry: 'paths',
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { 
-      depth: 2, 
-      geometry: 'paths' 
+    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
+      depth: 2,
+      geometry: 'paths',
     });
   });
 });

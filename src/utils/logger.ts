@@ -29,11 +29,7 @@ export interface LegacyLogger {
 
 // 従来のcreateLogger（テスト互換性のため）
 export function createLogger(options: LoggerOptions = {}): LegacyLogger {
-  const {
-    level = LogLevel.INFO,
-    context: globalContext = {},
-    filter,
-  } = options;
+  const { level = LogLevel.INFO, context: globalContext = {}, filter } = options;
 
   // MCPサーバーが指定されている場合
   if (options.server) {
@@ -45,11 +41,17 @@ export function createLogger(options: LoggerOptions = {}): LegacyLogger {
       warn: (message: string, context?: unknown) => LoggerNamespace.warn(message, context),
       error: (message: string, context?: unknown) => LoggerNamespace.error(message, context),
       child: (name: string) => ({
-        debug: (message: string, context?: unknown) => LoggerNamespace.debug(`[${name}] ${message}`, context),
-        info: (message: string, context?: unknown) => LoggerNamespace.info(`[${name}] ${message}`, context),
-        warn: (message: string, context?: unknown) => LoggerNamespace.warn(`[${name}] ${message}`, context),
-        error: (message: string, context?: unknown) => LoggerNamespace.error(`[${name}] ${message}`, context),
-        child: (): LegacyLogger => { throw new Error('Nested child not supported'); },
+        debug: (message: string, context?: unknown) =>
+          LoggerNamespace.debug(`[${name}] ${message}`, context),
+        info: (message: string, context?: unknown) =>
+          LoggerNamespace.info(`[${name}] ${message}`, context),
+        warn: (message: string, context?: unknown) =>
+          LoggerNamespace.warn(`[${name}] ${message}`, context),
+        error: (message: string, context?: unknown) =>
+          LoggerNamespace.error(`[${name}] ${message}`, context),
+        child: (): LegacyLogger => {
+          throw new Error('Nested child not supported');
+        },
       }),
     };
   }
@@ -68,12 +70,12 @@ export function createLogger(options: LoggerOptions = {}): LegacyLogger {
     const namespacePart = namespace ? `[${namespace}] ` : '';
     const levelLabel = ['[DEBUG]', '[INFO]', '[WARN]', '[ERROR]', ''][logLevel];
     const prefix = `${timestamp} ${levelLabel} ${namespacePart}${message}`;
-    
+
     const mergedContext = {
       ...globalContext,
-      ...(context as Record<string, unknown> || {}),
+      ...((context as Record<string, unknown>) || {}),
     };
-    
+
     switch (logLevel) {
       case LogLevel.DEBUG:
       case LogLevel.INFO:
@@ -95,20 +97,43 @@ export function createLogger(options: LoggerOptions = {}): LegacyLogger {
 
     return {
       debug(message: string, context?: unknown): void {
-        log(LogLevel.DEBUG, message, { ...instanceContext, ...(context as Record<string, unknown> || {}) }, namespace);
+        log(
+          LogLevel.DEBUG,
+          message,
+          { ...instanceContext, ...((context as Record<string, unknown>) || {}) },
+          namespace
+        );
       },
       info(message: string, context?: unknown): void {
-        log(LogLevel.INFO, message, { ...instanceContext, ...(context as Record<string, unknown> || {}) }, namespace);
+        log(
+          LogLevel.INFO,
+          message,
+          { ...instanceContext, ...((context as Record<string, unknown>) || {}) },
+          namespace
+        );
       },
       warn(message: string, context?: unknown): void {
-        log(LogLevel.WARN, message, { ...instanceContext, ...(context as Record<string, unknown> || {}) }, namespace);
+        log(
+          LogLevel.WARN,
+          message,
+          { ...instanceContext, ...((context as Record<string, unknown>) || {}) },
+          namespace
+        );
       },
       error(message: string, context?: unknown): void {
-        log(LogLevel.ERROR, message, { ...instanceContext, ...(context as Record<string, unknown> || {}) }, namespace);
+        log(
+          LogLevel.ERROR,
+          message,
+          { ...instanceContext, ...((context as Record<string, unknown>) || {}) },
+          namespace
+        );
       },
       child(name: string, context?: unknown): LegacyLogger {
         const childNamespace = namespace ? `${namespace}:${name}` : name;
-        return createLoggerInstance(childNamespace, { ...instanceContext, ...(context as Record<string, unknown> || {}) });
+        return createLoggerInstance(childNamespace, {
+          ...instanceContext,
+          ...((context as Record<string, unknown>) || {}),
+        });
       },
     };
   };

@@ -11,7 +11,7 @@ export function createNodesApi(client: HttpClient): NodesApi {
   return {
     getNodes: async (fileKey: string, options: GetNodesOptions): Promise<GetNodesResponse> => {
       const params = new URLSearchParams();
-      
+
       params.append('ids', options.ids.join(','));
       if (options.version) params.append('version', options.version);
       if (options.depth !== undefined) params.append('depth', options.depth.toString());

@@ -1,5 +1,9 @@
 import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
-import { setupTestEnvironment, teardownTestEnvironment, type TestContext } from '../../helpers/setup.js';
+import {
+  setupTestEnvironment,
+  teardownTestEnvironment,
+  type TestContext,
+} from '../../helpers/setup.js';
 import type { MCPTestClient } from '../../helpers/mcp-client.js';
 
 // モックサーバーを使用するために環境変数を設定
@@ -26,13 +30,15 @@ describe('get_components Tool Integration', () => {
     expect(result).toHaveProperty('content');
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
-    
-    const content = JSON.parse(result.content[0].text) as { meta: { components: Array<Record<string, unknown>> } };
+
+    const content = JSON.parse(result.content[0].text) as {
+      meta: { components: Array<Record<string, unknown>> };
+    };
     expect(content).toHaveProperty('meta');
     expect(content.meta).toHaveProperty('components');
     expect(Array.isArray(content.meta.components)).toBe(true);
     expect(content.meta.components).toHaveLength(2);
-    
+
     const component = content.meta.components[0];
     expect(component).toHaveProperty('key');
     expect(component).toHaveProperty('name', 'Button Component');

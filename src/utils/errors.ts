@@ -16,7 +16,7 @@ export function createFigmaError(
 
 export async function parseFigmaErrorResponse(response: Response): Promise<string> {
   try {
-    const errorData = await response.json() as FigmaApiError;
+    const errorData = (await response.json()) as FigmaApiError;
     return errorData.err || `HTTP ${response.status}: ${response.statusText}`;
   } catch {
     return `HTTP ${response.status}: ${response.statusText}`;

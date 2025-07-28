@@ -16,7 +16,7 @@ interface StyleData {
 export const styleHandlers = {
   getStyles: (req: Request, res: Response): void => {
     const { fileKey } = req.params;
-    
+
     // 様々なスタイルタイプのモックデータ
     const styles: StyleData[] = [
       {
@@ -68,7 +68,7 @@ export const styleHandlers = {
         sort_position: '3',
       },
     ];
-    
+
     const mockResponse = {
       meta: {
         styles,

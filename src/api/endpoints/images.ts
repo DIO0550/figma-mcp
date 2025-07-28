@@ -9,9 +9,12 @@ export interface ImagesApi {
 
 export function createImagesApi(client: HttpClient): ImagesApi {
   return {
-    exportImages: async (fileKey: string, options: ExportImageOptions): Promise<ExportImageResponse> => {
+    exportImages: async (
+      fileKey: string,
+      options: ExportImageOptions
+    ): Promise<ExportImageResponse> => {
       const params = new URLSearchParams();
-      
+
       params.append('ids', options.ids.join(','));
       if (options.scale) params.append('scale', options.scale.toString());
       if (options.format) params.append('format', options.format);

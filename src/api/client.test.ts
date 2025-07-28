@@ -32,15 +32,12 @@ describe('createHttpClient', () => {
       const client = createHttpClient(config);
       const result = await client.get('/v1/files/test');
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.figma.com/v1/files/test',
-        {
-          headers: {
-            'X-Figma-Token': 'test-token',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      expect(mockFetch).toHaveBeenCalledWith('https://api.figma.com/v1/files/test', {
+        headers: {
+          'X-Figma-Token': 'test-token',
+          'Content-Type': 'application/json',
+        },
+      });
       expect(result).toEqual(mockResponse);
     });
 
@@ -66,7 +63,7 @@ describe('createHttpClient', () => {
     test('POSTリクエストを送信できる', async () => {
       const mockResponse = { id: '123', message: 'Created' };
       const requestBody = { message: 'Hello', client_meta: { x: 100, y: 200 } };
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockResponse),
@@ -76,17 +73,14 @@ describe('createHttpClient', () => {
       const client = createHttpClient(config);
       const result = await client.post('/v1/files/test/comments', requestBody);
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.figma.com/v1/files/test/comments',
-        {
-          method: 'POST',
-          headers: {
-            'X-Figma-Token': 'test-token',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      expect(mockFetch).toHaveBeenCalledWith('https://api.figma.com/v1/files/test/comments', {
+        method: 'POST',
+        headers: {
+          'X-Figma-Token': 'test-token',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
       expect(result).toEqual(mockResponse);
     });
   });
@@ -131,15 +125,15 @@ describe('createHttpClient', () => {
         ok: false,
         status: 500,
         statusText: 'Internal Server Error',
-        json: () => { throw new Error('Invalid JSON'); },
+        json: () => {
+          throw new Error('Invalid JSON');
+        },
         headers: new Headers(),
       });
 
       const client = createHttpClient(config);
 
-      await expect(client.get('/v1/files/test')).rejects.toThrow(
-        'HTTP 500: Internal Server Error'
-      );
+      await expect(client.get('/v1/files/test')).rejects.toThrow('HTTP 500: Internal Server Error');
     });
   });
 
@@ -220,7 +214,7 @@ describe('createHttpClient', () => {
     test('GETリクエストの結果をキャッシュする', async () => {
       const cache = createCache({ defaultTtl: 60000 });
       const client = createHttpClient(config, { cache });
-      
+
       const mockResponse = { data: 'test' };
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -242,10 +236,10 @@ describe('createHttpClient', () => {
     test('異なるURLは別々にキャッシュされる', async () => {
       const cache = createCache();
       const client = createHttpClient(config, { cache });
-      
+
       const mockResponse1 = { data: 'test1' };
       const mockResponse2 = { data: 'test2' };
-      
+
       mockFetch
         .mockResolvedValueOnce({
           ok: true,
@@ -260,7 +254,7 @@ describe('createHttpClient', () => {
 
       const result1 = await client.get('/v1/files/test1');
       const result2 = await client.get('/v1/files/test2');
-      
+
       expect(result1).toEqual(mockResponse1);
       expect(result2).toEqual(mockResponse2);
       expect(mockFetch).toHaveBeenCalledTimes(2);
@@ -269,7 +263,7 @@ describe('createHttpClient', () => {
     test('POSTリクエストはキャッシュされない', async () => {
       const cache = createCache();
       const client = createHttpClient(config, { cache });
-      
+
       const mockResponse = { id: '123' };
       mockFetch.mockResolvedValue({
         ok: true,
@@ -279,14 +273,14 @@ describe('createHttpClient', () => {
 
       await client.post('/v1/files/test/comments', { message: 'test' });
       await client.post('/v1/files/test/comments', { message: 'test' });
-      
+
       expect(mockFetch).toHaveBeenCalledTimes(2); // 両方ともfetchが呼ばれる
     });
 
     test('エラーレスポンスはキャッシュされない', async () => {
       const cache = createCache();
       const client = createHttpClient(config, { cache });
-      
+
       mockFetch
         .mockResolvedValueOnce({
           ok: false,
@@ -303,7 +297,7 @@ describe('createHttpClient', () => {
 
       // 1回目（エラー）
       await expect(client.get('/v1/files/test')).rejects.toThrow();
-      
+
       // 2回目（成功）
       const result = await client.get('/v1/files/test');
       expect(result).toEqual({ data: 'found' });
@@ -313,7 +307,7 @@ describe('createHttpClient', () => {
     test('キャッシュのTTLが機能する', async () => {
       const cache = createCache({ defaultTtl: 1000 });
       const client = createHttpClient(config, { cache, cacheTtl: 1000 });
-      
+
       const mockResponse = { data: 'test' };
       mockFetch.mockResolvedValue({
         ok: true,
@@ -338,11 +332,11 @@ describe('createHttpClient', () => {
 
     test('cacheKeyPrefixでキャッシュキーをカスタマイズできる', async () => {
       const cache = createCache();
-      const client = createHttpClient(config, { 
+      const client = createHttpClient(config, {
         cache,
-        cacheKeyPrefix: 'figma-api:'
+        cacheKeyPrefix: 'figma-api:',
       });
-      
+
       const mockResponse = { data: 'test' };
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -351,7 +345,7 @@ describe('createHttpClient', () => {
       });
 
       await client.get('/v1/files/test');
-      
+
       // キャッシュが正しいキーで保存されているか確認
       expect(cache.has('figma-api:GET:/v1/files/test')).toBe(true);
     });

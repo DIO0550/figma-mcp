@@ -26,36 +26,33 @@ export interface HttpClientOptions {
   cacheTtl?: number;
 }
 
-async function handleResponse<T>(
-  response: Response,
-  context: RequestContext
-): Promise<T> {
+async function handleResponse<T>(response: Response, context: RequestContext): Promise<T> {
   // レート制限情報を更新
   context.rateLimitInfo = parseRateLimitHeaders(response.headers);
 
   if (!response.ok) {
     const errorMessage = await parseFigmaErrorResponse(response);
-    
+
     if (response.status === 429) {
       const retryAfter = getRetryAfter(response.headers);
-      const message = retryAfter 
+      const message = retryAfter
         ? `${errorMessage} (Retry after ${retryAfter} seconds)`
         : errorMessage;
-      
+
       Logger.warn('Rate limit exceeded', {
         status: response.status,
         retryAfter,
         rateLimitInfo: context.rateLimitInfo,
       });
-      
+
       throw createFigmaError(message, response.status, context.rateLimitInfo);
     }
-    
+
     Logger.error('HTTP Error', {
       status: response.status,
       message: errorMessage,
     });
-    
+
     throw createFigmaError(errorMessage, response.status, context.rateLimitInfo);
   }
 
@@ -73,15 +70,12 @@ export function createHttpClient(
     return `${cacheKeyPrefix}${method}:${endpoint}`;
   };
 
-  const request = async <T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> => {
+  const request = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
     const url = `${config.baseUrl}${endpoint}`;
     const method = options.method || 'GET';
-    
+
     Logger.debug('HTTP Request', { method, url });
-    
+
     const startTime = Date.now();
     const response = await fetch(url, {
       ...options,
@@ -90,7 +84,7 @@ export function createHttpClient(
         ...options.headers,
       },
     });
-    
+
     const duration = Date.now() - startTime;
     Logger.info('HTTP Response', {
       method,
@@ -106,30 +100,30 @@ export function createHttpClient(
     get: async <T>(endpoint: string, params?: URLSearchParams): Promise<T> => {
       const queryString = params?.toString();
       const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
-      
+
       // キャッシュが有効な場合
       if (cache) {
         const cacheKey = getCacheKey('GET', fullEndpoint);
-        
+
         // キャッシュから取得を試みる
         const cachedValue = cache.get(cacheKey);
         if (cachedValue !== undefined) {
           Logger.debug('Cache hit', { endpoint: fullEndpoint, cacheKey });
           return cachedValue as T;
         }
-        
+
         Logger.debug('Cache miss', { endpoint: fullEndpoint, cacheKey });
-        
+
         // キャッシュになければリクエスト
         const result = await request<T>(fullEndpoint);
-        
+
         // 成功した結果のみキャッシュ
         cache.set(cacheKey, result, cacheTtl);
         Logger.debug('Cached response', { endpoint: fullEndpoint, cacheKey, ttl: cacheTtl });
-        
+
         return result;
       }
-      
+
       // キャッシュなしの場合は通常のリクエスト
       return request<T>(fullEndpoint);
     },

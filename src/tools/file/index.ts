@@ -6,7 +6,7 @@ import { createGetFileNodesTool } from './nodes.js';
 
 export function createFileTools(apiClient: FigmaApiClient): FileTools {
   const filesApi: FilesApi = apiClient.files;
-  
+
   return {
     getFile: createGetFileTool(filesApi),
     getFileNodes: createGetFileNodesTool(filesApi),

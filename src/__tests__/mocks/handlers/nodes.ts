@@ -32,12 +32,12 @@ export const nodeHandlers = {
   getNodes: (req: Request, res: Response): void => {
     const { fileKey } = req.params;
     const { ids, depth, geometry, plugin_data } = req.query;
-    
+
     // クエリパラメータに基づいてレスポンスを調整
     const nodeIds = ids ? String(ids).split(',') : ['2:3'];
     const nodes: Record<string, NodeData> = {};
-    
-    nodeIds.forEach(nodeId => {
+
+    nodeIds.forEach((nodeId) => {
       const nodeData: NodeData = {
         document: {
           id: nodeId,
@@ -62,21 +62,21 @@ export const nodeHandlers = {
         schemaVersion: 0,
         styles: {},
       };
-      
+
       // geometryパラメータが指定されている場合は、追加情報を含める
       if (geometry === 'paths') {
         nodeData.document.strokeGeometry = [];
         nodeData.document.fillGeometry = [];
       }
-      
+
       // plugin_dataが指定されている場合
       if (plugin_data) {
         nodeData.document.pluginData = {};
       }
-      
+
       nodes[nodeId] = nodeData;
     });
-    
+
     const mockResponse = {
       name: 'Test Design File',
       lastModified: '2024-01-01T00:00:00Z',
@@ -86,7 +86,7 @@ export const nodeHandlers = {
       // ファイルキーをレスポンスに含める（デバッグ用）
       file_key: fileKey,
     };
-    
+
     // depthパラメータが指定されている場合はログに記録
     if (depth) {
       console.log(`[MockFigmaServer] Nodes requested with depth: ${String(depth)}`);

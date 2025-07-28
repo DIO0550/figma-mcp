@@ -21,21 +21,21 @@ export class MockFigmaServer {
 
   private setupMiddleware(): void {
     this.app.use(express.json());
-    
+
     // 認証チェックミドルウェア
     this.app.use((req: Request, res: Response, next) => {
       const token = req.headers['x-figma-token'];
       if (!token) {
-        res.status(401).json({ 
+        res.status(401).json({
           error: 'Unauthorized',
-          message: 'Missing authentication token' 
+          message: 'Missing authentication token',
         });
         return;
       }
       if (token === 'invalid-token') {
-        res.status(401).json({ 
+        res.status(401).json({
           error: 'Unauthorized',
-          message: 'Invalid authentication token' 
+          message: 'Invalid authentication token',
         });
         return;
       }
@@ -53,32 +53,32 @@ export class MockFigmaServer {
     // ファイル関連のルート
     this.app.get('/v1/files/:fileKey', fileHandlers.getFile);
     this.app.get('/v1/files/:fileKey/nodes', nodeHandlers.getNodes);
-    
+
     // コンポーネント・スタイル
     this.app.get('/v1/files/:fileKey/components', componentHandlers.getComponents);
     this.app.get('/v1/files/:fileKey/styles', styleHandlers.getStyles);
-    
+
     // 画像エクスポート
     this.app.get('/v1/images/:fileKey', imageHandlers.exportImages);
-    
+
     // コラボレーション
     this.app.get('/v1/files/:fileKey/comments', commentHandlers.getComments);
     this.app.get('/v1/files/:fileKey/versions', versionHandlers.getVersions);
 
     // 404 ハンドラー
     this.app.use((req: Request, res: Response) => {
-      res.status(404).json({ 
+      res.status(404).json({
         error: 'Not Found',
-        message: `Route ${req.path} not found` 
+        message: `Route ${req.path} not found`,
       });
     });
 
     // エラーハンドラー
     this.app.use((err: Error, _req: Request, res: Response, _next: express.NextFunction) => {
       console.error('[MockFigmaServer] Error:', err);
-      res.status(500).json({ 
+      res.status(500).json({
         error: 'Internal Server Error',
-        message: err.message 
+        message: err.message,
       });
     });
   }

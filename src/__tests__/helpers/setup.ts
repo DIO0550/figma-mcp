@@ -24,7 +24,7 @@ export async function setupTestEnvironment(): Promise<TestContext> {
 
   // サーバーに接続
   await mcpClient.connect();
-  
+
   // MCPプロトコルを初期化
   await mcpClient.initialize();
 

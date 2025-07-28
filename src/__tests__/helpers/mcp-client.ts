@@ -44,13 +44,19 @@ interface MCPInitializeResponse {
 export class MCPTestClient extends EventEmitter {
   private process!: ChildProcess;
   private messageBuffer: string = '';
-  private pendingRequests: Map<number, {
-    resolve: (value: unknown) => void;
-    reject: (error: Error) => void;
-  }> = new Map();
+  private pendingRequests: Map<
+    number,
+    {
+      resolve: (value: unknown) => void;
+      reject: (error: Error) => void;
+    }
+  > = new Map();
   private requestId: number = 1;
 
-  constructor(private serverPath: string, private env: Record<string, string> = {}) {
+  constructor(
+    private serverPath: string,
+    private env: Record<string, string> = {}
+  ) {
     super();
   }
 
@@ -94,7 +100,7 @@ export class MCPTestClient extends EventEmitter {
   private handleData(data: string): void {
     this.messageBuffer += data;
     const lines = this.messageBuffer.split('\n');
-    
+
     // 最後の不完全な行を保持
     this.messageBuffer = lines.pop() || '';
 
@@ -128,7 +134,7 @@ export class MCPTestClient extends EventEmitter {
   }
 
   async request<TResult = unknown, TParams = Record<string, unknown>>(
-    method: string, 
+    method: string,
     params?: TParams
   ): Promise<TResult> {
     const id = this.requestId++;
@@ -140,11 +146,11 @@ export class MCPTestClient extends EventEmitter {
     };
 
     return new Promise<TResult>((resolve, reject) => {
-      this.pendingRequests.set(id, { 
-        resolve: resolve as (value: unknown) => void, 
-        reject 
+      this.pendingRequests.set(id, {
+        resolve: resolve as (value: unknown) => void,
+        reject,
       });
-      
+
       // リクエストを送信
       this.process.stdin?.write(JSON.stringify(request) + '\n');
 
