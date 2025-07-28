@@ -15,15 +15,15 @@ export function createCommentsApi(client: HttpClient): CommentsApi {
     },
 
     postComment: async (fileKey: string, options: PostCommentOptions): Promise<Comment> => {
-      const body: { 
-        message: string; 
-        client_meta: { x: number; y: number }; 
-        comment_id?: string 
+      const body: {
+        message: string;
+        client_meta: { x: number; y: number };
+        comment_id?: string;
       } = {
         message: options.message,
         client_meta: options.client_meta,
       };
-      
+
       if (options.comment_id) {
         body.comment_id = options.comment_id;
       }
