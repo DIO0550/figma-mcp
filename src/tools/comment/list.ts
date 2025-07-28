@@ -12,26 +12,29 @@ export const createGetCommentsTool = (apiClient: FigmaApiClient): CommentTool =>
     inputSchema: JsonSchema.from(GetCommentsArgsSchema),
     execute: async (args: GetCommentsArgs): Promise<GetCommentsResponse> => {
       const response = await apiClient.getComments(args.fileKey);
-      
+
       // showResolvedがfalseの場合、未解決のコメントのみを返す
       // デフォルト（undefinedまたはtrue）では全てのコメントを返す
-      let filteredComments = args.showResolved === false 
-        ? response.comments.filter(comment => comment.resolved_at === null || comment.resolved_at === undefined)
-        : response.comments;
-      
+      let filteredComments =
+        args.showResolved === false
+          ? response.comments.filter(
+              (comment) => comment.resolved_at === null || comment.resolved_at === undefined
+            )
+          : response.comments;
+
       // userIdが指定されている場合、そのユーザーのコメントのみを返す
       if (args.userId) {
-        filteredComments = filteredComments.filter(comment => comment.user.id === args.userId);
+        filteredComments = filteredComments.filter((comment) => comment.user.id === args.userId);
       }
-      
+
       // nodeIdが指定されている場合、そのノードに関連するコメントのみを返す
       if (args.nodeId) {
         const nodeId = args.nodeId;
-        filteredComments = filteredComments.filter(comment => 
-          comment.client_meta?.node_id?.includes(nodeId) ?? false
+        filteredComments = filteredComments.filter(
+          (comment) => comment.client_meta?.node_id?.includes(nodeId) ?? false
         );
       }
-      
+
       // organizeThreadsが有効な場合、返信をスレッド構造に整理
       if (args.organizeThreads) {
         const organizedComments = organizeCommentsIntoThreads(filteredComments);
@@ -40,7 +43,7 @@ export const createGetCommentsTool = (apiClient: FigmaApiClient): CommentTool =>
           comments: organizedComments,
         };
       }
-      
+
       return {
         ...response,
         comments: filteredComments,
@@ -53,16 +56,16 @@ export const createGetCommentsTool = (apiClient: FigmaApiClient): CommentTool =>
 function organizeCommentsIntoThreads(comments: Comment[]): CommentWithReplies[] {
   const commentMap = new Map<string, CommentWithReplies>();
   const rootComments: CommentWithReplies[] = [];
-  
+
   // まず全てのコメントをMapに格納
-  comments.forEach(comment => {
+  comments.forEach((comment) => {
     commentMap.set(comment.id, { ...comment, replies: [] });
   });
-  
+
   // parent_idに基づいてスレッド構造を構築
-  comments.forEach(comment => {
+  comments.forEach((comment) => {
     const commentWithReplies = commentMap.get(comment.id)!;
-    
+
     if (!comment.parent_id || comment.parent_id === '') {
       // ルートコメント
       rootComments.push(commentWithReplies);
@@ -78,18 +81,18 @@ function organizeCommentsIntoThreads(comments: Comment[]): CommentWithReplies[] 
       }
     }
   });
-  
+
   // 返信を作成日時でソート
   function sortReplies(comment: CommentWithReplies): void {
     if (comment.replies && comment.replies.length > 0) {
-      comment.replies.sort((a, b) => 
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      comment.replies.sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
       comment.replies.forEach(sortReplies);
     }
   }
-  
+
   rootComments.forEach(sortReplies);
-  
+
   return rootComments;
 }

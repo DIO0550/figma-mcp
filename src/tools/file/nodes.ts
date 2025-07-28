@@ -5,13 +5,14 @@ import type { ToolDefinition } from '../types.js';
 import { GetFileNodesArgsSchema, type GetFileNodesArgs } from './get-file-nodes-args.js';
 import { JsonSchema } from '../types.js';
 
-export function createGetFileNodesTool(filesApi: FilesApi): GetFileNodesTool & ToolDefinition<GetFileNodesArgs, FileNodesResponse> {
+export function createGetFileNodesTool(
+  filesApi: FilesApi
+): GetFileNodesTool & ToolDefinition<GetFileNodesArgs, FileNodesResponse> {
   return {
     name: 'get_file_nodes',
     description: 'Get specific nodes from a Figma file with optional depth and geometry',
     inputSchema: JsonSchema.from(GetFileNodesArgsSchema),
     execute: async (args: GetFileNodesArgs): Promise<FileNodesResponse> => {
-
       const options: GetFileOptions = {
         depth: args.depth,
         geometry: args.geometry,
@@ -19,9 +20,9 @@ export function createGetFileNodesTool(filesApi: FilesApi): GetFileNodesTool & T
         version: args.version,
         plugin_data: args.plugin_data,
       };
-      
+
       // Remove undefined values
-      Object.keys(options).forEach(key => {
+      Object.keys(options).forEach((key) => {
         if (options[key as keyof GetFileOptions] === undefined) {
           delete options[key as keyof GetFileOptions];
         }

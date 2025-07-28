@@ -71,8 +71,10 @@ describe('get-components', () => {
     // Act & Assert
     const { createComponentTools } = await import('./index.js');
     const tools = createComponentTools(mockApiClient);
-    
-    await expect(tools.getComponents.execute({ fileKey })).rejects.toThrow('API Error: 404 Not Found');
+
+    await expect(tools.getComponents.execute({ fileKey })).rejects.toThrow(
+      'API Error: 404 Not Found'
+    );
   });
 
   test('analyzeMetadataオプションでメタデータを解析できる', async () => {
@@ -112,13 +114,13 @@ describe('get-components', () => {
       analysis: {
         total_components: 2,
         categories: {
-          'Button': 2,
+          Button: 2,
         },
         naming_patterns: {
-          'hierarchical': 2, // Button/Primary/Large
+          hierarchical: 2, // Button/Primary/Large
         },
         pages_distribution: {
-          'Components': 2,
+          Components: 2,
         },
         description_coverage: 1.0, // 100% have descriptions
       },
@@ -129,9 +131,9 @@ describe('get-components', () => {
     // Act
     const { createComponentTools } = await import('./index.js');
     const tools = createComponentTools(mockApiClient);
-    const result = await tools.getComponents.execute({ 
+    const result = await tools.getComponents.execute({
       fileKey,
-      analyzeMetadata: true 
+      analyzeMetadata: true,
     });
 
     // Assert
@@ -195,9 +197,9 @@ describe('get-components', () => {
           name: 'Button',
           variants: ['component-1', 'component-2'],
           properties: {
-            'size': ['small', 'medium', 'large'],
-            'state': ['default', 'hover', 'pressed'],
-            'type': ['primary', 'secondary'],
+            size: ['small', 'medium', 'large'],
+            state: ['default', 'hover', 'pressed'],
+            type: ['primary', 'secondary'],
           },
         },
         'set-2': {
@@ -213,9 +215,9 @@ describe('get-components', () => {
     // Act
     const { createComponentTools } = await import('./index.js');
     const tools = createComponentTools(mockApiClient);
-    const result = await tools.getComponents.execute({ 
+    const result = await tools.getComponents.execute({
       fileKey,
-      organizeVariants: true 
+      organizeVariants: true,
     });
 
     // Assert

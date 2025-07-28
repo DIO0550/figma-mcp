@@ -25,29 +25,29 @@ export const JsonSchema = {
       errorMessages: false,
       markdownDescription: false,
     });
-    
+
     let result: unknown = jsonSchema;
-    
+
     // $schemaプロパティを除去
     if (typeof jsonSchema === 'object' && jsonSchema !== null && '$schema' in jsonSchema) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { $schema, ...rest } = jsonSchema;
       result = rest;
     }
-    
+
     // object型の場合、requiredがなければ空配列を追加
     if (
-      result && 
-      typeof result === 'object' && 
-      'type' in result && 
+      result &&
+      typeof result === 'object' &&
+      'type' in result &&
       result.type === 'object' &&
       !('required' in result)
     ) {
       (result as Record<string, unknown>).required = [];
     }
-    
+
     return result as JsonSchema;
-  }
+  },
 };
 
 export interface ToolDefinition<TArgs = unknown, TResult = unknown> {

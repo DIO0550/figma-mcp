@@ -4,7 +4,8 @@ import type { GetFileArgs } from './get-file-args.js';
 import type { GetFileNodesArgs } from './get-file-nodes-args.js';
 
 // 内部実装用の型定義（MCPから独立）
-export interface FigmaTool<TArgs = unknown, TResult = unknown> extends ToolDefinition<TArgs, TResult> {
+export interface FigmaTool<TArgs = unknown, TResult = unknown>
+  extends ToolDefinition<TArgs, TResult> {
   name: string;
   description: string;
   execute: (args: TArgs) => Promise<TResult>;

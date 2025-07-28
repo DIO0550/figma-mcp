@@ -18,7 +18,7 @@ describe('export-images', () => {
     const ids = ['1:2', '3:4'];
     const format = 'png';
     const scale = 2;
-    
+
     const mockResponse: ExportImagesResponse = {
       err: undefined,
       images: {
@@ -44,7 +44,7 @@ describe('export-images', () => {
     // Arrange
     const fileKey = 'test-file-key';
     const ids = ['1:2'];
-    
+
     const mockResponse: ExportImagesResponse = {
       err: undefined,
       images: {
@@ -69,7 +69,7 @@ describe('export-images', () => {
     const fileKey = 'test-file-key';
     const ids = ['1:2'];
     const format = 'svg';
-    
+
     const mockResponse: ExportImagesResponse = {
       err: undefined,
       images: {
@@ -100,15 +100,17 @@ describe('export-images', () => {
     // Act & Assert
     const { createImageTools } = await import('./index.js');
     const tools = createImageTools(mockApiClient);
-    
-    await expect(tools.exportImages.execute({ fileKey, ids })).rejects.toThrow('API Error: 400 Bad Request');
+
+    await expect(tools.exportImages.execute({ fileKey, ids })).rejects.toThrow(
+      'API Error: 400 Bad Request'
+    );
   });
 
   test('エラーレスポンスを処理できる', async () => {
     // Arrange
     const fileKey = 'test-file-key';
     const ids = ['1:2'];
-    
+
     const mockResponse: ExportImagesResponse = {
       err: 'Invalid node ID',
       images: {},
@@ -132,8 +134,8 @@ describe('export-images', () => {
     const ids = ['1:2'];
     const format = 'png';
     const scales = [1, 2, 3];
-    
-    const mockResponses = scales.map(scale => ({
+
+    const mockResponses = scales.map((scale) => ({
       err: undefined,
       images: {
         '1:2': `https://figma-export.com/image1@${scale}x.png`,
@@ -143,11 +145,13 @@ describe('export-images', () => {
     // Act
     const { createImageTools } = await import('./index.js');
     const tools = createImageTools(mockApiClient);
-    
+
     for (let i = 0; i < scales.length; i++) {
-      (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mockResponses[i]);
+      (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+        mockResponses[i]
+      );
       const result = await tools.exportImages.execute({ fileKey, ids, format, scale: scales[i] });
-      
+
       // Assert
       expect(result.images['1:2']).toContain(`@${scales[i]}x`);
     }

@@ -40,7 +40,7 @@ describe('list', () => {
           reactions: [],
         },
         {
-          id: 'comment-2', 
+          id: 'comment-2',
           message: 'Great work!',
           user: {
             id: 'user-2',
@@ -61,7 +61,12 @@ describe('list', () => {
           reactions: [
             {
               emoji: '👍',
-              user: { id: 'user-1', handle: 'designer1', img_url: '', email: 'designer1@example.com' },
+              user: {
+                id: 'user-1',
+                handle: 'designer1',
+                img_url: '',
+                email: 'designer1@example.com',
+              },
               created_at: '2024-01-02T12:00:00Z',
             },
           ],
@@ -92,8 +97,10 @@ describe('list', () => {
     // Act & Assert
     const { createCommentTools } = await import('./index.js');
     const tools = createCommentTools(mockApiClient);
-    
-    await expect(tools.getComments.execute({ fileKey })).rejects.toThrow('API Error: 401 Unauthorized');
+
+    await expect(tools.getComments.execute({ fileKey })).rejects.toThrow(
+      'API Error: 401 Unauthorized'
+    );
   });
 
   test('空のコメントリストを処理できる', async () => {
@@ -154,15 +161,15 @@ describe('list', () => {
     const result = await tools.getComments.execute({ fileKey });
 
     // Assert
-    const parentComment = result.comments.find(c => c.id === 'comment-parent');
-    const replyComment = result.comments.find(c => c.id === 'comment-reply');
-    
+    const parentComment = result.comments.find((c) => c.id === 'comment-parent');
+    const replyComment = result.comments.find((c) => c.id === 'comment-reply');
+
     expect(parentComment?.parent_id).toBe('');
     expect(replyComment?.parent_id).toBe('comment-parent');
   });
 
   test('解決済みコメントをフィルタリングできる', async () => {
-    // Arrange  
+    // Arrange
     const fileKey = 'test-file-key';
     const mockResponse: GetCommentsResponse = {
       comments: [
@@ -201,9 +208,9 @@ describe('list', () => {
     const result = await tools.getComments.execute({ fileKey });
 
     // Assert
-    const unresolvedComments = result.comments.filter(c => !c.resolved_at);
-    const resolvedComments = result.comments.filter(c => c.resolved_at);
-    
+    const unresolvedComments = result.comments.filter((c) => !c.resolved_at);
+    const resolvedComments = result.comments.filter((c) => c.resolved_at);
+
     expect(unresolvedComments).toHaveLength(1);
     expect(resolvedComments).toHaveLength(1);
   });
@@ -245,18 +252,18 @@ describe('list', () => {
     // Act - showResolved: false
     const { createCommentTools } = await import('./index.js');
     const tools = createCommentTools(mockApiClient);
-    const resultUnresolvedOnly = await tools.getComments.execute({ 
-      fileKey, 
-      showResolved: false 
+    const resultUnresolvedOnly = await tools.getComments.execute({
+      fileKey,
+      showResolved: false,
     });
 
     // Assert
     expect(resultUnresolvedOnly.comments).toHaveLength(1);
     expect(resultUnresolvedOnly.comments[0].resolved_at).toBeUndefined();
-    
+
     // Act - showResolved: true (default)
     const resultAll = await tools.getComments.execute({ fileKey });
-    
+
     // Assert
     expect(resultAll.comments).toHaveLength(2);
   });
@@ -298,9 +305,9 @@ describe('list', () => {
     // Act
     const { createCommentTools } = await import('./index.js');
     const tools = createCommentTools(mockApiClient);
-    const result = await tools.getComments.execute({ 
-      fileKey, 
-      userId: 'user-1' 
+    const result = await tools.getComments.execute({
+      fileKey,
+      userId: 'user-1',
     });
 
     // Assert
@@ -345,9 +352,9 @@ describe('list', () => {
     // Act
     const { createCommentTools } = await import('./index.js');
     const tools = createCommentTools(mockApiClient);
-    const result = await tools.getComments.execute({ 
-      fileKey, 
-      nodeId: '1:2' 
+    const result = await tools.getComments.execute({
+      fileKey,
+      nodeId: '1:2',
     });
 
     // Assert
@@ -404,15 +411,15 @@ describe('list', () => {
     // Act
     const { createCommentTools } = await import('./index.js');
     const tools = createCommentTools(mockApiClient);
-    const result = await tools.getComments.execute({ 
-      fileKey, 
-      organizeThreads: true 
+    const result = await tools.getComments.execute({
+      fileKey,
+      organizeThreads: true,
     });
 
     // Assert
     expect(result.comments).toHaveLength(1); // Only parent comment at top level
     expect(result.comments[0].id).toBe('comment-parent');
-    
+
     // organizeThreadsオプションを使用した場合、コメントはCommentWithReplies型として扱われる
     const parentComment = result.comments[0] as CommentWithReplies;
     expect(parentComment.replies).toHaveLength(2);
@@ -469,11 +476,11 @@ describe('list', () => {
     // Act
     const { createCommentTools } = await import('./index.js');
     const tools = createCommentTools(mockApiClient);
-    const result = await tools.getComments.execute({ 
-      fileKey, 
+    const result = await tools.getComments.execute({
+      fileKey,
       userId: 'user-1',
       nodeId: '1:2',
-      showResolved: false
+      showResolved: false,
     });
 
     // Assert

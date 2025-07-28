@@ -11,7 +11,7 @@ export const createGetVersionsTool = (apiClient: FigmaApiClient): VersionTool =>
     inputSchema: JsonSchema.from(GetVersionsArgsSchema),
     execute: async (args: GetVersionsArgs): Promise<GetVersionsResponse> => {
       const response = await apiClient.getVersions(args.fileKey);
-      
+
       // includeDetailsが指定されている場合、詳細情報を含む
       // 実際のFigma APIはこの情報を直接提供しないので、
       // ここではモックとして実装（実際のAPIでは別のエンドポイントが必要）
@@ -19,12 +19,12 @@ export const createGetVersionsTool = (apiClient: FigmaApiClient): VersionTool =>
         // 本来は各バージョンごとに追加のAPI呼び出しが必要
         // ここではレスポンスをそのまま返す
       }
-      
+
       // comparePairが指定されている場合、バージョン間の差分を計算
       // 実際のFigma APIでは、各バージョンのファイル情報を取得して比較する必要がある
       if (args.comparePair && args.comparePair.length === 2) {
         const [fromVersionId, toVersionId] = args.comparePair;
-        
+
         // 本来はここで各バージョンのファイル詳細を取得して比較
         // モックとしてcomparisonデータを追加
         return {
@@ -46,7 +46,7 @@ export const createGetVersionsTool = (apiClient: FigmaApiClient): VersionTool =>
           },
         };
       }
-      
+
       return response;
     },
   };

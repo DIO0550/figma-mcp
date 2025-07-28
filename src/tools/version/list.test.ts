@@ -79,8 +79,10 @@ describe('get-versions', () => {
     // Act & Assert
     const { createVersionTools } = await import('./index.js');
     const tools = createVersionTools(mockApiClient);
-    
-    await expect(tools.getVersions.execute({ fileKey })).rejects.toThrow('API Error: 404 Not Found');
+
+    await expect(tools.getVersions.execute({ fileKey })).rejects.toThrow(
+      'API Error: 404 Not Found'
+    );
   });
 
   test('空のバージョンリストを処理できる', async () => {
@@ -138,7 +140,7 @@ describe('get-versions', () => {
     const result = await tools.getVersions.execute({ fileKey });
 
     // Assert
-    const dates = result.versions.map(v => new Date(v.created_at).getTime());
+    const dates = result.versions.map((v) => new Date(v.created_at).getTime());
     const sortedDates = [...dates].sort((a, b) => b - a);
     expect(dates).toEqual(sortedDates);
   });
@@ -167,9 +169,9 @@ describe('get-versions', () => {
     // Act
     const { createVersionTools } = await import('./index.js');
     const tools = createVersionTools(mockApiClient);
-    const result = await tools.getVersions.execute({ 
+    const result = await tools.getVersions.execute({
       fileKey,
-      includeDetails: true 
+      includeDetails: true,
     });
 
     // Assert
@@ -222,9 +224,9 @@ describe('get-versions', () => {
     // Act
     const { createVersionTools } = await import('./index.js');
     const tools = createVersionTools(mockApiClient);
-    const result = await tools.getVersions.execute({ 
+    const result = await tools.getVersions.execute({
       fileKey,
-      comparePair: ['version-1', 'version-2']
+      comparePair: ['version-1', 'version-2'],
     });
 
     // Assert

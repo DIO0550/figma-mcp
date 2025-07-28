@@ -71,7 +71,7 @@ describe('get-styles', () => {
     // Act & Assert
     const { createStyleTools } = await import('./index.js');
     const tools = createStyleTools(mockApiClient);
-    
+
     await expect(tools.getStyles.execute({ fileKey })).rejects.toThrow('API Error: 403 Forbidden');
   });
 
@@ -167,9 +167,9 @@ describe('get-styles', () => {
     // Act
     const { createStyleTools } = await import('./index.js');
     const tools = createStyleTools(mockApiClient);
-    const result = await tools.getStyles.execute({ 
+    const result = await tools.getStyles.execute({
       fileKey,
-      categorize: true 
+      categorize: true,
     });
 
     // Assert
@@ -215,9 +215,9 @@ describe('get-styles', () => {
     const result = await tools.getStyles.execute({ fileKey });
 
     // Assert
-    const fillStyles = result.meta.styles.filter(s => s.style_type === 'FILL');
-    const textStyles = result.meta.styles.filter(s => s.style_type === 'TEXT');
-    
+    const fillStyles = result.meta.styles.filter((s) => s.style_type === 'FILL');
+    const textStyles = result.meta.styles.filter((s) => s.style_type === 'TEXT');
+
     expect(fillStyles).toHaveLength(1);
     expect(textStyles).toHaveLength(1);
   });

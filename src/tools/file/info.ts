@@ -5,7 +5,9 @@ import type { ToolDefinition } from '../types.js';
 import { GetFileArgsSchema, type GetFileArgs } from './get-file-args.js';
 import { JsonSchema } from '../types.js';
 
-export function createGetFileTool(filesApi: FilesApi): GetFileTool & ToolDefinition<GetFileArgs, FileResponse> {
+export function createGetFileTool(
+  filesApi: FilesApi
+): GetFileTool & ToolDefinition<GetFileArgs, FileResponse> {
   return {
     name: 'get_file',
     description: 'Get Figma file information including metadata and structure',
@@ -16,17 +18,19 @@ export function createGetFileTool(filesApi: FilesApi): GetFileTool & ToolDefinit
         version: args.version,
         plugin_data: args.plugin_data,
       };
-      
+
       // Remove undefined values
-      Object.keys(options).forEach(key => {
+      Object.keys(options).forEach((key) => {
         if (options[key as keyof GetFileOptions] === undefined) {
           delete options[key as keyof GetFileOptions];
         }
       });
-      
+
       const file = await filesApi.getFile(args.file_key, options);
       const documentChildren = file.document.children || [];
-      const pagesCount = documentChildren.filter((child) => 'type' in child && child.type === 'CANVAS').length;
+      const pagesCount = documentChildren.filter(
+        (child) => 'type' in child && child.type === 'CANVAS'
+      ).length;
 
       return {
         name: file.name,
