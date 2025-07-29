@@ -1,6 +1,9 @@
 // 画像エクスポート関連のAPIオプション型定義
 
-export interface ExportImageOptions {
+import type { DeepCamelCase } from '../../../utils/type-transformers.js';
+
+// APIリクエスト用のスネークケース型（内部使用）
+export interface ExportImageOptionsSnake {
   ids: string[];
   scale?: number;
   format?: 'jpg' | 'png' | 'svg' | 'pdf';
@@ -9,3 +12,6 @@ export interface ExportImageOptions {
   use_absolute_bounds?: boolean;
   version?: string;
 }
+
+// アプリケーション用のキャメルケース型
+export type ExportImageOptions = DeepCamelCase<ExportImageOptionsSnake>;
