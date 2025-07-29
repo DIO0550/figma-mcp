@@ -84,7 +84,7 @@ describe('MCP Server Integration', () => {
         const schema = tool.inputSchema;
         expect(schema).toHaveProperty('type');
         expect(schema).toHaveProperty('properties');
-        
+
         expect(schema).toHaveProperty('required');
       });
     });
