@@ -302,10 +302,13 @@ describe('type-transformers', () => {
           user_id: string;
           display_name: string | null;
         } | null;
-        settings_data?: {
-          theme_mode: 'light' | 'dark';
-          auto_save?: boolean;
-        } | null | undefined;
+        settings_data?:
+          | {
+              theme_mode: 'light' | 'dark';
+              auto_save?: boolean;
+            }
+          | null
+          | undefined;
       };
 
       type Expected = {
@@ -313,10 +316,13 @@ describe('type-transformers', () => {
           userId: string;
           displayName: string | null;
         } | null;
-        settingsData?: {
-          themeMode: 'light' | 'dark';
-          autoSave?: boolean;
-        } | null | undefined;
+        settingsData?:
+          | {
+              themeMode: 'light' | 'dark';
+              autoSave?: boolean;
+            }
+          | null
+          | undefined;
       };
 
       type Result = DeepCamelCase<Input>;
@@ -328,7 +334,7 @@ describe('type-transformers', () => {
     enum StatusEnum {
       IN_PROGRESS = 'IN_PROGRESS',
       COMPLETED = 'COMPLETED',
-      FAILED = 'FAILED'
+      FAILED = 'FAILED',
     }
 
     it('should handle enum values', () => {
@@ -351,7 +357,7 @@ describe('type-transformers', () => {
         Up = 0,
         Down = 1,
         Left = 2,
-        Right = 3
+        Right = 3,
       }
 
       type Input = {
@@ -371,12 +377,12 @@ describe('type-transformers', () => {
 
   describe('Complex union types', () => {
     it('should handle discriminated unions', () => {
-      type Input = 
+      type Input =
         | { type: 'user_created'; user_id: string; created_at: string }
         | { type: 'user_updated'; user_id: string; updated_fields: string[] }
         | { type: 'user_deleted'; user_id: string; deleted_at: string };
 
-      type Expected = 
+      type Expected =
         | { type: 'user_created'; userId: string; createdAt: string }
         | { type: 'user_updated'; userId: string; updatedFields: string[] }
         | { type: 'user_deleted'; userId: string; deletedAt: string };
@@ -387,14 +393,14 @@ describe('type-transformers', () => {
 
     it('should handle nested unions with objects', () => {
       type Input = {
-        response_data: 
+        response_data:
           | { status: 'success'; data_payload: { item_count: number } }
           | { status: 'error'; error_details: { error_code: string; error_message: string } }
           | null;
       };
 
       type Expected = {
-        responseData: 
+        responseData:
           | { status: 'success'; dataPayload: { itemCount: number } }
           | { status: 'error'; errorDetails: { errorCode: string; errorMessage: string } }
           | null;
@@ -404,7 +410,6 @@ describe('type-transformers', () => {
       expectTypeOf<Result>().toEqualTypeOf<Expected>();
     });
   });
-
 
   describe('Complex nested structures', () => {
     it('should handle deeply nested arrays and objects', () => {
