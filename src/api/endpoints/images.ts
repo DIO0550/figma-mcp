@@ -1,17 +1,18 @@
 // 画像エクスポート関連のAPI関数
 
 import type { HttpClient } from '../client.js';
-import type { ExportImageOptions, ExportImageResponse } from '../../types/index.js';
+import type { ExportImageResponse } from '../../types/index.js';
+import type { ExportImageOptionsSnake } from '../../types/api/options/image-options.js';
 
 export interface ImagesApi {
-  exportImages: (fileKey: string, options: ExportImageOptions) => Promise<ExportImageResponse>;
+  exportImages: (fileKey: string, options: ExportImageOptionsSnake) => Promise<ExportImageResponse>;
 }
 
 export function createImagesApi(client: HttpClient): ImagesApi {
   return {
     exportImages: async (
       fileKey: string,
-      options: ExportImageOptions
+      options: ExportImageOptionsSnake
     ): Promise<ExportImageResponse> => {
       const params = new URLSearchParams();
 

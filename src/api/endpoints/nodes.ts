@@ -1,15 +1,16 @@
 // ノード関連のAPI関数
 
 import type { HttpClient } from '../client.js';
-import type { GetNodesOptions, GetNodesResponse } from '../../types/index.js';
+import type { GetNodesResponse } from '../../types/index.js';
+import type { GetNodesOptionsSnake } from '../../types/api/options/node-options.js';
 
 export interface NodesApi {
-  getNodes: (fileKey: string, options: GetNodesOptions) => Promise<GetNodesResponse>;
+  getNodes: (fileKey: string, options: GetNodesOptionsSnake) => Promise<GetNodesResponse>;
 }
 
 export function createNodesApi(client: HttpClient): NodesApi {
   return {
-    getNodes: async (fileKey: string, options: GetNodesOptions): Promise<GetNodesResponse> => {
+    getNodes: async (fileKey: string, options: GetNodesOptionsSnake): Promise<GetNodesResponse> => {
       const params = new URLSearchParams();
 
       params.append('ids', options.ids.join(','));

@@ -9,11 +9,14 @@ import { createCommentsApi } from './endpoints/comments.js';
 import { createVersionsApi } from './endpoints/versions.js';
 import { createTeamsApi } from './endpoints/teams.js';
 import { getRuntimeConfig } from '../config/runtime-config.js';
+import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter.js';
 import type { GetComponentsResponse } from '../types/api/responses/component-responses.js';
 import type { GetStylesResponse } from '../types/api/responses/style-responses.js';
 import type { ExportImageResponse } from '../types/api/responses/image-responses.js';
 import type { GetCommentsResponse } from '../types/api/responses/comment-responses.js';
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
+import type { ExportImageOptions } from '../types/api/options/image-options.js';
+import type { ExportImageOptionsSnake } from '../types/api/options/image-options.js';
 
 export class FigmaApiClient {
   public files!: FilesApi;
@@ -53,26 +56,32 @@ export class FigmaApiClient {
   }
 
   // ツール互換性のためのエイリアスメソッド
-  getComponents(fileKey: string): Promise<GetComponentsResponse> {
-    return this.components.getComponents(fileKey);
+  async getComponents(fileKey: string): Promise<GetComponentsResponse> {
+    const response = await this.components.getComponents(fileKey);
+    return convertKeysToCamelCase<GetComponentsResponse>(response);
   }
 
-  getStyles(fileKey: string): Promise<GetStylesResponse> {
-    return this.styles.getStyles(fileKey);
+  async getStyles(fileKey: string): Promise<GetStylesResponse> {
+    const response = await this.styles.getStyles(fileKey);
+    return convertKeysToCamelCase<GetStylesResponse>(response);
   }
 
-  exportImages(
+  async exportImages(
     fileKey: string,
-    options: Parameters<typeof this.images.exportImages>[1]
+    options: ExportImageOptions
   ): Promise<ExportImageResponse> {
-    return this.images.exportImages(fileKey, options);
+    const snakeOptions = convertKeysToSnakeCase<ExportImageOptionsSnake>(options);
+    const response = await this.images.exportImages(fileKey, snakeOptions);
+    return convertKeysToCamelCase<ExportImageResponse>(response);
   }
 
-  getComments(fileKey: string): Promise<GetCommentsResponse> {
-    return this.comments.getComments(fileKey);
+  async getComments(fileKey: string): Promise<GetCommentsResponse> {
+    const response = await this.comments.getComments(fileKey);
+    return convertKeysToCamelCase<GetCommentsResponse>(response);
   }
 
-  getVersions(fileKey: string): Promise<GetVersionsResponse> {
-    return this.versions.getVersions(fileKey);
+  async getVersions(fileKey: string): Promise<GetVersionsResponse> {
+    const response = await this.versions.getVersions(fileKey);
+    return convertKeysToCamelCase<GetVersionsResponse>(response);
   }
 }
