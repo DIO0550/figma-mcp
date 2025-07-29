@@ -18,7 +18,7 @@ export const createGetCommentsTool = (apiClient: FigmaApiClient): CommentTool =>
       let filteredComments =
         args.showResolved === false
           ? response.comments.filter(
-              (comment) => comment.resolved_at === null || comment.resolved_at === undefined
+              (comment) => comment.resolvedAt === null || comment.resolvedAt === undefined
             )
           : response.comments;
 
@@ -31,7 +31,7 @@ export const createGetCommentsTool = (apiClient: FigmaApiClient): CommentTool =>
       if (args.nodeId) {
         const nodeId = args.nodeId;
         filteredComments = filteredComments.filter(
-          (comment) => comment.client_meta?.node_id?.includes(nodeId) ?? false
+          (comment) => comment.clientMeta?.nodeId?.includes(nodeId) ?? false
         );
       }
 
@@ -66,12 +66,12 @@ function organizeCommentsIntoThreads(comments: Comment[]): CommentWithReplies[] 
   comments.forEach((comment) => {
     const commentWithReplies = commentMap.get(comment.id)!;
 
-    if (!comment.parent_id || comment.parent_id === '') {
+    if (!comment.parentId || comment.parentId === '') {
       // ルートコメント
       rootComments.push(commentWithReplies);
     } else {
       // 返信コメント
-      const parent = commentMap.get(comment.parent_id);
+      const parent = commentMap.get(comment.parentId);
       if (parent) {
         parent.replies = parent.replies || [];
         parent.replies.push(commentWithReplies);
@@ -86,7 +86,7 @@ function organizeCommentsIntoThreads(comments: Comment[]): CommentWithReplies[] 
   function sortReplies(comment: CommentWithReplies): void {
     if (comment.replies && comment.replies.length > 0) {
       comment.replies.sort(
-        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
       comment.replies.forEach(sortReplies);
     }

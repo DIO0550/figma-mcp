@@ -40,7 +40,7 @@ function categorizeStyles(styles: Style[]): {
   let hierarchicalCount = 0;
 
   styles.forEach((style) => {
-    const styleType = style.style_type;
+    const styleType = style.styleType;
 
     // タイプ別のカウント
     byType[styleType] = (byType[styleType] || 0) + 1;
@@ -73,8 +73,8 @@ function categorizeStyles(styles: Style[]): {
 
   const statistics = {
     total: styles.length,
-    by_type: byType,
-    naming_consistency: styles.length > 0 ? hierarchicalCount / styles.length : 0,
+    byType,
+    namingConsistency: styles.length > 0 ? hierarchicalCount / styles.length : 0,
   };
 
   return { categorized, statistics };
