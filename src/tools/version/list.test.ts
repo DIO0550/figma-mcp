@@ -140,7 +140,7 @@ describe('get-versions', () => {
     const result = await tools.getVersions.execute({ fileKey });
 
     // Assert
-    const dates = result.versions.map((v) => new Date(v.created_at).getTime());
+    const dates = result.versions.map((v) => new Date(v.createdAt).getTime());
     const sortedDates = [...dates].sort((a, b) => b - a);
     expect(dates).toEqual(sortedDates);
   });

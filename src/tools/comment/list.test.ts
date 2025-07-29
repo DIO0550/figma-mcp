@@ -2,6 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetCommentsResponse } from '../../types/api/responses/comment-responses.js';
 import type { CommentWithReplies } from './types.js';
+import { convertKeysToCamelCase } from '../../utils/case-converter.js';
 
 describe('list', () => {
   let mockApiClient: FigmaApiClient;
@@ -74,7 +75,9 @@ describe('list', () => {
       ],
     };
 
-    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetCommentsResponse>(mockResponse)
+    );
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -83,7 +86,7 @@ describe('list', () => {
 
     // Assert
     expect(mockApiClient.getComments).toHaveBeenCalledWith(fileKey);
-    expect(result).toEqual(mockResponse);
+    expect(result).toEqual(convertKeysToCamelCase<GetCommentsResponse>(mockResponse));
     expect(result.comments).toHaveLength(2);
   });
 
@@ -110,7 +113,9 @@ describe('list', () => {
       comments: [],
     };
 
-    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetCommentsResponse>(mockResponse)
+    );
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -153,7 +158,9 @@ describe('list', () => {
       ],
     };
 
-    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetCommentsResponse>(mockResponse)
+    );
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -164,8 +171,8 @@ describe('list', () => {
     const parentComment = result.comments.find((c) => c.id === 'comment-parent');
     const replyComment = result.comments.find((c) => c.id === 'comment-reply');
 
-    expect(parentComment?.parent_id).toBe('');
-    expect(replyComment?.parent_id).toBe('comment-parent');
+    expect(parentComment?.parentId).toBe('');
+    expect(replyComment?.parentId).toBe('comment-parent');
   });
 
   test('解決済みコメントをフィルタリングできる', async () => {
@@ -200,7 +207,9 @@ describe('list', () => {
       ],
     };
 
-    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetCommentsResponse>(mockResponse)
+    );
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -208,8 +217,8 @@ describe('list', () => {
     const result = await tools.getComments.execute({ fileKey });
 
     // Assert
-    const unresolvedComments = result.comments.filter((c) => !c.resolved_at);
-    const resolvedComments = result.comments.filter((c) => c.resolved_at);
+    const unresolvedComments = result.comments.filter((c) => !c.resolvedAt);
+    const resolvedComments = result.comments.filter((c) => c.resolvedAt);
 
     expect(unresolvedComments).toHaveLength(1);
     expect(resolvedComments).toHaveLength(1);
@@ -247,7 +256,9 @@ describe('list', () => {
       ],
     };
 
-    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetCommentsResponse>(mockResponse)
+    );
 
     // Act - showResolved: false
     const { createCommentTools } = await import('./index.js');
@@ -259,7 +270,7 @@ describe('list', () => {
 
     // Assert
     expect(resultUnresolvedOnly.comments).toHaveLength(1);
-    expect(resultUnresolvedOnly.comments[0].resolved_at).toBeUndefined();
+    expect(resultUnresolvedOnly.comments[0].resolvedAt).toBeUndefined();
 
     // Act - showResolved: true (default)
     const resultAll = await tools.getComments.execute({ fileKey });
@@ -300,7 +311,9 @@ describe('list', () => {
       ],
     };
 
-    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetCommentsResponse>(mockResponse)
+    );
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -347,7 +360,9 @@ describe('list', () => {
       ],
     };
 
-    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetCommentsResponse>(mockResponse)
+    );
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -359,7 +374,7 @@ describe('list', () => {
 
     // Assert
     expect(result.comments).toHaveLength(1);
-    expect(result.comments[0].client_meta?.node_id).toContain('1:2');
+    expect(result.comments[0].clientMeta?.nodeId).toContain('1:2');
   });
 
   test('organizeThreadsオプションでスレッドを構造化できる', async () => {
@@ -406,7 +421,9 @@ describe('list', () => {
       ],
     };
 
-    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetCommentsResponse>(mockResponse)
+    );
 
     // Act
     const { createCommentTools } = await import('./index.js');
@@ -471,7 +488,9 @@ describe('list', () => {
       ],
     };
 
-    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComments as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetCommentsResponse>(mockResponse)
+    );
 
     // Act
     const { createCommentTools } = await import('./index.js');

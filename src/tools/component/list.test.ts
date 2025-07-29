@@ -1,6 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetComponentsResponse } from '../../types/api/responses/component-responses.js';
+import { convertKeysToCamelCase } from '../../utils/case-converter.js';
 
 describe('get-components', () => {
   let mockApiClient: FigmaApiClient;
@@ -22,25 +23,25 @@ describe('get-components', () => {
         components: [
           {
             key: 'component-1',
-            file_key: fileKey,
-            node_id: '1:2',
+            fileKey: fileKey,
+            nodeId: '1:2',
             name: 'Button Component',
             description: 'Primary button component',
-            containing_frame: {
-              page_id: 'page-1',
-              page_name: 'Page 1',
+            containingFrame: {
+              pageId: 'page-1',
+              pageName: 'Page 1',
             },
             documentationLinks: [],
           },
           {
             key: 'component-2',
-            file_key: fileKey,
-            node_id: '1:3',
+            fileKey: fileKey,
+            nodeId: '1:3',
             name: 'Card Component',
             description: 'Card layout component',
-            containing_frame: {
-              page_id: 'page-1',
-              page_name: 'Page 1',
+            containingFrame: {
+              pageId: 'page-1',
+              pageName: 'Page 1',
             },
             documentationLinks: [],
           },
@@ -48,7 +49,9 @@ describe('get-components', () => {
       },
     };
 
-    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetComponentsResponse>(mockResponse)
+    );
 
     // Act
     // ここでget_componentsツールを呼び出す（まだ実装されていないのでエラーになるはず）
@@ -58,7 +61,7 @@ describe('get-components', () => {
 
     // Assert
     expect(mockApiClient.getComponents).toHaveBeenCalledWith(fileKey);
-    expect(result).toEqual(mockResponse);
+    expect(result).toEqual(convertKeysToCamelCase<GetComponentsResponse>(mockResponse));
   });
 
   test('APIエラーを適切に処理する', async () => {
@@ -87,46 +90,48 @@ describe('get-components', () => {
         components: [
           {
             key: 'component-1',
-            file_key: fileKey,
-            node_id: '1:2',
+            fileKey: fileKey,
+            nodeId: '1:2',
             name: 'Button/Primary/Large',
             description: 'Primary button component - Large size',
-            containing_frame: {
-              page_id: 'page-1',
-              page_name: 'Components',
+            containingFrame: {
+              pageId: 'page-1',
+              pageName: 'Components',
             },
             documentationLinks: [],
           },
           {
             key: 'component-2',
-            file_key: fileKey,
-            node_id: '1:3',
+            fileKey: fileKey,
+            nodeId: '1:3',
             name: 'Button/Secondary/Medium',
             description: 'Secondary button component - Medium size',
-            containing_frame: {
-              page_id: 'page-1',
-              page_name: 'Components',
+            containingFrame: {
+              pageId: 'page-1',
+              pageName: 'Components',
             },
             documentationLinks: [],
           },
         ],
       },
       analysis: {
-        total_components: 2,
+        totalComponents: 2,
         categories: {
           Button: 2,
         },
-        naming_patterns: {
+        namingPatterns: {
           hierarchical: 2, // Button/Primary/Large
         },
-        pages_distribution: {
+        pagesDistribution: {
           Components: 2,
         },
-        description_coverage: 1.0, // 100% have descriptions
+        descriptionCoverage: 1.0, // 100% have descriptions
       },
     };
 
-    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetComponentsResponse>(mockResponse)
+    );
 
     // Act
     const { createComponentTools } = await import('./index.js');
@@ -138,9 +143,9 @@ describe('get-components', () => {
 
     // Assert
     expect(result.analysis).toBeDefined();
-    expect(result.analysis?.total_components).toBe(2);
+    expect(result.analysis?.totalComponents).toBe(2);
     expect(result.analysis?.categories['Button']).toBe(2);
-    expect(result.analysis?.description_coverage).toBe(1.0);
+    expect(result.analysis?.descriptionCoverage).toBe(1.0);
   });
 
   test('organizeVariantsオプションでバリアント情報を整理できる', async () => {
@@ -153,41 +158,41 @@ describe('get-components', () => {
         components: [
           {
             key: 'component-1',
-            file_key: fileKey,
-            node_id: '1:2',
+            fileKey: fileKey,
+            nodeId: '1:2',
             name: 'Button',
             description: 'Button component',
-            containing_frame: {
-              page_id: 'page-1',
-              page_name: 'Components',
+            containingFrame: {
+              pageId: 'page-1',
+              pageName: 'Components',
             },
-            component_set_id: 'set-1',
+            componentSetId: 'set-1',
             documentationLinks: [],
           },
           {
             key: 'component-2',
-            file_key: fileKey,
-            node_id: '1:3',
+            fileKey: fileKey,
+            nodeId: '1:3',
             name: 'Button',
             description: 'Button component - variant',
-            containing_frame: {
-              page_id: 'page-1',
-              page_name: 'Components',
+            containingFrame: {
+              pageId: 'page-1',
+              pageName: 'Components',
             },
-            component_set_id: 'set-1',
+            componentSetId: 'set-1',
             documentationLinks: [],
           },
           {
             key: 'component-3',
-            file_key: fileKey,
-            node_id: '1:4',
+            fileKey: fileKey,
+            nodeId: '1:4',
             name: 'Card',
             description: 'Card component',
-            containing_frame: {
-              page_id: 'page-1',
-              page_name: 'Components',
+            containingFrame: {
+              pageId: 'page-1',
+              pageName: 'Components',
             },
-            component_set_id: 'set-2',
+            componentSetId: 'set-2',
             documentationLinks: [],
           },
         ],
@@ -210,7 +215,9 @@ describe('get-components', () => {
       },
     };
 
-    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetComponentsResponse>(mockResponse)
+    );
 
     // Act
     const { createComponentTools } = await import('./index.js');
@@ -239,7 +246,9 @@ describe('get-components', () => {
       },
     };
 
-    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getComponents as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetComponentsResponse>(mockResponse)
+    );
 
     // Act
     const { createComponentTools } = await import('./index.js');

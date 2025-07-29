@@ -1,6 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetStylesResponse } from '../../types/api/responses/style-responses.js';
+import { convertKeysToCamelCase } from '../../utils/case-converter.js';
 
 describe('get-styles', () => {
   let mockApiClient: FigmaApiClient;
@@ -22,25 +23,25 @@ describe('get-styles', () => {
         styles: [
           {
             key: 'style-1',
-            file_key: fileKey,
-            node_id: '2:1',
-            style_type: 'FILL',
+            fileKey: fileKey,
+            nodeId: '2:1',
+            styleType: 'FILL',
             name: 'Primary Color',
             description: 'Main brand color',
           },
           {
             key: 'style-2',
-            file_key: fileKey,
-            node_id: '2:2',
-            style_type: 'TEXT',
+            fileKey: fileKey,
+            nodeId: '2:2',
+            styleType: 'TEXT',
             name: 'Heading 1',
             description: 'Main heading style',
           },
           {
             key: 'style-3',
-            file_key: fileKey,
-            node_id: '2:3',
-            style_type: 'EFFECT',
+            fileKey: fileKey,
+            nodeId: '2:3',
+            styleType: 'EFFECT',
             name: 'Drop Shadow',
             description: 'Standard drop shadow',
           },
@@ -48,7 +49,9 @@ describe('get-styles', () => {
       },
     };
 
-    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetStylesResponse>(mockResponse)
+    );
 
     // Act
     const { createStyleTools } = await import('./index.js');
@@ -86,7 +89,9 @@ describe('get-styles', () => {
       },
     };
 
-    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetStylesResponse>(mockResponse)
+    );
 
     // Act
     const { createStyleTools } = await import('./index.js');
@@ -107,33 +112,33 @@ describe('get-styles', () => {
         styles: [
           {
             key: 'style-1',
-            file_key: fileKey,
-            node_id: '2:1',
-            style_type: 'FILL',
+            fileKey: fileKey,
+            nodeId: '2:1',
+            styleType: 'FILL',
             name: 'Colors/Primary/Blue',
             description: 'Primary blue color',
           },
           {
             key: 'style-2',
-            file_key: fileKey,
-            node_id: '2:2',
-            style_type: 'FILL',
+            fileKey: fileKey,
+            nodeId: '2:2',
+            styleType: 'FILL',
             name: 'Colors/Secondary/Green',
             description: 'Secondary green color',
           },
           {
             key: 'style-3',
-            file_key: fileKey,
-            node_id: '2:3',
-            style_type: 'TEXT',
+            fileKey: fileKey,
+            nodeId: '2:3',
+            styleType: 'TEXT',
             name: 'Typography/Headings/H1',
             description: 'Main heading style',
           },
           {
             key: 'style-4',
-            file_key: fileKey,
-            node_id: '2:4',
-            style_type: 'EFFECT',
+            fileKey: fileKey,
+            nodeId: '2:4',
+            styleType: 'EFFECT',
             name: 'Effects/Shadows/Elevation-1',
             description: 'Light shadow',
           },
@@ -153,16 +158,18 @@ describe('get-styles', () => {
       },
       statistics: {
         total: 4,
-        by_type: {
+        byType: {
           FILL: 2,
           TEXT: 1,
           EFFECT: 1,
         },
-        naming_consistency: 1.0, // 100% follow hierarchical naming
+        namingConsistency: 1.0, // 100% follow hierarchical naming
       },
     };
 
-    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetStylesResponse>(mockResponse)
+    );
 
     // Act
     const { createStyleTools } = await import('./index.js');
@@ -176,7 +183,7 @@ describe('get-styles', () => {
     expect(result.categorized).toBeDefined();
     expect(result.categorized?.FILL['Colors/Primary']).toContain('style-1');
     expect(result.statistics?.total).toBe(4);
-    expect(result.statistics?.by_type.FILL).toBe(2);
+    expect(result.statistics?.byType.FILL).toBe(2);
   });
 
   test('スタイルタイプごとにフィルタリングできる', async () => {
@@ -189,17 +196,17 @@ describe('get-styles', () => {
         styles: [
           {
             key: 'style-1',
-            file_key: fileKey,
-            node_id: '2:1',
-            style_type: 'FILL',
+            fileKey: fileKey,
+            nodeId: '2:1',
+            styleType: 'FILL',
             name: 'Primary Color',
             description: '',
           },
           {
             key: 'style-2',
-            file_key: fileKey,
-            node_id: '2:2',
-            style_type: 'TEXT',
+            fileKey: fileKey,
+            nodeId: '2:2',
+            styleType: 'TEXT',
             name: 'Body Text',
             description: '',
           },
@@ -207,7 +214,9 @@ describe('get-styles', () => {
       },
     };
 
-    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (mockApiClient.getStyles as ReturnType<typeof vi.fn>).mockResolvedValue(
+      convertKeysToCamelCase<GetStylesResponse>(mockResponse)
+    );
 
     // Act
     const { createStyleTools } = await import('./index.js');
@@ -215,8 +224,8 @@ describe('get-styles', () => {
     const result = await tools.getStyles.execute({ fileKey });
 
     // Assert
-    const fillStyles = result.meta.styles.filter((s) => s.style_type === 'FILL');
-    const textStyles = result.meta.styles.filter((s) => s.style_type === 'TEXT');
+    const fillStyles = result.meta.styles.filter((s) => s.styleType === 'FILL');
+    const textStyles = result.meta.styles.filter((s) => s.styleType === 'TEXT');
 
     expect(fillStyles).toHaveLength(1);
     expect(textStyles).toHaveLength(1);
