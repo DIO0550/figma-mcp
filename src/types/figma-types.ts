@@ -1,5 +1,7 @@
 // Figmaの基本型定義
 
+import type { DeepCamelCase } from '../utils/type-transformers.js';
+
 export interface Color {
   r: number;
   g: number;
@@ -117,7 +119,8 @@ export interface Document {
   children: Node[];
 }
 
-export interface Component {
+// APIレスポンス用のスネークケース型（内部使用）
+export interface ComponentSnake {
   key: string;
   name: string;
   description: string;
@@ -133,6 +136,9 @@ export interface Component {
   component_set_id?: string;
 }
 
+// アプリケーション用のキャメルケース型
+export type Component = DeepCamelCase<ComponentSnake>;
+
 export interface ComponentSet {
   key: string;
   name: string;
@@ -140,7 +146,8 @@ export interface ComponentSet {
   documentationLinks: DocumentationLink[];
 }
 
-export interface Style {
+// APIレスポンス用のスネークケース型（内部使用）
+export interface StyleSnake {
   key: string;
   file_key: string;
   node_id: string;
@@ -151,22 +158,30 @@ export interface Style {
   sort_position?: string;
 }
 
+// アプリケーション用のキャメルケース型
+export type Style = DeepCamelCase<StyleSnake>;
+
 export interface DocumentationLink {
   uri: string;
 }
 
-export interface FigmaUser {
+// APIレスポンス用のスネークケース型（内部使用）
+export interface FigmaUserSnake {
   id: string;
   handle: string;
   img_url: string;
   email: string;
 }
 
-export interface Comment {
+// アプリケーション用のキャメルケース型
+export type FigmaUser = DeepCamelCase<FigmaUserSnake>;
+
+// APIレスポンス用のスネークケース型（内部使用）
+export interface CommentSnake {
   id: string;
   file_key: string;
   parent_id?: string;
-  user: FigmaUser;
+  user: FigmaUserSnake;
   created_at: string;
   resolved_at?: string;
   message: string;
@@ -176,24 +191,35 @@ export interface Comment {
     [key: string]: unknown;
   };
   order_id: string;
-  reactions?: Reaction[];
+  reactions?: ReactionSnake[];
 }
 
-export interface Reaction {
-  user: FigmaUser;
+// アプリケーション用のキャメルケース型
+export type Comment = DeepCamelCase<CommentSnake>;
+
+// APIレスポンス用のスネークケース型（内部使用）
+export interface ReactionSnake {
+  user: FigmaUserSnake;
   created_at: string;
   emoji: string;
 }
 
-export interface Version {
+// アプリケーション用のキャメルケース型
+export type Reaction = DeepCamelCase<ReactionSnake>;
+
+// APIレスポンス用のスネークケース型（内部使用）
+export interface VersionSnake {
   id: string;
   created_at: string;
   label: string;
   description: string;
-  user: FigmaUser;
+  user: FigmaUserSnake;
   // 詳細情報（オプション）
   thumbnail_url?: string;
   pages_changed?: string[];
   components_changed?: number;
   styles_changed?: number;
 }
+
+// アプリケーション用のキャメルケース型
+export type Version = DeepCamelCase<VersionSnake>;

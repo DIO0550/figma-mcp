@@ -43,7 +43,7 @@ describe('get_components Tool Integration', () => {
     expect(component).toHaveProperty('key');
     expect(component).toHaveProperty('name', 'Button Component');
     expect(component).toHaveProperty('description');
-    expect(component).toHaveProperty('file_key', 'test-file-key');
+    expect(component).toHaveProperty('fileKey', 'test-file-key');
   });
 
   test('空のコンポーネントリストが正常に処理される', async () => {

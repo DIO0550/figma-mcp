@@ -4,8 +4,8 @@ import type { Style } from '../../figma-types.js';
 
 export interface StyleStatistics {
   total: number;
-  by_type: Record<string, number>;
-  naming_consistency: number;
+  byType: Record<string, number>;
+  namingConsistency: number;
 }
 
 export interface GetStylesResponse {

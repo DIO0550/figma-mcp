@@ -3,11 +3,11 @@
 import type { Component } from '../../figma-types.js';
 
 export interface ComponentAnalysis {
-  total_components: number;
+  totalComponents: number;
   categories: Record<string, number>;
-  naming_patterns: Record<string, number>;
-  pages_distribution: Record<string, number>;
-  description_coverage: number;
+  namingPatterns: Record<string, number>;
+  pagesDistribution: Record<string, number>;
+  descriptionCoverage: number;
 }
 
 export interface VariantSet {
@@ -28,7 +28,7 @@ export interface GetComponentsResponse {
 
 export interface GetComponentSetsResponse {
   meta: {
-    component_sets: Array<{
+    componentSets: Array<{
       key: string;
       name: string;
       description: string;

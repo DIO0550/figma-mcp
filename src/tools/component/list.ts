@@ -58,8 +58,8 @@ function analyzeComponents(components: Component[]): ComponentAnalysis {
     }
 
     // ページ分布
-    if (component.containing_frame?.page_name) {
-      const pageName = component.containing_frame.page_name;
+    if (component.containingFrame?.pageName) {
+      const pageName = component.containingFrame.pageName;
       pagesDistribution[pageName] = (pagesDistribution[pageName] || 0) + 1;
     }
 
@@ -70,11 +70,11 @@ function analyzeComponents(components: Component[]): ComponentAnalysis {
   });
 
   return {
-    total_components: components.length,
+    totalComponents: components.length,
     categories,
-    naming_patterns: namingPatterns,
-    pages_distribution: pagesDistribution,
-    description_coverage: components.length > 0 ? descriptionsCount / components.length : 0,
+    namingPatterns,
+    pagesDistribution,
+    descriptionCoverage: components.length > 0 ? descriptionsCount / components.length : 0,
   };
 }
 
@@ -84,7 +84,7 @@ function organizeVariants(components: Component[]): Record<string, VariantSet> {
 
   // コンポーネントセットごとにグループ化
   components.forEach((component) => {
-    const setId = component.component_set_id || component.componentSetId;
+    const setId = component.componentSetId;
     if (setId) {
       if (!variantSets[setId]) {
         variantSets[setId] = {
@@ -109,7 +109,7 @@ function organizeVariants(components: Component[]): Record<string, VariantSet> {
 
   // 単独のコンポーネント（バリアントなし）も含める
   components.forEach((component) => {
-    const setId = component.component_set_id || component.componentSetId;
+    const setId = component.componentSetId;
     if (!setId) {
       // 単独コンポーネント用の仮想セットID
       const virtualSetId = `single-${component.key}`;

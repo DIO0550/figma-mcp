@@ -18,7 +18,8 @@ export const setConfig = (args: SetConfigArgs): Promise<ConfigToolResult> => {
     return Promise.resolve({
       success: true,
       config: currentConfig,
-      message: 'Configuration updated successfully. Note: The new base URL will be used for new API client instances.',
+      message:
+        'Configuration updated successfully. Note: The new base URL will be used for new API client instances.',
     });
   } catch (error) {
     Logger.error('Failed to update configuration', { error });

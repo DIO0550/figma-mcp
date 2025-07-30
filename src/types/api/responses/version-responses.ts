@@ -6,15 +6,15 @@ export interface VersionComparison {
   from: string;
   to: string;
   changes: {
-    pages_added: string[];
-    pages_removed: string[];
-    pages_modified: string[];
-    components_added: number;
-    components_removed: number;
-    components_modified: number;
-    styles_added: number;
-    styles_removed: number;
-    styles_modified: number;
+    pagesAdded: string[];
+    pagesRemoved: string[];
+    pagesModified: string[];
+    componentsAdded: number;
+    componentsRemoved: number;
+    componentsModified: number;
+    stylesAdded: number;
+    stylesRemoved: number;
+    stylesModified: number;
   };
 }
 
