@@ -16,7 +16,6 @@ import type { ExportImageResponse } from '../types/api/responses/image-responses
 import type { GetCommentsResponse } from '../types/api/responses/comment-responses.js';
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
 import type { ExportImageOptions } from '../types/api/options/image-options.js';
-import type { ExportImageOptionsSnake } from '../types/api/options/image-options.js';
 
 export class FigmaApiClient {
   public files!: FilesApi;
@@ -58,30 +57,29 @@ export class FigmaApiClient {
   // ツール互換性のためのエイリアスメソッド
   async getComponents(fileKey: string): Promise<GetComponentsResponse> {
     const response = await this.components.getComponents(fileKey);
-    return convertKeysToCamelCase<GetComponentsResponse>(response);
+    return convertKeysToCamelCase(response);
   }
 
   async getStyles(fileKey: string): Promise<GetStylesResponse> {
     const response = await this.styles.getStyles(fileKey);
-    return convertKeysToCamelCase<GetStylesResponse>(response);
+    return convertKeysToCamelCase(response);
   }
 
-  async exportImages(
-    fileKey: string,
-    options: ExportImageOptions
-  ): Promise<ExportImageResponse> {
-    const snakeOptions = convertKeysToSnakeCase<ExportImageOptionsSnake>(options);
+  async exportImages(fileKey: string, options: ExportImageOptions): Promise<ExportImageResponse> {
+    // optionsは既にExportImageOptions (DeepCamelCase<ExportImageOptionsSnake>)型
+    // convertKeysToSnakeCaseでスネークケースに戻す
+    const snakeOptions = convertKeysToSnakeCase(options);
     const response = await this.images.exportImages(fileKey, snakeOptions);
-    return convertKeysToCamelCase<ExportImageResponse>(response);
+    return convertKeysToCamelCase(response);
   }
 
   async getComments(fileKey: string): Promise<GetCommentsResponse> {
     const response = await this.comments.getComments(fileKey);
-    return convertKeysToCamelCase<GetCommentsResponse>(response);
+    return convertKeysToCamelCase(response);
   }
 
   async getVersions(fileKey: string): Promise<GetVersionsResponse> {
     const response = await this.versions.getVersions(fileKey);
-    return convertKeysToCamelCase<GetVersionsResponse>(response);
+    return convertKeysToCamelCase(response);
   }
 }
