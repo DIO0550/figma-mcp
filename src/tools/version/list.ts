@@ -1,10 +1,14 @@
-import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { VersionTool } from './types.js';
 import type { GetVersionsResponse } from '../../types/api/responses/version-responses.js';
 import { GetVersionsArgsSchema, type GetVersionsArgs } from './get-versions-args.js';
 import { JsonSchema } from '../types.js';
 
-export const createGetVersionsTool = (apiClient: FigmaApiClient): VersionTool => {
+// 必要な最小限のインターフェース
+interface ApiClientWithVersions {
+  getVersions(fileKey: string): Promise<GetVersionsResponse>;
+}
+
+export const createGetVersionsTool = (apiClient: ApiClientWithVersions): VersionTool => {
   return {
     name: 'get_versions',
     description: 'Get version history of a Figma file with optional details',
@@ -33,15 +37,15 @@ export const createGetVersionsTool = (apiClient: FigmaApiClient): VersionTool =>
             from: fromVersionId,
             to: toVersionId,
             changes: {
-              pages_added: [],
-              pages_removed: [],
-              pages_modified: [],
-              components_added: 0,
-              components_removed: 0,
-              components_modified: 0,
-              styles_added: 0,
-              styles_removed: 0,
-              styles_modified: 0,
+              pagesAdded: [],
+              pagesRemoved: [],
+              pagesModified: [],
+              componentsAdded: 0,
+              componentsRemoved: 0,
+              componentsModified: 0,
+              stylesAdded: 0,
+              stylesRemoved: 0,
+              stylesModified: 0,
             },
           },
         };
