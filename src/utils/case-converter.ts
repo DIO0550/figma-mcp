@@ -5,11 +5,22 @@
  * APIとのやり取りで使用されます。
  */
 
+import type { DeepSnakeCase, DeepCamelCase } from './type-transformers.js';
+
 /**
  * スネークケースをキャメルケースに変換
  */
 export function snakeToCamelCase(str: string): string {
-  return str.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+  // 先頭のアンダースコアを保持
+  const leadingUnderscores = str.match(/^_+/)?.[0] || '';
+  const withoutLeading = str.slice(leadingUnderscores.length);
+
+  // アンダースコアの後の文字を大文字に変換（数字の後のアンダースコアは削除のみ）
+  const converted = withoutLeading
+    .replace(/_([a-zA-Z])/g, (_, letter: string) => letter.toUpperCase())
+    .replace(/_(\d)/g, '$1'); // 数字の前のアンダースコアは削除
+
+  return leadingUnderscores + converted;
 }
 
 /**
@@ -37,13 +48,13 @@ export function camelToSnakeCase(str: string): string {
 /**
  * オブジェクトのキーをスネークケースからキャメルケースに変換
  */
-export function convertKeysToCamelCase<T>(obj: unknown): T {
+export function convertKeysToCamelCase<T>(obj: T): DeepCamelCase<T> {
   if (obj === null || obj === undefined) {
-    return obj as T;
+    return obj as DeepCamelCase<T>;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => convertKeysToCamelCase(item)) as T;
+    return obj.map((item): unknown => convertKeysToCamelCase(item)) as DeepCamelCase<T>;
   }
 
   if (typeof obj === 'object' && obj.constructor === Object) {
@@ -52,22 +63,22 @@ export function convertKeysToCamelCase<T>(obj: unknown): T {
       const camelKey = snakeToCamelCase(key);
       converted[camelKey] = convertKeysToCamelCase(value);
     }
-    return converted as T;
+    return converted as DeepCamelCase<T>;
   }
 
-  return obj as T;
+  return obj as DeepCamelCase<T>;
 }
 
 /**
  * オブジェクトのキーをキャメルケースからスネークケースに変換
  */
-export function convertKeysToSnakeCase<T>(obj: unknown): T {
+export function convertKeysToSnakeCase<T>(obj: T): DeepSnakeCase<T> {
   if (obj === null || obj === undefined) {
-    return obj as T;
+    return obj as DeepSnakeCase<T>;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => convertKeysToSnakeCase(item)) as T;
+    return obj.map((item): unknown => convertKeysToSnakeCase(item)) as DeepSnakeCase<T>;
   }
 
   if (typeof obj === 'object' && obj.constructor === Object) {
@@ -76,8 +87,8 @@ export function convertKeysToSnakeCase<T>(obj: unknown): T {
       const snakeKey = camelToSnakeCase(key);
       converted[snakeKey] = convertKeysToSnakeCase(value);
     }
-    return converted as T;
+    return converted as DeepSnakeCase<T>;
   }
 
-  return obj as T;
+  return obj as DeepSnakeCase<T>;
 }
