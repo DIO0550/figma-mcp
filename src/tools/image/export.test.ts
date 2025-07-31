@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { ExportImagesResponse } from '../../types/api/responses/image-responses.js';
+import type { ExportImageResponse } from '../../types/api/responses/image-responses.js';
 
 describe('export-images', () => {
   let mockApiClient: FigmaApiClient;
@@ -19,7 +19,7 @@ describe('export-images', () => {
     const format = 'png';
     const scale = 2;
 
-    const mockResponse: ExportImagesResponse = {
+    const mockResponse: ExportImageResponse = {
       err: undefined,
       images: {
         '1:2': 'https://figma-export.com/image1.png',
@@ -45,7 +45,7 @@ describe('export-images', () => {
     const fileKey = 'test-file-key';
     const ids = ['1:2'];
 
-    const mockResponse: ExportImagesResponse = {
+    const mockResponse: ExportImageResponse = {
       err: undefined,
       images: {
         '1:2': 'https://figma-export.com/image1.png',
@@ -70,7 +70,7 @@ describe('export-images', () => {
     const ids = ['1:2'];
     const format = 'svg';
 
-    const mockResponse: ExportImagesResponse = {
+    const mockResponse: ExportImageResponse = {
       err: undefined,
       images: {
         '1:2': 'https://figma-export.com/image1.svg',
@@ -111,7 +111,7 @@ describe('export-images', () => {
     const fileKey = 'test-file-key';
     const ids = ['1:2'];
 
-    const mockResponse: ExportImagesResponse = {
+    const mockResponse: ExportImageResponse = {
       err: 'Invalid node ID',
       images: {},
     };
