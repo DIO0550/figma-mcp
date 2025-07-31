@@ -11,7 +11,7 @@ export interface GetProjectFilesResponse {
   files: Array<{
     key: string;
     name: string;
-    thumbnail_url: string;
-    last_modified: string;
+    thumbnailUrl: string;
+    lastModified: string;
   }>;
 }
