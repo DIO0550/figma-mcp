@@ -1,0 +1,47 @@
+# Base image for Figma MCP Server and development environment
+FROM ubuntu:24.04 AS base
+
+# Set environment to avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Set locale for Japanese support
+ENV LANG=ja_JP.UTF-8
+ENV LANGUAGE=ja_JP:ja
+ENV LC_ALL=ja_JP.UTF-8
+
+# Install essential packages and Japanese language support
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    jq \
+    build-essential \
+    ca-certificates \
+    gnupg \
+    sudo \
+    locales \
+    language-pack-ja \
+    fonts-noto-cjk \
+    && locale-gen ja_JP.UTF-8 \
+    && update-locale LANG=ja_JP.UTF-8 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 20.x
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Create node user with sudo privileges (for development)
+RUN useradd -ms /bin/bash node \
+    && usermod -aG sudo node \
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Set up basic git configuration
+RUN git config --global init.defaultBranch main
+
+# Switch to node user
+USER node
+WORKDIR /home/node
