@@ -94,11 +94,11 @@ show_image_sizes() {
 cleanup_images() {
     log_warning "Cleaning up Docker images..."
     
-    # 古いイメージを削除（より安全なフィルタリング）
+    # 古いイメージを削除（awkベースの安全なフィルタリング）
     docker image ls --filter "reference=${BASE_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}} {{.ID}}" | \
-        grep -vx "${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG} .*" | awk '{print $2}' | xargs -r docker rmi -f 2>/dev/null || true
+        awk -v exclude="${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}" '$1 != exclude {print $2}' | xargs -r docker rmi -f 2>/dev/null || true
     docker image ls --filter "reference=${MCP_SERVER_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}} {{.ID}}" | \
-        grep -vx "${MCP_SERVER_IMAGE_NAME}:${MCP_SERVER_TAG} .*" | awk '{print $2}' | xargs -r docker rmi -f 2>/dev/null || true
+        awk -v exclude="${MCP_SERVER_IMAGE_NAME}:${MCP_SERVER_TAG}" '$1 != exclude {print $2}' | xargs -r docker rmi -f 2>/dev/null || true
     
     # ダングリングイメージを削除
     docker image prune -f
@@ -190,7 +190,7 @@ main() {
     
     if [[ "${build_server}" == "true" ]]; then
         # ベースイメージが存在するかチェック
-        if ! docker images | grep -E -q "^${BASE_IMAGE_NAME}[[:space:]]+${BASE_IMAGE_TAG}"; then
+        if ! docker images --format "{{.Repository}}:{{.Tag}}" | grep -q "^${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}$"; then
             log_error "Base image not found. Building base image first..."
             build_base_image
         fi
