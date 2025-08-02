@@ -1,5 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { createApiConfig, createHeaders, DEFAULT_BASE_URL } from './config';
+import { Headers, ContentType } from '../constants';
 
 describe('DEFAULT_BASE_URL', () => {
   test('デフォルトのベースURLが定義されている', () => {
@@ -50,8 +51,8 @@ describe('createHeaders', () => {
     const headers = createHeaders(config);
 
     expect(headers).toEqual({
-      'X-Figma-Token': 'test-token',
-      'Content-Type': 'application/json',
+      [Headers.FIGMA_TOKEN]: 'test-token',
+      [Headers.CONTENT_TYPE]: ContentType.JSON,
     });
   });
 
@@ -59,6 +60,6 @@ describe('createHeaders', () => {
     const config = createApiConfig('another-token');
     const headers = createHeaders(config);
 
-    expect(headers['X-Figma-Token']).toBe('another-token');
+    expect(headers[Headers.FIGMA_TOKEN]).toBe('another-token');
   });
 });

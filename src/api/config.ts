@@ -1,5 +1,7 @@
 // API設定
 
+import { Headers, ContentType } from '../constants/index.js';
+
 export interface ApiConfig {
   accessToken: string;
   baseUrl?: string;
@@ -20,7 +22,7 @@ export function createApiConfig(accessToken: string, baseUrl?: string): ApiConfi
 
 export function createHeaders(config: ApiConfig): Record<string, string> {
   return {
-    'X-Figma-Token': config.accessToken,
-    'Content-Type': 'application/json',
+    [Headers.FIGMA_TOKEN]: config.accessToken,
+    [Headers.CONTENT_TYPE]: ContentType.JSON,
   };
 }
