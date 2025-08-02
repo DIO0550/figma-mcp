@@ -1,11 +1,12 @@
 import { describe, test, expect, vi } from 'vitest';
 import { parseRateLimitHeaders, getRetryAfter, shouldRetry, withRetry } from './rate-limit';
+import { HttpStatus, Limits, Headers as HeaderNames } from '../constants';
 
 describe('parseRateLimitHeaders', () => {
   test('レート制限ヘッダーがある場合はRateLimitInfoを返す', () => {
     const headers = new Headers({
-      'X-RateLimit-Remaining': '100',
-      'X-RateLimit-Reset': '1704067200', // 2024-01-01T00:00:00Z
+      [HeaderNames.RATE_LIMIT_REMAINING]: '100',
+      [HeaderNames.RATE_LIMIT_RESET]: '1704067200', // 2024-01-01T00:00:00Z
     });
 
     const result = parseRateLimitHeaders(headers);
@@ -26,7 +27,7 @@ describe('parseRateLimitHeaders', () => {
 
   test('一部のヘッダーのみがある場合はundefinedを返す', () => {
     const headers = new Headers({
-      'X-RateLimit-Remaining': '100',
+      [HeaderNames.RATE_LIMIT_REMAINING]: '100',
     });
 
     const result = parseRateLimitHeaders(headers);
@@ -38,12 +39,12 @@ describe('parseRateLimitHeaders', () => {
 describe('getRetryAfter', () => {
   test('Retry-Afterヘッダーがある場合は数値を返す', () => {
     const headers = new Headers({
-      'Retry-After': '60',
+      [HeaderNames.RETRY_AFTER]: '60',
     });
 
     const result = getRetryAfter(headers);
 
-    expect(result).toBe(60);
+    expect(result).toBe(Limits.DEFAULT_RETRY_AFTER_SECONDS);
   });
 
   test('Retry-Afterヘッダーがない場合はundefinedを返す', () => {
@@ -57,12 +58,12 @@ describe('getRetryAfter', () => {
 
 describe('shouldRetry', () => {
   test.each([
-    { status: 429, expected: true, description: 'レート制限エラー(429)' },
-    { status: 500, expected: true, description: 'サーバーエラー(500)' },
-    { status: 502, expected: true, description: 'Bad Gateway(502)' },
-    { status: 503, expected: true, description: 'Service Unavailable(503)' },
-    { status: 400, expected: false, description: 'Bad Request(400)' },
-    { status: 404, expected: false, description: 'Not Found(404)' },
+    { status: HttpStatus.TOO_MANY_REQUESTS, expected: true, description: 'レート制限エラー(429)' },
+    { status: HttpStatus.INTERNAL_SERVER_ERROR, expected: true, description: 'サーバーエラー(500)' },
+    { status: HttpStatus.BAD_GATEWAY, expected: true, description: 'Bad Gateway(502)' },
+    { status: HttpStatus.SERVICE_UNAVAILABLE, expected: true, description: 'Service Unavailable(503)' },
+    { status: HttpStatus.BAD_REQUEST, expected: false, description: 'Bad Request(400)' },
+    { status: HttpStatus.NOT_FOUND, expected: false, description: 'Not Found(404)' },
   ])('$descriptionの場合は$expectedを返す', ({ status, expected }) => {
     const error = Object.assign(new Error(), { status });
 
@@ -97,7 +98,7 @@ describe('withRetry', () => {
   });
 
   test('リトライ可能なエラーは指定回数まで再実行される', async () => {
-    const error = Object.assign(new Error('Server Error'), { status: 500 });
+    const error = Object.assign(new Error('Server Error'), { status: HttpStatus.INTERNAL_SERVER_ERROR });
     const mockFn = vi
       .fn()
       .mockRejectedValueOnce(error)
@@ -111,7 +112,7 @@ describe('withRetry', () => {
   });
 
   test('リトライ不可能なエラーは即座に投げられる', async () => {
-    const error = Object.assign(new Error('Not Found'), { status: 404 });
+    const error = Object.assign(new Error('Not Found'), { status: HttpStatus.NOT_FOUND });
     const mockFn = vi.fn().mockRejectedValue(error);
 
     await expect(withRetry(mockFn)).rejects.toThrow('Not Found');
@@ -119,7 +120,7 @@ describe('withRetry', () => {
   });
 
   test('最大リトライ回数を超えたら最後のエラーを投げる', async () => {
-    const error = Object.assign(new Error('Server Error'), { status: 500 });
+    const error = Object.assign(new Error('Server Error'), { status: HttpStatus.INTERNAL_SERVER_ERROR });
     const mockFn = vi.fn().mockRejectedValue(error);
 
     await expect(withRetry(mockFn, 3, 10)).rejects.toThrow('Server Error');
@@ -127,7 +128,7 @@ describe('withRetry', () => {
   });
 
   test('エクスポネンシャルバックオフで遅延が増加する', async () => {
-    const error = Object.assign(new Error('Server Error'), { status: 500 });
+    const error = Object.assign(new Error('Server Error'), { status: HttpStatus.INTERNAL_SERVER_ERROR });
     const mockFn = vi
       .fn()
       .mockRejectedValueOnce(error)
