@@ -204,7 +204,29 @@ Figmaファイルの基本情報を取得します。
 
 ```typescript
 {
-  "baseUrl": "https://api.figma.com/v1"
+  "baseUrl": "https://api.figma.com/v1"  // 通常は変更不要
+}
+```
+
+#### `parse_figma_url`
+
+FigmaのURLを解析してファイルID、ファイル名、ノードIDを抽出し、ローカルに保存します。
+
+```typescript
+{
+  "url": "https://www.figma.com/file/ABC123xyz/My-Design-File?node-id=1234-5678"
+}
+```
+
+戻り値：
+```typescript
+{
+  "figmaInfo": {
+    "fileId": "ABC123xyz",
+    "fileName": "My-Design-File",
+    "nodeId": "1234-5678"
+  },
+  "message": "Figma URL parsed and saved successfully"
 }
 ```
 
