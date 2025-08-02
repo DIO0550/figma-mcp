@@ -36,9 +36,14 @@ RUN addgroup -g 10001 -S nodejs && \
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json ./
-COPY package-lock.json ./
+# Copy package files (optimized: single layer)
+COPY package*.json ./
+
+# Change ownership to nodejs user before npm ci
+RUN chown -R nodejs:nodejs /app
+
+# Switch to non-root user before installing dependencies
+USER nodejs
 
 # Install only production dependencies
 RUN npm ci --omit=dev && \
@@ -46,9 +51,6 @@ RUN npm ci --omit=dev && \
 
 # Copy built application from builder stage
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-
-# Switch to non-root user
-USER nodejs
 
 # Expose MCP server port
 EXPOSE 8765
