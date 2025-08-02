@@ -198,15 +198,6 @@ Figmaファイルの基本情報を取得します。
 }
 ```
 
-#### `set_config`
-
-実行時に設定を変更します。
-
-```typescript
-{
-  "baseUrl": "https://api.figma.com/v1"  // 通常は変更不要
-}
-```
 
 #### `parse_figma_url`
 
