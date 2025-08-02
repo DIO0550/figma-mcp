@@ -31,8 +31,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install pnpm globally (optional, since project uses npm)
+# RUN npm install -g pnpm
 
 # Create node user with sudo privileges (for development)
 RUN useradd -ms /bin/bash node \

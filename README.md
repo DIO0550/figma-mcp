@@ -19,7 +19,7 @@ Figma REST APIを使用してFigmaデザインファイルの情報を取得・�
 
 ### 前提条件
 
-- Docker および Docker Compose
+- Docker
 - Figma Personal Access Token（[取得方法](https://www.figma.com/developers/api#access-tokens)）
 
 ### Dockerを使用したセットアップ
@@ -29,12 +29,21 @@ Figma REST APIを使用してFigmaデザインファイルの情報を取得・�
 git clone https://github.com/yourusername/figma-mcp.git
 cd figma-mcp
 
-# Dockerイメージのビルド
-docker build -t figma-mcp .
+# Dockerイメージのビルド（ビルドスクリプトを使用）
+./scripts/docker-build.sh
 
-# または docker-compose を使用
-docker-compose build
+# または個別にビルド
+# ベースイメージのビルド
+docker build -f docker/Dockerfile.base -t figma-mcp-base:latest .
+
+# MCPサーバーイメージのビルド
+docker build -f mcp-server/Dockerfile -t figma-mcp-server:latest .
 ```
+
+ビルドが成功すると、以下のイメージが作成されます：
+
+- `figma-mcp-base:latest` - 開発環境用ベースイメージ
+- `figma-mcp-server:latest` - 本番用MCPサーバーイメージ
 
 ## 設定
 
@@ -53,30 +62,12 @@ Claude Desktopの設定ファイル（`claude_desktop_config.json`）に以下�
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
 **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
-#### Dockerコンテナとして実行する場合
-
 ```json
 {
   "mcpServers": {
     "figma-mcp": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "--env", "FIGMA_ACCESS_TOKEN", "figma-mcp:latest"],
-      "env": {
-        "FIGMA_ACCESS_TOKEN": "your_figma_personal_access_token_here"
-      }
-    }
-  }
-}
-```
-
-#### docker-composeを使用する場合
-
-```json
-{
-  "mcpServers": {
-    "figma-mcp": {
-      "command": "docker-compose",
-      "args": ["-f", "/path/to/figma-mcp/docker-compose.yml", "run", "--rm", "figma-mcp"],
+      "args": ["run", "--rm", "-i", "-e", "FIGMA_ACCESS_TOKEN", "figma-mcp-server:latest"],
       "env": {
         "FIGMA_ACCESS_TOKEN": "your_figma_personal_access_token_here"
       }
@@ -112,11 +103,10 @@ Claude Desktopの設定ファイル（`claude_desktop_config.json`）に以下�
 
 ### 利用可能な環境変数
 
-| 環境変数             | 説明                                   | デフォルト値             |
-| -------------------- | -------------------------------------- | ------------------------ |
-| `FIGMA_ACCESS_TOKEN` | Figma Personal Access Token（必須）    | -                        |
-| `LOG_LEVEL`          | ログレベル（ERROR, WARN, INFO, DEBUG） | INFO                     |
-| `FIGMA_API_BASE_URL` | Figma API のベースURL                  | https://api.figma.com/v1 |
+| 環境変数             | 説明                                   | デフォルト値 |
+| -------------------- | -------------------------------------- | ------------ |
+| `FIGMA_ACCESS_TOKEN` | Figma Personal Access Token（必須）    | -            |
+| `LOG_LEVEL`          | ログレベル（ERROR, WARN, INFO, DEBUG） | INFO         |
 
 ## 使用方法
 
@@ -198,7 +188,6 @@ Figmaファイルの基本情報を取得します。
 }
 ```
 
-
 #### `parse_figma_url`
 
 FigmaのURLを解析してファイルID、ファイル名、ノードIDを抽出し、ローカルに保存します。
@@ -210,6 +199,7 @@ FigmaのURLを解析してファイルID、ファイル名、ノードIDを抽�
 ```
 
 戻り値：
+
 ```typescript
 {
   "figmaInfo": {
@@ -274,50 +264,77 @@ npm test
 #### Docker開発環境
 
 ```bash
-# 開発用コンテナの起動
-docker-compose up -d
+# 開発用環境での実行（ソースコードをマウント）
+docker run --rm -it \
+  -e FIGMA_ACCESS_TOKEN \
+  -v $(pwd):/app \
+  -w /app \
+  figma-mcp-base:latest \
+  npm run dev
 
-# コンテナ内でコマンド実行
-docker-compose exec figma-mcp npm run dev
-
-# ログの確認
-docker-compose logs -f
+# ビルドスクリプトのオプション
+./scripts/docker-build.sh --help     # ヘルプを表示
+./scripts/docker-build.sh -b          # ベースイメージのみビルド
+./scripts/docker-build.sh -s          # サーバーイメージのみビルド
+./scripts/docker-build.sh --clean     # ビルド後に古いイメージをクリーンアップ
+./scripts/docker-build.sh --no-cache  # キャッシュを使わずにビルド
 ```
 
 ### プロジェクト構造
 
 ```
-src/
-├── index.ts              # MCPサーバーのエントリーポイント
-├── api/                  # Figma API関連
-│   ├── client.ts         # HTTPクライアント
-│   ├── figma-api-client.ts # APIクライアント
-│   └── endpoints/        # 各APIエンドポイント
-├── tools/                # MCPツールの実装
-│   ├── file/            # ファイル関連ツール
-│   ├── component/       # コンポーネント関連ツール
-│   └── ...
-├── types/               # 型定義
-└── utils/              # ユーティリティ関数
+.
+├── docker/                 # Docker関連ファイル
+│   ├── Dockerfile.base    # ベースイメージの定義
+│   └── README.md          # Docker環境の説明
+├── mcp-server/            # MCPサーバー専用Docker
+│   ├── Dockerfile         # 本番用マルチステージビルド
+│   └── README.md
+├── scripts/               # ビルド・運用スクリプト
+│   └── docker-build.sh    # Dockerイメージビルドスクリプト
+├── src/                   # ソースコード
+│   ├── index.ts           # MCPサーバーのエントリーポイント
+│   ├── api/               # Figma API関連
+│   │   ├── client.ts      # HTTPクライアント
+│   │   ├── figma-api-client.ts # APIクライアント
+│   │   └── endpoints/     # 各APIエンドポイント
+│   ├── tools/             # MCPツールの実装
+│   │   ├── file/          # ファイル関連ツール
+│   │   ├── component/     # コンポーネント関連ツール
+│   │   └── ...
+│   ├── types/             # 型定義
+│   └── utils/             # ユーティリティ関数
+└── docs/                  # ドキュメント
+    └── claude-desktop-setup.md # Claude Desktop設定ガイド
 ```
 
 ## トラブルシューティング
 
 ### よくある問題
 
-1. **「FIGMA_ACCESS_TOKEN environment variable is required」エラー**
+1. **「Unable to find image 'figma-mcp-server:latest' locally」エラー**
+
+   - Dockerイメージがビルドされていません
+   - `./scripts/docker-build.sh` を実行してイメージをビルドしてください
+
+2. **「FIGMA_ACCESS_TOKEN environment variable is required」エラー**
 
    - 環境変数が正しく設定されているか確認してください
    - MCP設定ファイルの`env`フィールドを確認してください
 
-2. **「401 Unauthorized」エラー**
+3. **「401 Unauthorized」エラー**
 
    - Figma Personal Access Tokenが有効か確認してください
    - トークンに必要な権限があるか確認してください
 
-3. **「429 Too Many Requests」エラー**
+4. **「429 Too Many Requests」エラー**
+
    - APIレート制限に達しています。しばらく待ってから再試行してください
    - サーバーは自動的にリトライしますが、大量のリクエストは避けてください
+
+5. **ビルドエラー: 「pnpm-lock.yaml not found」**
+   - このプロジェクトは`npm`を使用しています
+   - `package-lock.json`が存在することを確認してください
 
 ### ログの確認
 
