@@ -29,9 +29,9 @@ FROM node:20-alpine AS production
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+# Create non-root user with high UID/GID to avoid conflicts
+RUN addgroup -g 10001 -S nodejs && \
+    adduser -S nodejs -u 10001
 
 # Set working directory
 WORKDIR /app
