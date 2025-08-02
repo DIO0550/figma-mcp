@@ -43,6 +43,7 @@ build_base_image() {
     log_info "Building base image: ${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}"
     
     if ! docker build \
+        ${docker_args} \
         -f "${PROJECT_ROOT}/docker/Dockerfile.base" \
         -t "${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}" \
         "${PROJECT_ROOT}"; then
@@ -70,6 +71,7 @@ build_mcp_server_image() {
     fi
     
     if ! docker build \
+        ${docker_args} \
         -f "${PROJECT_ROOT}/mcp-server/Dockerfile" \
         -t "${MCP_SERVER_IMAGE_NAME}:${MCP_SERVER_TAG}" \
         "${PROJECT_ROOT}"; then
@@ -90,9 +92,11 @@ show_image_sizes() {
 cleanup_images() {
     log_warning "Cleaning up Docker images..."
     
-    # 古いイメージを削除
-    docker images | grep "${BASE_IMAGE_NAME}" | grep -v "${BASE_IMAGE_TAG}" | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
-    docker images | grep "${MCP_SERVER_IMAGE_NAME}" | grep -v "${MCP_SERVER_TAG}" | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
+    # 古いイメージを削除（より安全なフィルタリング）
+    docker image ls --filter "reference=${BASE_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}} {{.ID}}" | \
+        grep -v "${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}" | awk '{print $2}' | xargs -r docker rmi -f 2>/dev/null || true
+    docker image ls --filter "reference=${MCP_SERVER_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}} {{.ID}}" | \
+        grep -v "${MCP_SERVER_IMAGE_NAME}:${MCP_SERVER_TAG}" | awk '{print $2}' | xargs -r docker rmi -f 2>/dev/null || true
     
     # ダングリングイメージを削除
     docker image prune -f
