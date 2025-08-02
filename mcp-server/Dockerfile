@@ -37,7 +37,8 @@ RUN addgroup -g 1001 -S nodejs && \
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json ./
+COPY package-lock.json ./
 
 # Install only production dependencies
 RUN npm ci --omit=dev && \
