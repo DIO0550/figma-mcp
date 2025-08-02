@@ -11,6 +11,7 @@ import { createImageTools } from './tools/image/index.js';
 import { createCommentTools } from './tools/comment/index.js';
 import { createVersionTools } from './tools/version/index.js';
 import { createConfigTools } from './tools/config/index.js';
+import { parseFigmaUrlTool, parseFigmaUrl } from './tools/parse-figma-url/index.js';
 import { Logger, LogLevel } from './utils/logger/index.js';
 
 // Args schemas for parsing
@@ -22,6 +23,7 @@ import { ExportImagesArgsSchema } from './tools/image/export-images-args.js';
 import { GetCommentsArgsSchema } from './tools/comment/get-comments-args.js';
 import { GetVersionsArgsSchema } from './tools/version/get-versions-args.js';
 import { SetConfigArgsSchema } from './tools/config/set-config-args.js';
+import { parseFigmaUrlArgsSchema } from './tools/parse-figma-url/parse-figma-url-args.js';
 
 dotenv.config();
 
@@ -53,7 +55,7 @@ if (!accessToken) {
 }
 
 // APIクライアントの作成
-const apiClient = new FigmaApiClient(accessToken, process.env.FIGMA_API_BASE_URL);
+const apiClient = new FigmaApiClient(accessToken);
 
 // ツールの作成
 const fileTools = createFileTools(apiClient);
@@ -106,6 +108,11 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         name: configTools.setConfig.name,
         description: configTools.setConfig.description,
         inputSchema: configTools.setConfig.inputSchema,
+      },
+      {
+        name: parseFigmaUrlTool.name,
+        description: parseFigmaUrlTool.description,
+        inputSchema: parseFigmaUrlTool.inputSchema,
       },
     ],
   };
@@ -214,6 +221,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // Reinitialize apiClient with new config
         apiClient.reinitialize();
 
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'parse_figma_url': {
+        const validatedArgs = parseFigmaUrlArgsSchema.parse(args);
+        const result = parseFigmaUrl(validatedArgs);
         return {
           content: [
             {
