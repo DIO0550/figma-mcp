@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import {
   setupTestEnvironment,
   teardownTestEnvironment,
@@ -6,9 +6,7 @@ import {
 } from '../helpers/setup.js';
 import { MCPTestClient } from '../helpers/mcp-client.js';
 import { join } from 'path';
-
-// モックサーバーを使用するために環境変数を設定
-vi.stubEnv('FIGMA_API_BASE_URL', 'http://localhost:3001');
+import { TestPorts } from '../../constants/index.js';
 
 describe('MCP Server Integration', () => {
   let context: TestContext;
@@ -36,7 +34,6 @@ describe('MCP Server Integration', () => {
       // 再度初期化を試みて、プロトコルバージョンが受け入れられることを確認
       const client2 = new MCPTestClient(join(process.cwd(), 'dist', 'index.js'), {
         FIGMA_ACCESS_TOKEN: 'test-token',
-        FIGMA_API_BASE_URL: 'http://localhost:3001',
       });
 
       await client2.connect();
@@ -64,7 +61,7 @@ describe('MCP Server Integration', () => {
         'export_images',
         'get_comments',
         'get_versions',
-        'set_config',
+        'parse_figma_url',
       ];
 
       expectedTools.forEach((toolName) => {
@@ -130,7 +127,7 @@ describe('MCP Server Integration', () => {
       const serverPath = join(process.cwd(), 'dist', 'index.js');
       const invalidClient = new MCPTestClient(serverPath, {
         FIGMA_ACCESS_TOKEN: 'invalid-token',
-        FIGMA_API_BASE_URL: 'http://localhost:3001',
+        FIGMA_API_BASE_URL: `http://localhost:${TestPorts.DEFAULT}`,
       });
 
       await invalidClient.connect();

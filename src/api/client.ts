@@ -6,6 +6,7 @@ import { createHeaders } from './config.js';
 import { parseRateLimitHeaders, getRetryAfter } from '../utils/rate-limit.js';
 import { createFigmaError, parseFigmaErrorResponse } from '../utils/errors.js';
 import { Logger } from '../utils/logger/index.js';
+import { HttpStatus, Limits } from '../constants/index.js';
 
 export interface HttpClient {
   get: <T>(endpoint: string, params?: URLSearchParams) => Promise<T>;
@@ -33,7 +34,7 @@ async function handleResponse<T>(response: Response, context: RequestContext): P
   if (!response.ok) {
     const errorMessage = await parseFigmaErrorResponse(response);
 
-    if (response.status === 429) {
+    if (response.status === HttpStatus.TOO_MANY_REQUESTS) {
       const retryAfter = getRetryAfter(response.headers);
       const message = retryAfter
         ? `${errorMessage} (Retry after ${retryAfter} seconds)`
@@ -64,7 +65,7 @@ export function createHttpClient(
   options: HttpClientOptions = {}
 ): HttpClient & { getContext: () => RequestContext } {
   const context: RequestContext = {};
-  const { cache, cacheKeyPrefix = '', cacheTtl = 300000 } = options; // デフォルト5分
+  const { cache, cacheKeyPrefix = '', cacheTtl = 5 * 60 * Limits.MS_TO_SECONDS } = options; // デフォルト5分
 
   const getCacheKey = (method: string, endpoint: string): string => {
     return `${cacheKeyPrefix}${method}:${endpoint}`;

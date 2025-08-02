@@ -1,15 +1,16 @@
 // レート制限処理ユーティリティ
 
 import type { RateLimitInfo } from '../types/index.js';
+import { HttpStatus, Limits, Headers } from '../constants/index.js';
 
 export function parseRateLimitHeaders(headers: Headers): RateLimitInfo | undefined {
-  const remaining = headers.get('X-RateLimit-Remaining');
-  const reset = headers.get('X-RateLimit-Reset');
+  const remaining = headers.get(Headers.RATE_LIMIT_REMAINING);
+  const reset = headers.get(Headers.RATE_LIMIT_RESET);
 
   if (remaining && reset) {
     return {
       remaining: parseInt(remaining, 10),
-      reset: new Date(parseInt(reset, 10) * 1000),
+      reset: new Date(parseInt(reset, 10) * Limits.MS_TO_SECONDS),
     };
   }
 
@@ -17,14 +18,15 @@ export function parseRateLimitHeaders(headers: Headers): RateLimitInfo | undefin
 }
 
 export function getRetryAfter(headers: Headers): number | undefined {
-  const retryAfter = headers.get('Retry-After');
+  const retryAfter = headers.get(Headers.RETRY_AFTER);
   return retryAfter ? parseInt(retryAfter, 10) : undefined;
 }
 
 export function shouldRetry(error: unknown): boolean {
   if (error instanceof Error && 'status' in error) {
     const status = (error as { status: number }).status;
-    return status === 429 || (status >= 500 && status < 600);
+    return status === HttpStatus.TOO_MANY_REQUESTS || 
+           (status >= HttpStatus.INTERNAL_SERVER_ERROR && status < 600);
   }
   return false;
 }
@@ -32,7 +34,7 @@ export function shouldRetry(error: unknown): boolean {
 export async function withRetry<T>(
   fn: () => Promise<T>,
   maxRetries: number = 3,
-  delay: number = 1000
+  delay: number = Limits.RATE_LIMIT_RETRY_DELAY
 ): Promise<T> {
   let lastError: unknown;
 

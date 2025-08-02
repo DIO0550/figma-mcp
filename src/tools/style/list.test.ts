@@ -1,6 +1,7 @@
 import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import { MockFigmaServer } from '../../__tests__/mocks/server.js';
 import { FigmaApiClient } from '../../api/figma-api-client.js';
+import { TestPorts } from '../../constants/index.js';
 
 describe('get-styles', () => {
   let mockServer: MockFigmaServer;
@@ -8,11 +9,11 @@ describe('get-styles', () => {
 
   beforeAll(async () => {
     // モックサーバーを起動
-    mockServer = new MockFigmaServer(3003);
+    mockServer = new MockFigmaServer(TestPorts.STYLE_TEST);
     await mockServer.start();
     
-    // APIクライアントを初期化
-    apiClient = new FigmaApiClient('test-token', 'http://localhost:3003');
+    // APIクライアントを初期化（baseURLを直接指定）
+    apiClient = new FigmaApiClient('test-token', `http://localhost:${TestPorts.STYLE_TEST}`);
   });
 
   afterAll(async () => {
@@ -38,7 +39,7 @@ describe('get-styles', () => {
 
   test('APIエラーを適切に処理する', async () => {
     // Arrange - 無効なトークンでクライアントを作成
-    const errorClient = new FigmaApiClient('invalid-token', 'http://localhost:3003');
+    const errorClient = new FigmaApiClient('invalid-token', `http://localhost:${TestPorts.STYLE_TEST}`);
     const fileKey = 'test-file-key';
 
     // Act & Assert

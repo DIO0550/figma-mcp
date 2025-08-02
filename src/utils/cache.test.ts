@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { createCache } from './cache.js';
+import { Limits } from '../constants/index.js';
 
 describe('Cache', () => {
   describe('基本機能', () => {
@@ -37,17 +38,17 @@ describe('Cache', () => {
     });
 
     it('TTL経過後に値が削除される', () => {
-      const cache = createCache({ defaultTtl: 1000 });
+      const cache = createCache({ defaultTtl: Limits.DEFAULT_CACHE_TTL });
 
       cache.set('key1', 'value1');
       expect(cache.get('key1')).toBe('value1');
 
-      vi.advanceTimersByTime(1001);
+      vi.advanceTimersByTime(Limits.DEFAULT_CACHE_TTL + 1);
       expect(cache.get('key1')).toBeUndefined();
     });
 
     it('個別のTTLを設定できる', () => {
-      const cache = createCache({ defaultTtl: 1000 });
+      const cache = createCache({ defaultTtl: Limits.DEFAULT_CACHE_TTL });
 
       cache.set('key1', 'value1', 500);
       cache.set('key2', 'value2'); // デフォルトTTL使用

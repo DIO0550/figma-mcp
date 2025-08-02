@@ -1,13 +1,11 @@
-import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import {
   setupTestEnvironment,
   teardownTestEnvironment,
   type TestContext,
 } from '../../helpers/setup.js';
 import type { MCPTestClient } from '../../helpers/mcp-client.js';
-
-// モックサーバーを使用するために環境変数を設定
-vi.stubEnv('FIGMA_API_BASE_URL', 'http://localhost:3001');
+import { TestData } from '../../../constants/index.js';
 
 describe('get_file Tool Integration', () => {
   let context: TestContext;
@@ -24,7 +22,7 @@ describe('get_file Tool Integration', () => {
 
   test('ファイル情報を正常に取得できる', async () => {
     const result = await client.callTool('get_file', {
-      file_key: 'test-file-key',
+      file_key: TestData.FILE_KEY,
     });
 
     expect(result).toHaveProperty('content');
@@ -41,7 +39,7 @@ describe('get_file Tool Integration', () => {
 
   test('存在しないファイルで適切なエラーが返される', async () => {
     const result = await client.callTool('get_file', {
-      file_key: 'non-existent-file',
+      file_key: TestData.NON_EXISTENT_FILE_KEY,
     });
     expect(result).toHaveProperty('isError', true);
     expect(result.content[0].text).toContain('Error');
@@ -56,7 +54,7 @@ describe('get_file Tool Integration', () => {
 
   test('versionパラメータを指定できる', async () => {
     const result = await client.callTool('get_file', {
-      file_key: 'test-file-key',
+      file_key: TestData.FILE_KEY,
       version: '1234567890',
     });
 
@@ -69,7 +67,7 @@ describe('get_file Tool Integration', () => {
 
   test('geometryパラメータを指定できる', async () => {
     const result = await client.callTool('get_file', {
-      file_key: 'test-file-key',
+      file_key: TestData.FILE_KEY,
       geometry: 'paths',
     });
 
@@ -83,7 +81,7 @@ describe('get_file Tool Integration', () => {
     const startTime = Date.now();
 
     const result = await client.callTool('get_file', {
-      file_key: 'test-file-key',
+      file_key: TestData.FILE_KEY,
     });
 
     const elapsed = Date.now() - startTime;

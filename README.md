@@ -198,13 +198,26 @@ Figmaファイルの基本情報を取得します。
 }
 ```
 
-#### `set_config`
 
-実行時に設定を変更します。
+#### `parse_figma_url`
+
+FigmaのURLを解析してファイルID、ファイル名、ノードIDを抽出し、ローカルに保存します。
 
 ```typescript
 {
-  "baseUrl": "https://api.figma.com/v1"
+  "url": "https://www.figma.com/file/ABC123xyz/My-Design-File?node-id=1234-5678"
+}
+```
+
+戻り値：
+```typescript
+{
+  "figmaInfo": {
+    "fileId": "ABC123xyz",
+    "fileName": "My-Design-File",
+    "nodeId": "1234-5678"
+  },
+  "message": "Figma URL parsed and saved successfully"
 }
 ```
 

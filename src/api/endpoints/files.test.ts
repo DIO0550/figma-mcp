@@ -2,6 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { createFilesApi } from './files';
 import type { HttpClient } from '../client';
 import type { FigmaFile, GetFileOptions } from '../../types';
+import { TestData } from '../../constants';
 
 describe('createFilesApi', () => {
   let mockHttpClient: HttpClient;
@@ -39,7 +40,7 @@ describe('createFilesApi', () => {
       vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockFile);
 
       const filesApi = createFilesApi(mockHttpClient);
-      const result = await filesApi.getFile('test-file-key');
+      const result = await filesApi.getFile(TestData.FILE_KEY);
 
       expect(mockHttpClient.get).toHaveBeenCalledWith(
         '/v1/files/test-file-key',
@@ -53,7 +54,7 @@ describe('createFilesApi', () => {
       vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockFile);
 
       const filesApi = createFilesApi(mockHttpClient);
-      await filesApi.getFile('test-file-key');
+      await filesApi.getFile(TestData.FILE_KEY);
 
       const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
       expect(calledParams?.toString()).toBe('');
@@ -88,7 +89,7 @@ describe('createFilesApi', () => {
       vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
 
       const filesApi = createFilesApi(mockHttpClient);
-      await filesApi.getFile('test-file-key', options);
+      await filesApi.getFile(TestData.FILE_KEY, options);
 
       const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
       expect(calledParams?.toString()).toBe(expectedParams);
@@ -107,7 +108,7 @@ describe('createFilesApi', () => {
       vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
 
       const filesApi = createFilesApi(mockHttpClient);
-      await filesApi.getFile('test-file-key', options);
+      await filesApi.getFile(TestData.FILE_KEY, options);
 
       const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
       const paramString = calledParams?.toString() ?? '';
@@ -124,7 +125,7 @@ describe('createFilesApi', () => {
       vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
 
       const filesApi = createFilesApi(mockHttpClient);
-      await filesApi.getFile('test-file-key', { depth: 0 });
+      await filesApi.getFile(TestData.FILE_KEY, { depth: 0 });
 
       const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
       expect(calledParams?.toString()).toBe('depth=0');
@@ -134,7 +135,7 @@ describe('createFilesApi', () => {
       vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
 
       const filesApi = createFilesApi(mockHttpClient);
-      await filesApi.getFile('test-file-key', { branch_data: false });
+      await filesApi.getFile(TestData.FILE_KEY, { branch_data: false });
 
       const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
       expect(calledParams?.toString()).toBe('branch_data=false');

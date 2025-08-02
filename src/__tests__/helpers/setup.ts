@@ -1,6 +1,7 @@
 import { MockFigmaServer } from '../mocks/server.js';
 import { MCPTestClient } from './mcp-client.js';
 import { join } from 'path';
+import { TestPorts } from '../../constants/index.js';
 
 export interface TestContext {
   mockServer: MockFigmaServer;
@@ -12,14 +13,14 @@ export { MCPTestClient } from './mcp-client.js';
 
 export async function setupTestEnvironment(): Promise<TestContext> {
   // モックサーバーを起動
-  const mockServer = new MockFigmaServer(3001);
+  const mockServer = new MockFigmaServer(TestPorts.DEFAULT);
   await mockServer.start();
 
   // MCPクライアントを作成
   const serverPath = join(process.cwd(), 'dist', 'index.js');
   const mcpClient = new MCPTestClient(serverPath, {
     FIGMA_ACCESS_TOKEN: 'test-token',
-    FIGMA_API_BASE_URL: 'http://localhost:3001',
+    FIGMA_API_BASE_URL: `http://localhost:${TestPorts.DEFAULT}`,
   });
 
   // サーバーに接続

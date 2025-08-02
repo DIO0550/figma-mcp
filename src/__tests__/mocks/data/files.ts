@@ -1,3 +1,5 @@
+import { TestData } from '../../../constants/index.js';
+
 export interface MockFileResponse {
   name: string;
   lastModified: string;
@@ -17,7 +19,7 @@ export interface MockFileResponse {
 }
 
 export const mockFileData: Record<string, MockFileResponse> = {
-  'test-file-key': {
+  [TestData.FILE_KEY]: {
     name: 'Test Design File',
     lastModified: '2024-01-01T00:00:00Z',
     editorType: 'figma',

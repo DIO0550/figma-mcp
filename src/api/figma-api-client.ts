@@ -37,9 +37,10 @@ export class FigmaApiClient {
   }
 
   public reinitialize(): void {
-    // Get runtime config, prioritizing it over constructor-provided baseUrl
+    // Get runtime config
     const runtimeConfig = getRuntimeConfig();
-    const baseUrl = runtimeConfig.baseUrl || this.defaultBaseUrl;
+    // Priority: runtime config > constructor parameter > environment variable
+    const baseUrl = runtimeConfig.baseUrl || this.defaultBaseUrl || process.env.FIGMA_API_BASE_URL;
 
     const config = createApiConfig(this.accessToken, baseUrl);
     const httpClient = createHttpClient(config);

@@ -3,6 +3,7 @@ import { createHttpClient } from './client';
 import { createApiConfig } from './config';
 import type { ApiConfig } from './config';
 import { createCache } from '../utils/cache';
+import { HttpStatus, Limits, Headers as HeaderNames, ContentType } from '../constants';
 
 // fetchのモック
 const mockFetch = vi.fn();
@@ -34,8 +35,8 @@ describe('createHttpClient', () => {
 
       expect(mockFetch).toHaveBeenCalledWith('https://api.figma.com/v1/files/test', {
         headers: {
-          'X-Figma-Token': 'test-token',
-          'Content-Type': 'application/json',
+          [HeaderNames.FIGMA_TOKEN]: 'test-token',
+          [HeaderNames.CONTENT_TYPE]: ContentType.JSON,
         },
       });
       expect(result).toEqual(mockResponse);
@@ -76,8 +77,8 @@ describe('createHttpClient', () => {
       expect(mockFetch).toHaveBeenCalledWith('https://api.figma.com/v1/files/test/comments', {
         method: 'POST',
         headers: {
-          'X-Figma-Token': 'test-token',
-          'Content-Type': 'application/json',
+          [HeaderNames.FIGMA_TOKEN]: 'test-token',
+          [HeaderNames.CONTENT_TYPE]: ContentType.JSON,
         },
         body: JSON.stringify(requestBody),
       });
@@ -89,7 +90,7 @@ describe('createHttpClient', () => {
     test('404エラーの場合は適切なエラーメッセージを含むエラーを投げる', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
-        status: 404,
+        status: HttpStatus.NOT_FOUND,
         statusText: 'Not Found',
         json: () => Promise.resolve({ err: 'File not found' }),
         headers: new Headers(),
@@ -103,27 +104,27 @@ describe('createHttpClient', () => {
     test('429エラーの場合はRetry-After情報を含むエラーを投げる', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
-        status: 429,
+        status: HttpStatus.TOO_MANY_REQUESTS,
         statusText: 'Too Many Requests',
         json: () => Promise.resolve({ err: 'Rate limit exceeded' }),
         headers: new Headers({
-          'Retry-After': '60',
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': '1704067200',
+          [HeaderNames.RETRY_AFTER]: String(Limits.DEFAULT_RETRY_AFTER_SECONDS),
+          [HeaderNames.RATE_LIMIT_REMAINING]: '0',
+          [HeaderNames.RATE_LIMIT_RESET]: '1704067200',
         }),
       });
 
       const client = createHttpClient(config);
 
       await expect(client.get('/v1/files/test')).rejects.toThrow(
-        'Rate limit exceeded (Retry after 60 seconds)'
+        `Rate limit exceeded (Retry after ${Limits.DEFAULT_RETRY_AFTER_SECONDS} seconds)`
       );
     });
 
     test('JSON解析に失敗した場合はHTTPステータスメッセージを使用する', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
-        status: 500,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
         statusText: 'Internal Server Error',
         json: () => {
           throw new Error('Invalid JSON');
@@ -133,7 +134,7 @@ describe('createHttpClient', () => {
 
       const client = createHttpClient(config);
 
-      await expect(client.get('/v1/files/test')).rejects.toThrow('HTTP 500: Internal Server Error');
+      await expect(client.get('/v1/files/test')).rejects.toThrow(`HTTP ${HttpStatus.INTERNAL_SERVER_ERROR}: Internal Server Error`);
     });
   });
 
@@ -143,8 +144,8 @@ describe('createHttpClient', () => {
         ok: true,
         json: () => Promise.resolve({ data: 'test' }),
         headers: new Headers({
-          'X-RateLimit-Remaining': '99',
-          'X-RateLimit-Reset': '1704067200',
+          [HeaderNames.RATE_LIMIT_REMAINING]: '99',
+          [HeaderNames.RATE_LIMIT_RESET]: '1704067200',
         }),
       });
 
@@ -165,8 +166,8 @@ describe('createHttpClient', () => {
         statusText: 'Too Many Requests',
         json: () => Promise.resolve({ err: 'Rate limit' }),
         headers: new Headers({
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': '1704067200',
+          [HeaderNames.RATE_LIMIT_REMAINING]: '0',
+          [HeaderNames.RATE_LIMIT_RESET]: '1704067200',
         }),
       });
 

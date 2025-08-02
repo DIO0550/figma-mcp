@@ -3,9 +3,20 @@
  * Allows dynamic configuration updates during runtime
  */
 
+export interface FigmaInfo {
+  /** Figma file ID */
+  fileId?: string;
+  /** Figma file name (optional) */
+  fileName?: string;
+  /** Figma node ID (optional) */
+  nodeId?: string;
+}
+
 export interface RuntimeConfig {
   /** Figma API base URL override */
   baseUrl?: string;
+  /** Parsed Figma information */
+  figmaInfo?: FigmaInfo;
   // Future configuration options can be added here
 }
 

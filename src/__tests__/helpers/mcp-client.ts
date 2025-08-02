@@ -1,5 +1,6 @@
 import { spawn, type ChildProcess } from 'child_process';
 import { EventEmitter } from 'events';
+import { Limits } from '../../constants/index.js';
 
 interface MCPMessage {
   jsonrpc: '2.0';
@@ -160,7 +161,7 @@ export class MCPTestClient extends EventEmitter {
           this.pendingRequests.delete(id);
           reject(new Error('Request timeout'));
         }
-      }, 5000);
+      }, Limits.DEFAULT_REQUEST_TIMEOUT);
     });
   }
 

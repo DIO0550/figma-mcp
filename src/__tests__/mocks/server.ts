@@ -8,12 +8,13 @@ import { styleHandlers } from './handlers/styles.js';
 import { imageHandlers } from './handlers/images.js';
 import { commentHandlers } from './handlers/comments.js';
 import { versionHandlers } from './handlers/versions.js';
+import { HttpStatus, TestPorts, ErrorMessages, Headers as HeaderNames } from '../../constants/index.js';
 
 export class MockFigmaServer {
   private app: Express;
   private server: Server | null = null;
 
-  constructor(private port: number = 3001) {
+  constructor(private port: number = TestPorts.FIGMA_API_MOCK) {
     this.app = express();
     this.setupMiddleware();
     this.setupRoutes();
@@ -24,18 +25,18 @@ export class MockFigmaServer {
 
     // 認証チェックミドルウェア
     this.app.use((req: Request, res: Response, next) => {
-      const token = req.headers['x-figma-token'];
+      const token = req.headers[HeaderNames.FIGMA_TOKEN.toLowerCase()];
       if (!token) {
-        res.status(401).json({
-          error: 'Unauthorized',
-          message: 'Missing authentication token',
+        res.status(HttpStatus.UNAUTHORIZED).json({
+          error: ErrorMessages.UNAUTHORIZED,
+          message: ErrorMessages.MISSING_TOKEN,
         });
         return;
       }
       if (token === 'invalid-token') {
-        res.status(401).json({
-          error: 'Unauthorized',
-          message: 'Invalid authentication token',
+        res.status(HttpStatus.UNAUTHORIZED).json({
+          error: ErrorMessages.UNAUTHORIZED,
+          message: ErrorMessages.INVALID_TOKEN,
         });
         return;
       }
@@ -67,8 +68,8 @@ export class MockFigmaServer {
 
     // 404 ハンドラー
     this.app.use((req: Request, res: Response) => {
-      res.status(404).json({
-        error: 'Not Found',
+      res.status(HttpStatus.NOT_FOUND).json({
+        error: ErrorMessages.NOT_FOUND,
         message: `Route ${req.path} not found`,
       });
     });
@@ -76,8 +77,8 @@ export class MockFigmaServer {
     // エラーハンドラー
     this.app.use((err: Error, _req: Request, res: Response, _next: express.NextFunction) => {
       console.error('[MockFigmaServer] Error:', err);
-      res.status(500).json({
-        error: 'Internal Server Error',
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: ErrorMessages.INTERNAL_SERVER_ERROR,
         message: err.message,
       });
     });
