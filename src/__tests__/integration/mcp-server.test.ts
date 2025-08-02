@@ -61,7 +61,7 @@ describe('MCP Server Integration', () => {
         'export_images',
         'get_comments',
         'get_versions',
-        'set_config',
+        'parse_figma_url',
       ];
 
       expectedTools.forEach((toolName) => {
