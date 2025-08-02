@@ -1,13 +1,11 @@
-import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import {
   setupTestEnvironment,
   teardownTestEnvironment,
   type TestContext,
 } from '../../helpers/setup.js';
 import type { MCPTestClient } from '../../helpers/mcp-client.js';
-
-// モックサーバーを使用するために環境変数を設定
-vi.stubEnv('FIGMA_API_BASE_URL', 'http://localhost:3001');
+import { TestData } from '../../../constants/index.js';
 
 describe('get_components Tool Integration', () => {
   let context: TestContext;
@@ -24,7 +22,7 @@ describe('get_components Tool Integration', () => {
 
   test('コンポーネント一覧を正常に取得できる', async () => {
     const result = await client.callTool('get_components', {
-      fileKey: 'test-file-key',
+      fileKey: TestData.FILE_KEY,
     });
 
     expect(result).toHaveProperty('content');
@@ -43,12 +41,12 @@ describe('get_components Tool Integration', () => {
     expect(component).toHaveProperty('key');
     expect(component).toHaveProperty('name', 'Button Component');
     expect(component).toHaveProperty('description');
-    expect(component).toHaveProperty('fileKey', 'test-file-key');
+    expect(component).toHaveProperty('fileKey', TestData.FILE_KEY);
   });
 
   test('空のコンポーネントリストが正常に処理される', async () => {
     const result = await client.callTool('get_components', {
-      fileKey: 'empty-file-key',
+      fileKey: TestData.EMPTY_FILE_KEY,
     });
 
     expect(result).toHaveProperty('content');

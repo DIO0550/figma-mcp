@@ -1,13 +1,11 @@
-import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import {
   setupTestEnvironment,
   teardownTestEnvironment,
   type TestContext,
 } from '../../helpers/setup.js';
 import type { MCPTestClient } from '../../helpers/mcp-client.js';
-
-// モックサーバーを使用するために環境変数を設定
-vi.stubEnv('FIGMA_API_BASE_URL', 'http://localhost:3001');
+import { TestData } from '../../../constants/index.js';
 
 describe('export_images Tool Integration', () => {
   let context: TestContext;
@@ -24,7 +22,7 @@ describe('export_images Tool Integration', () => {
 
   test('画像を正常にエクスポートできる', async () => {
     const result = await client.callTool('export_images', {
-      fileKey: 'test-file-key',
+      fileKey: TestData.FILE_KEY,
       ids: ['2:3'],
     });
 
@@ -42,7 +40,7 @@ describe('export_images Tool Integration', () => {
 
   test('複数のノードを一度にエクスポートできる', async () => {
     const result = await client.callTool('export_images', {
-      fileKey: 'test-file-key',
+      fileKey: TestData.FILE_KEY,
       ids: ['2:3', '2:4', '2:5'],
     });
 
@@ -55,7 +53,7 @@ describe('export_images Tool Integration', () => {
 
   test('フォーマットを指定できる', async () => {
     const result = await client.callTool('export_images', {
-      fileKey: 'test-file-key',
+      fileKey: TestData.FILE_KEY,
       ids: ['2:3'],
       format: 'svg',
     });
@@ -66,7 +64,7 @@ describe('export_images Tool Integration', () => {
 
   test('スケールを指定できる', async () => {
     const result = await client.callTool('export_images', {
-      fileKey: 'test-file-key',
+      fileKey: TestData.FILE_KEY,
       ids: ['2:3'],
       scale: 2,
     });
@@ -79,7 +77,7 @@ describe('export_images Tool Integration', () => {
 
   test('必須パラメータが不足している場合エラーが返される', async () => {
     const result = await client.callTool('export_images', {
-      fileKey: 'test-file-key',
+      fileKey: TestData.FILE_KEY,
       // idsが不足
     });
     expect(result).toHaveProperty('isError', true);
