@@ -16,6 +16,9 @@ readonly MCP_SERVER_IMAGE_NAME="figma-mcp-server"
 readonly BASE_IMAGE_TAG="${BASE_IMAGE_TAG:-latest}"
 readonly MCP_SERVER_TAG="${MCP_SERVER_TAG:-latest}"
 
+# グローバル変数
+docker_args=""
+
 # ログ関数
 log_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
@@ -95,10 +98,10 @@ cleanup_images() {
     log_warning "Cleaning up Docker images..."
     
     # 古いイメージを削除（awkベースの安全なフィルタリング）
-    docker image ls --filter "reference=${BASE_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}} {{.ID}}" | \
-        awk -v exclude="${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}" '$1 != exclude {print $2}' | xargs -r docker rmi -f 2>/dev/null || true
-    docker image ls --filter "reference=${MCP_SERVER_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}} {{.ID}}" | \
-        awk -v exclude="${MCP_SERVER_IMAGE_NAME}:${MCP_SERVER_TAG}" '$1 != exclude {print $2}' | xargs -r docker rmi -f 2>/dev/null || true
+    docker image ls --filter "reference=${BASE_IMAGE_NAME}:*" --format "{{.Repository}}\t{{.Tag}}\t{{.ID}}" | \
+        awk -v repo="${BASE_IMAGE_NAME}" -v tag="${BASE_IMAGE_TAG}" '$1 != repo || $2 != tag {print $3}' | xargs -r docker rmi -f 2>/dev/null || true
+    docker image ls --filter "reference=${MCP_SERVER_IMAGE_NAME}:*" --format "{{.Repository}}\t{{.Tag}}\t{{.ID}}" | \
+        awk -v repo="${MCP_SERVER_IMAGE_NAME}" -v tag="${MCP_SERVER_TAG}" '$1 != repo || $2 != tag {print $3}' | xargs -r docker rmi -f 2>/dev/null || true
     
     # ダングリングイメージを削除
     docker image prune -f

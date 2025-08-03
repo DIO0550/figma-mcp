@@ -29,7 +29,8 @@ FROM node:20-alpine AS production
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
 
-# Create non-root user with high UID/GID to avoid conflicts
+# Create non-root user with UID/GID 10001 (sufficiently high to avoid system user conflicts)
+# Alternative: Use nobody user (UID/GID 65534) if preferred for your security policy
 RUN addgroup -g 10001 -S nodejs && \
     adduser -S nodejs -u 10001
 
