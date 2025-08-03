@@ -16,9 +16,6 @@ readonly MCP_SERVER_IMAGE_NAME="figma-mcp-server"
 readonly BASE_IMAGE_TAG="${BASE_IMAGE_TAG:-latest}"
 readonly MCP_SERVER_TAG="${MCP_SERVER_TAG:-latest}"
 
-# グローバル変数
-docker_args=""
-
 # ログ関数
 log_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
@@ -43,10 +40,11 @@ check_docker() {
 
 # ベースイメージをビルド
 build_base_image() {
+    local build_args="${1:-}"
     log_info "Building base image: ${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}"
     
     if ! docker build \
-        ${docker_args} \
+        ${build_args} \
         -f "${PROJECT_ROOT}/docker/Dockerfile.base" \
         -t "${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}" \
         "${PROJECT_ROOT}"; then
@@ -59,6 +57,7 @@ build_base_image() {
 
 # MCP Serverイメージをビルド
 build_mcp_server_image() {
+    local build_args="${1:-}"
     log_info "Building MCP Server image: ${MCP_SERVER_IMAGE_NAME}:${MCP_SERVER_TAG}"
     
     # package.jsonが存在するか確認
@@ -74,7 +73,7 @@ build_mcp_server_image() {
     fi
     
     if ! docker build \
-        ${docker_args} \
+        ${build_args} \
         -f "${PROJECT_ROOT}/mcp-server/Dockerfile" \
         -t "${MCP_SERVER_IMAGE_NAME}:${MCP_SERVER_TAG}" \
         "${PROJECT_ROOT}"; then
@@ -97,11 +96,17 @@ show_image_sizes() {
 cleanup_images() {
     log_warning "Cleaning up Docker images..."
     
-    # 古いイメージを削除（awkベースの安全なフィルタリング）
-    docker image ls --filter "reference=${BASE_IMAGE_NAME}:*" --format "{{.Repository}}\t{{.Tag}}\t{{.ID}}" | \
-        awk -v repo="${BASE_IMAGE_NAME}" -v tag="${BASE_IMAGE_TAG}" '$1 != repo || $2 != tag {print $3}' | xargs -r docker rmi -f 2>/dev/null || true
-    docker image ls --filter "reference=${MCP_SERVER_IMAGE_NAME}:*" --format "{{.Repository}}\t{{.Tag}}\t{{.ID}}" | \
-        awk -v repo="${MCP_SERVER_IMAGE_NAME}" -v tag="${MCP_SERVER_TAG}" '$1 != repo || $2 != tag {print $3}' | xargs -r docker rmi -f 2>/dev/null || true
+    # 現在のタグを除いて、同じリポジトリの古いイメージを削除
+    # 注: --filter "before=" は作成時刻ベースのため、タグベースのフィルタリングにはawkを使用
+    local base_images=$(docker images --filter "reference=${BASE_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}}" | grep -v "^${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}$" || true)
+    if [[ -n "${base_images}" ]]; then
+        echo "${base_images}" | xargs -r docker rmi -f 2>/dev/null || true
+    fi
+    
+    local server_images=$(docker images --filter "reference=${MCP_SERVER_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}}" | grep -v "^${MCP_SERVER_IMAGE_NAME}:${MCP_SERVER_TAG}$" || true)
+    if [[ -n "${server_images}" ]]; then
+        echo "${server_images}" | xargs -r docker rmi -f 2>/dev/null || true
+    fi
     
     # ダングリングイメージを削除
     docker image prune -f
@@ -188,16 +193,16 @@ main() {
     
     # ビルド実行
     if [[ "${build_base}" == "true" ]]; then
-        build_base_image
+        build_base_image "${docker_args}"
     fi
     
     if [[ "${build_server}" == "true" ]]; then
         # ベースイメージが存在するかチェック
-        if ! docker images --format "{{.Repository}}:{{.Tag}}" | grep -q "^${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}$"; then
+        if ! docker image inspect "${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}" >/dev/null 2>&1; then
             log_error "Base image not found. Building base image first..."
-            build_base_image
+            build_base_image "${docker_args}"
         fi
-        build_mcp_server_image
+        build_mcp_server_image "${docker_args}"
     fi
     
     # イメージサイズを表示
