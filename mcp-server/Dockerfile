@@ -1,5 +1,7 @@
 # Dockerfile for Figma MCP Server
-# Build from common base image
+# Multi-stage build for optimal image size
+
+# Stage 1: Build stage
 FROM figma-mcp-base:latest AS builder
 
 # Switch back to root for dependency installation
@@ -10,36 +12,54 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY pnpm-lock.yaml* ./
 
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
+# Install all dependencies (including dev dependencies for build)
+RUN npm install
 
 # Copy source code
 COPY tsconfig*.json ./
 COPY src ./src
 
 # Build the application
-RUN pnpm build
+RUN npm run build
 
-# Remove devDependencies and build files
-RUN pnpm prune --prod && \
-    rm -rf src tsconfig*.json
+# Stage 2: Production stage
+FROM node:20-alpine AS production
 
-# Create production user without sudo
-RUN useradd -r -s /bin/false -d /app mcpserver
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
 
-# Change ownership
-RUN chown -R mcpserver:mcpserver /app
+# Create non-root user with UID/GID 10001 to avoid system user conflicts
+RUN addgroup -g 10001 -S nodejs && \
+    adduser -S nodejs -u 10001
 
-# Switch to production user
-USER mcpserver
+# Set working directory
+WORKDIR /app
+
+# Copy package files (optimized: single layer)
+COPY package*.json ./
+
+# Change ownership to nodejs user before npm ci
+RUN chown -R nodejs:nodejs /app
+
+# Switch to non-root user before installing dependencies
+USER nodejs
+
+# Install only production dependencies
+RUN npm ci --omit=dev && \
+    npm cache clean --force
+
+# Copy built application from builder stage
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 
 # Expose MCP server port
 EXPOSE 8765
 
 # Set production environment
 ENV NODE_ENV=production
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
 
 # Run the MCP server
 CMD ["node", "dist/index.js"]
