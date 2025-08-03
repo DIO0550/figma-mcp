@@ -92,21 +92,26 @@ show_image_sizes() {
     docker images --filter "reference=${MCP_SERVER_IMAGE_NAME}:*" --format "{{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}"
 }
 
+# 特定のイメージを除外して削除
+cleanup_specific_images() {
+    local image_name="$1"
+    local current_tag="$2"
+    
+    local images_to_remove=$(docker images --filter "reference=${image_name}:*" --format "{{.Repository}}:{{.Tag}}" | grep -v "^${image_name}:${current_tag}$" || true)
+    if [[ -n "${images_to_remove}" ]]; then
+        echo "${images_to_remove}" | xargs -r docker rmi -f 2>/dev/null || true
+    fi
+}
+
 # クリーンアップオプション
 cleanup_images() {
     log_warning "Cleaning up Docker images..."
     
-    # 現在のタグを除いて、同じリポジトリの古いイメージを削除
-    # 注: --filter "before=" は作成時刻ベースのため、タグベースのフィルタリングにはawkを使用
-    local base_images=$(docker images --filter "reference=${BASE_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}}" | grep -v "^${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}$" || true)
-    if [[ -n "${base_images}" ]]; then
-        echo "${base_images}" | xargs -r docker rmi -f 2>/dev/null || true
-    fi
+    # ベースイメージのクリーンアップ
+    cleanup_specific_images "${BASE_IMAGE_NAME}" "${BASE_IMAGE_TAG}"
     
-    local server_images=$(docker images --filter "reference=${MCP_SERVER_IMAGE_NAME}:*" --format "{{.Repository}}:{{.Tag}}" | grep -v "^${MCP_SERVER_IMAGE_NAME}:${MCP_SERVER_TAG}$" || true)
-    if [[ -n "${server_images}" ]]; then
-        echo "${server_images}" | xargs -r docker rmi -f 2>/dev/null || true
-    fi
+    # サーバーイメージのクリーンアップ
+    cleanup_specific_images "${MCP_SERVER_IMAGE_NAME}" "${MCP_SERVER_TAG}"
     
     # ダングリングイメージを削除
     docker image prune -f
