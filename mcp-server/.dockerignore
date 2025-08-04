@@ -1,0 +1,78 @@
+# MCPサーバー専用の.dockerignore
+# 本番環境に不要なファイルを除外
+
+# Node modules (ビルドステージで再インストール)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs (ビルドステージで再生成)
+dist/
+*.tsbuildinfo
+
+# Environment files (秘密情報)
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (本番環境に不要)
+*.md
+README*
+LICENSE*
+doc/
+docs/
+
+# Development files
+.devcontainer/
+.github/
+.eslintrc*
+.prettierrc*
+vitest.config.ts
+tsconfig.test.json
+tsconfig.eslint.json
+
+# Test files (本番環境に不要)
+src/__tests__/
+src/**/*.test.ts
+src/**/*.spec.ts
+coverage/
+.nyc_output/
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+docker/
+mcp-server/
+
+# Scripts (本番環境に不要)
+scripts/
+
+# Misc
+.npm/
+.cache/
+tmp/
+temp/
+
+# Examples and samples
+examples/
+samples/
+*.example
+
+# Source maps (必要に応じて)
+*.map
