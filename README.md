@@ -32,18 +32,13 @@ cd figma-mcp
 # Dockerイメージのビルド（ビルドスクリプトを使用）
 ./scripts/docker-build.sh
 
-# または個別にビルド
-# ベースイメージのビルド
-docker build -f docker/Dockerfile.base -t figma-mcp-base:latest .
-
-# MCPサーバーイメージのビルド
+# またはDockerコマンドで直接ビルド
 docker build -f mcp-server/Dockerfile -t figma-mcp-server:latest .
 ```
 
 ビルドが成功すると、以下のイメージが作成されます：
 
-- `figma-mcp-base:latest` - 開発環境用ベースイメージ
-- `figma-mcp-server:latest` - 本番用MCPサーバーイメージ
+- `figma-mcp-server:latest` - 本番用MCPサーバーイメージ（ソースコードのビルドも含む）
 
 ## 設定
 
@@ -263,19 +258,11 @@ npm test
 
 #### Docker開発環境
 
-```bash
-# 開発用環境での実行（ソースコードをマウント）
-docker run --rm -it \
-  -e FIGMA_ACCESS_TOKEN \
-  -v $(pwd):/app \
-  -w /app \
-  figma-mcp-base:latest \
-  npm run dev
+開発にはVS CodeのDev Containerを使用することを推奨します。`.devcontainer/`ディレクトリに設定ファイルが含まれています。
 
+```bash
 # ビルドスクリプトのオプション
 ./scripts/docker-build.sh --help     # ヘルプを表示
-./scripts/docker-build.sh -b          # ベースイメージのみビルド
-./scripts/docker-build.sh -s          # サーバーイメージのみビルド
 ./scripts/docker-build.sh --clean     # ビルド後に古いイメージをクリーンアップ
 ./scripts/docker-build.sh --no-cache  # キャッシュを使わずにビルド
 ```
@@ -284,9 +271,8 @@ docker run --rm -it \
 
 ```
 .
-├── docker/                 # Docker関連ファイル
-│   ├── Dockerfile.base    # ベースイメージの定義
-│   └── README.md          # Docker環境の説明
+├── .devcontainer/         # VS Code Dev Container設定
+│   └── Dockerfile         # 開発環境用Dockerfile
 ├── mcp-server/            # MCPサーバー専用Docker
 │   ├── Dockerfile         # 本番用マルチステージビルド
 │   └── README.md
