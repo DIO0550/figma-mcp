@@ -8,11 +8,47 @@ RUN git clone https://github.com/github/github-mcp-server.git /tmp/github-mcp-se
 FROM rust:latest AS similarity-builder
 RUN cargo install similarity-ts
 
-# Main stage - Use the common base image
-FROM figma-mcp-base:latest AS development
+# Base stage for development environment
+FROM ubuntu:24.04 AS development
 
-# Switch back to root for additional installations
-USER root
+# Set environment to avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Set locale for Japanese support
+ENV LANG=ja_JP.UTF-8
+ENV LANGUAGE=ja_JP:ja
+ENV LC_ALL=ja_JP.UTF-8
+
+# Install essential packages and Japanese language support
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    jq \
+    build-essential \
+    ca-certificates \
+    gnupg \
+    sudo \
+    locales \
+    language-pack-ja \
+    fonts-noto-cjk \
+    && locale-gen ja_JP.UTF-8 \
+    && update-locale LANG=ja_JP.UTF-8 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 20.x
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create node user with sudo privileges (for development)
+RUN useradd -ms /bin/bash node \
+    && usermod -aG sudo node \
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Set up basic git configuration
+RUN git config --global init.defaultBranch main
+
 
 # Install additional packages for development
 RUN apt-get update && apt-get install -y \
