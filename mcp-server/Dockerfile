@@ -38,6 +38,12 @@ WORKDIR /app
 # Copy package files (optimized for production)
 COPY --chown=nodejs:nodejs package*.json ./
 
+# Create node_modules directory with proper ownership
+RUN mkdir -p node_modules && chown -R nodejs:nodejs /app
+
+# Create necessary directories (before switching to non-root user)
+RUN mkdir -p /app/logs && chown -R nodejs:nodejs /app/logs
+
 # Switch to non-root user before installing dependencies
 USER nodejs
 
@@ -49,9 +55,6 @@ RUN npm ci --omit=dev && \
 
 # Copy only the built application from builder stage
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-
-# Create necessary directories
-RUN mkdir -p /app/logs && chown -R nodejs:nodejs /app/logs
 
 # Expose MCP server port
 EXPOSE 8765
