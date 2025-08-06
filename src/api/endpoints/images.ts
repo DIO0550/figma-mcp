@@ -2,17 +2,18 @@
 
 import type { HttpClient } from '../client.js';
 import type { ExportImageResponse } from '../../types/index.js';
-import type { ExportImageOptionsSnake } from '../../types/api/options/image-options.js';
+import type { ExportImageOptions } from '../../types/api/options/image-options.js';
+import type { DeepSnakeCase } from '../../utils/type-transformers.js';
 
 export interface ImagesApi {
-  exportImages: (fileKey: string, options: ExportImageOptionsSnake) => Promise<ExportImageResponse>;
+  exportImages: (fileKey: string, options: DeepSnakeCase<ExportImageOptions>) => Promise<ExportImageResponse>;
 }
 
 export function createImagesApi(client: HttpClient): ImagesApi {
   return {
     exportImages: async (
       fileKey: string,
-      options: ExportImageOptionsSnake
+      options: DeepSnakeCase<ExportImageOptions>
     ): Promise<ExportImageResponse> => {
       const params = new URLSearchParams();
 

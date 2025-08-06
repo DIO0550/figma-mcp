@@ -78,11 +78,11 @@ describe('createFilesApi', () => {
         expectedParams: 'geometry=paths',
       },
       {
-        options: { plugin_data: 'test-plugin' },
+        options: { pluginData: 'test-plugin' },
         expectedParams: 'plugin_data=test-plugin',
       },
       {
-        options: { branch_data: true },
+        options: { branchData: true },
         expectedParams: 'branch_data=true',
       },
     ])('オプション$optionsを正しくパラメータ化する', async ({ options, expectedParams }) => {
@@ -101,8 +101,8 @@ describe('createFilesApi', () => {
         ids: ['1:1', '2:2'],
         depth: 2,
         geometry: 'points',
-        plugin_data: 'my-plugin',
-        branch_data: false,
+        pluginData: 'my-plugin',
+        branchData: false,
       };
 
       vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
@@ -131,11 +131,11 @@ describe('createFilesApi', () => {
       expect(calledParams?.toString()).toBe('depth=0');
     });
 
-    test('branch_dataがfalseの場合も正しくパラメータ化される', async () => {
+    test('branchDataがfalseの場合も正しくパラメータ化される', async () => {
       vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
 
       const filesApi = createFilesApi(mockHttpClient);
-      await filesApi.getFile(TestData.FILE_KEY, { branch_data: false });
+      await filesApi.getFile(TestData.FILE_KEY, { branchData: false });
 
       const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
       expect(calledParams?.toString()).toBe('branch_data=false');

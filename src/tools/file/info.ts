@@ -14,9 +14,9 @@ export function createGetFileTool(
     inputSchema: JsonSchema.from(GetFileArgsSchema),
     execute: async (args: GetFileArgs): Promise<FileResponse> => {
       const options: GetFileOptions = {
-        branch_data: args.branch_data,
+        branchData: args.branch_data,
         version: args.version,
-        plugin_data: args.plugin_data,
+        pluginData: args.plugin_data,
       };
 
       // Remove undefined values
