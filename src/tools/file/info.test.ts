@@ -86,7 +86,7 @@ describe('info tool', () => {
     });
 
     expect(filesApi.getFile).toHaveBeenCalledWith('test-file-key', {
-      branch_data: true,
+      branchData: true,
     });
   });
 
