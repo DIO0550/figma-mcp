@@ -2,15 +2,16 @@
 
 import type { HttpClient } from '../client.js';
 import type { GetNodesResponse } from '../../types/index.js';
-import type { GetNodesOptionsSnake } from '../../types/api/options/node-options.js';
+import type { GetNodesOptions } from '../../types/api/options/node-options.js';
+import type { DeepSnakeCase } from '../../utils/type-transformers.js';
 
 export interface NodesApi {
-  getNodes: (fileKey: string, options: GetNodesOptionsSnake) => Promise<GetNodesResponse>;
+  getNodes: (fileKey: string, options: DeepSnakeCase<GetNodesOptions>) => Promise<GetNodesResponse>;
 }
 
 export function createNodesApi(client: HttpClient): NodesApi {
   return {
-    getNodes: async (fileKey: string, options: GetNodesOptionsSnake): Promise<GetNodesResponse> => {
+    getNodes: async (fileKey: string, options: DeepSnakeCase<GetNodesOptions>): Promise<GetNodesResponse> => {
       const params = new URLSearchParams();
 
       params.append('ids', options.ids.join(','));

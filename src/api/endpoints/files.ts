@@ -22,9 +22,9 @@ export function createFilesApi(client: HttpClient): FilesApi {
         if (options.ids) params.append('ids', options.ids.join(','));
         if (options.depth !== undefined) params.append('depth', options.depth.toString());
         if (options.geometry) params.append('geometry', options.geometry);
-        if (options.plugin_data) params.append('plugin_data', options.plugin_data);
-        if (options.branch_data !== undefined)
-          params.append('branch_data', options.branch_data.toString());
+        if (options.pluginData) params.append('plugin_data', options.pluginData);
+        if (options.branchData !== undefined)
+          params.append('branch_data', options.branchData.toString());
       }
 
       return client.get<FigmaFile>(`/v1/files/${fileKey}`, params);
@@ -42,9 +42,9 @@ export function createFilesApi(client: HttpClient): FilesApi {
         if (options.version) params.append('version', options.version);
         if (options.depth !== undefined) params.append('depth', options.depth.toString());
         if (options.geometry) params.append('geometry', options.geometry);
-        if (options.plugin_data) params.append('plugin_data', options.plugin_data);
-        if (options.branch_data !== undefined)
-          params.append('branch_data', options.branch_data.toString());
+        if (options.pluginData) params.append('plugin_data', options.pluginData);
+        if (options.branchData !== undefined)
+          params.append('branch_data', options.branchData.toString());
       }
 
       return client.get<GetFileNodesResponse>(`/v1/files/${fileKey}/nodes`, params);
