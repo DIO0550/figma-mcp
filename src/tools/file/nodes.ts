@@ -16,9 +16,9 @@ export function createGetFileNodesTool(
       const options: GetFileOptions = {
         depth: args.depth,
         geometry: args.geometry,
-        branch_data: args.branch_data,
+        branchData: args.branch_data,
         version: args.version,
-        plugin_data: args.plugin_data,
+        pluginData: args.plugin_data,
       };
 
       // Remove undefined values
