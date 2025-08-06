@@ -67,8 +67,6 @@ export class FigmaApiClient {
   }
 
   async exportImages(fileKey: string, options: ExportImageOptions): Promise<ExportImageResponse> {
-    // optionsは既にExportImageOptions (DeepCamelCase<ExportImageOptionsSnake>)型
-    // convertKeysToSnakeCaseでスネークケースに戻す
     const snakeOptions = convertKeysToSnakeCase(options);
     const response = await this.images.exportImages(fileKey, snakeOptions);
     return convertKeysToCamelCase(response);
