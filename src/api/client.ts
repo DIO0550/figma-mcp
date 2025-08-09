@@ -1,5 +1,3 @@
-// HTTP通信の基本関数
-
 import type { ApiConfig } from './config.js';
 import type { RateLimitInfo } from '../types/index.js';
 import { createHeaders } from './config.js';
@@ -28,7 +26,6 @@ export interface HttpClientOptions {
 }
 
 async function handleResponse<T>(response: Response, context: RequestContext): Promise<T> {
-  // レート制限情報を更新
   context.rateLimitInfo = parseRateLimitHeaders(response.headers);
 
   if (!response.ok) {
@@ -65,7 +62,7 @@ export function createHttpClient(
   options: HttpClientOptions = {}
 ): HttpClient & { getContext: () => RequestContext } {
   const context: RequestContext = {};
-  const { cache, cacheKeyPrefix = '', cacheTtl = 5 * 60 * Limits.MS_TO_SECONDS } = options; // デフォルト5分
+  const { cache, cacheKeyPrefix = '', cacheTtl = 5 * 60 * Limits.MS_TO_SECONDS } = options;
 
   const getCacheKey = (method: string, endpoint: string): string => {
     return `${cacheKeyPrefix}${method}:${endpoint}`;
@@ -102,11 +99,9 @@ export function createHttpClient(
       const queryString = params?.toString();
       const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
 
-      // キャッシュが有効な場合
       if (cache) {
         const cacheKey = getCacheKey('GET', fullEndpoint);
 
-        // キャッシュから取得を試みる
         const cachedValue = cache.get(cacheKey);
         if (cachedValue !== undefined) {
           Logger.debug('Cache hit', { endpoint: fullEndpoint, cacheKey });
@@ -115,22 +110,18 @@ export function createHttpClient(
 
         Logger.debug('Cache miss', { endpoint: fullEndpoint, cacheKey });
 
-        // キャッシュになければリクエスト
         const result = await request<T>(fullEndpoint);
 
-        // 成功した結果のみキャッシュ
         cache.set(cacheKey, result, cacheTtl);
         Logger.debug('Cached response', { endpoint: fullEndpoint, cacheKey, ttl: cacheTtl });
 
         return result;
       }
 
-      // キャッシュなしの場合は通常のリクエスト
       return request<T>(fullEndpoint);
     },
 
     post: async <T>(endpoint: string, body: unknown): Promise<T> => {
-      // POSTリクエストはキャッシュしない
       return request<T>(endpoint, {
         method: 'POST',
         body: JSON.stringify(body),
