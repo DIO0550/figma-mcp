@@ -48,7 +48,6 @@ export async function withRetry<T>(
         throw error;
       }
 
-      // エクスポネンシャルバックオフ
       await new Promise((resolve) => setTimeout(resolve, delay * Math.pow(2, i)));
     }
   }

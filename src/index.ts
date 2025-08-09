@@ -13,7 +13,6 @@ import { createVersionTools } from './tools/version/index.js';
 import { parseFigmaUrlTool, parseFigmaUrl } from './tools/parse-figma-url/index.js';
 import { Logger, LogLevel } from './utils/logger/index.js';
 
-// Args schemas for parsing
 import { GetFileArgsSchema } from './tools/file/get-file-args.js';
 import { GetFileNodesArgsSchema } from './tools/file/get-file-nodes-args.js';
 import { GetComponentsArgsSchema } from './tools/component/get-components-args.js';
@@ -25,7 +24,6 @@ import { parseFigmaUrlArgsSchema } from './tools/parse-figma-url/parse-figma-url
 
 dotenv.config();
 
-// MCPサーバーの設定
 const server = new Server(
   {
     name: 'figma-mcp',

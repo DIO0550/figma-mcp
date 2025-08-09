@@ -106,15 +106,3 @@ export class MockFigmaServer {
     });
   }
 }
-
-// CLIから直接実行する場合はコメントアウト
-// if (import.meta.url === `file://${process.argv[1]}`) {
-//   const server = new MockFigmaServer();
-//   server.start().catch(console.error);
-//
-//   // グレースフルシャットダウン
-//   process.on('SIGINT', async () => {
-//     await server.stop();
-//     process.exit(0);
-//   });
-// }
