@@ -17,68 +17,84 @@ import type { GetCommentsResponse } from '../types/api/responses/comment-respons
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
 import type { ExportImageOptions } from '../types/api/options/image-options.js';
 
-export class FigmaApiClient {
-  public files!: FilesApi;
-  public nodes!: ReturnType<typeof createNodesApi>;
-  public components!: ReturnType<typeof createComponentsApi>;
-  public styles!: ReturnType<typeof createStylesApi>;
-  public images!: ReturnType<typeof createImagesApi>;
-  public comments!: ReturnType<typeof createCommentsApi>;
-  public versions!: ReturnType<typeof createVersionsApi>;
-  public teams!: ReturnType<typeof createTeamsApi>;
+interface FigmaApiClientInterface {
+  files: FilesApi;
+  nodes: ReturnType<typeof createNodesApi>;
+  components: ReturnType<typeof createComponentsApi>;
+  styles: ReturnType<typeof createStylesApi>;
+  images: ReturnType<typeof createImagesApi>;
+  comments: ReturnType<typeof createCommentsApi>;
+  versions: ReturnType<typeof createVersionsApi>;
+  teams: ReturnType<typeof createTeamsApi>;
+  reinitialize(): void;
+  getComponents(fileKey: string): Promise<GetComponentsResponse>;
+  getStyles(fileKey: string): Promise<GetStylesResponse>;
+  exportImages(fileKey: string, options: ExportImageOptions): Promise<ExportImageResponse>;
+  getComments(fileKey: string): Promise<GetCommentsResponse>;
+  getVersions(fileKey: string): Promise<GetVersionsResponse>;
+}
 
-  private accessToken: string;
-  private defaultBaseUrl?: string;
+export function createFigmaApiClient(accessToken: string, baseUrl?: string): FigmaApiClientInterface {
+  let files: FilesApi;
+  let nodes: ReturnType<typeof createNodesApi>;
+  let components: ReturnType<typeof createComponentsApi>;
+  let styles: ReturnType<typeof createStylesApi>;
+  let images: ReturnType<typeof createImagesApi>;
+  let comments: ReturnType<typeof createCommentsApi>;
+  let versions: ReturnType<typeof createVersionsApi>;
+  let teams: ReturnType<typeof createTeamsApi>;
 
-  constructor(accessToken: string, baseUrl?: string) {
-    this.accessToken = accessToken;
-    this.defaultBaseUrl = baseUrl;
-    this.reinitialize();
-  }
-
-  public reinitialize(): void {
-    // Get runtime config
+  const reinitialize = (): void => {
     const runtimeConfig = getRuntimeConfig();
-    // Priority: runtime config > constructor parameter > environment variable
-    const baseUrl = runtimeConfig.baseUrl || this.defaultBaseUrl || process.env.FIGMA_API_BASE_URL;
+    const effectiveBaseUrl = runtimeConfig.baseUrl || baseUrl || process.env.FIGMA_API_BASE_URL;
 
-    const config = createApiConfig(this.accessToken, baseUrl);
+    const config = createApiConfig(accessToken, effectiveBaseUrl);
     const httpClient = createHttpClient(config);
 
-    this.files = createFilesApi(httpClient);
-    this.nodes = createNodesApi(httpClient);
-    this.components = createComponentsApi(httpClient);
-    this.styles = createStylesApi(httpClient);
-    this.images = createImagesApi(httpClient);
-    this.comments = createCommentsApi(httpClient);
-    this.versions = createVersionsApi(httpClient);
-    this.teams = createTeamsApi(httpClient);
-  }
+    files = createFilesApi(httpClient);
+    nodes = createNodesApi(httpClient);
+    components = createComponentsApi(httpClient);
+    styles = createStylesApi(httpClient);
+    images = createImagesApi(httpClient);
+    comments = createCommentsApi(httpClient);
+    versions = createVersionsApi(httpClient);
+    teams = createTeamsApi(httpClient);
+  };
 
-  // ツール互換性のためのエイリアスメソッド
-  async getComponents(fileKey: string): Promise<GetComponentsResponse> {
-    const response = await this.components.getComponents(fileKey);
-    return convertKeysToCamelCase(response);
-  }
+  reinitialize();
 
-  async getStyles(fileKey: string): Promise<GetStylesResponse> {
-    const response = await this.styles.getStyles(fileKey);
-    return convertKeysToCamelCase(response);
-  }
-
-  async exportImages(fileKey: string, options: ExportImageOptions): Promise<ExportImageResponse> {
-    const snakeOptions = convertKeysToSnakeCase(options);
-    const response = await this.images.exportImages(fileKey, snakeOptions);
-    return convertKeysToCamelCase(response);
-  }
-
-  async getComments(fileKey: string): Promise<GetCommentsResponse> {
-    const response = await this.comments.getComments(fileKey);
-    return convertKeysToCamelCase(response);
-  }
-
-  async getVersions(fileKey: string): Promise<GetVersionsResponse> {
-    const response = await this.versions.getVersions(fileKey);
-    return convertKeysToCamelCase(response);
-  }
+  return {
+    get files(): FilesApi { return files; },
+    get nodes(): ReturnType<typeof createNodesApi> { return nodes; },
+    get components(): ReturnType<typeof createComponentsApi> { return components; },
+    get styles(): ReturnType<typeof createStylesApi> { return styles; },
+    get images(): ReturnType<typeof createImagesApi> { return images; },
+    get comments(): ReturnType<typeof createCommentsApi> { return comments; },
+    get versions(): ReturnType<typeof createVersionsApi> { return versions; },
+    get teams(): ReturnType<typeof createTeamsApi> { return teams; },
+    reinitialize,
+    async getComponents(fileKey: string): Promise<GetComponentsResponse> {
+      const response = await components.getComponents(fileKey);
+      return convertKeysToCamelCase(response);
+    },
+    async getStyles(fileKey: string): Promise<GetStylesResponse> {
+      const response = await styles.getStyles(fileKey);
+      return convertKeysToCamelCase(response);
+    },
+    async exportImages(fileKey: string, options: ExportImageOptions): Promise<ExportImageResponse> {
+      const snakeOptions = convertKeysToSnakeCase(options);
+      const response = await images.exportImages(fileKey, snakeOptions);
+      return convertKeysToCamelCase(response);
+    },
+    async getComments(fileKey: string): Promise<GetCommentsResponse> {
+      const response = await comments.getComments(fileKey);
+      return convertKeysToCamelCase(response);
+    },
+    async getVersions(fileKey: string): Promise<GetVersionsResponse> {
+      const response = await versions.getVersions(fileKey);
+      return convertKeysToCamelCase(response);
+    }
+  };
 }
+
+export type FigmaApiClient = FigmaApiClientInterface;

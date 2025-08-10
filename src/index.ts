@@ -3,7 +3,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import dotenv from 'dotenv';
 
-import { FigmaApiClient } from './api/figma-api-client.js';
+import { createFigmaApiClient } from './api/figma-api-client.js';
 import { createFileTools } from './tools/file/index.js';
 import { createComponentTools } from './tools/component/index.js';
 import { createStyleTools } from './tools/style/index.js';
@@ -51,7 +51,7 @@ if (!accessToken) {
 }
 
 // APIクライアントの作成
-const apiClient = new FigmaApiClient(accessToken);
+const apiClient = createFigmaApiClient(accessToken);
 
 // ツールの作成
 const fileTools = createFileTools(apiClient);
