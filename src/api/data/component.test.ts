@@ -2,6 +2,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ComponentData } from './component.js';
 import type { FigmaContext } from '../context.js';
 import type { GetComponentsResponse } from '../../types/api/responses/component-responses.js';
+import type { Component } from '../../types/figma-types.js';
 
 describe('ComponentData', () => {
   const mockContext: FigmaContext = {
@@ -51,7 +52,7 @@ describe('ComponentData', () => {
                 backgroundColor: '#F0F0F0',
                 pageName: 'Design System',
               },
-            } as any,
+            } as unknown as Component,
           ],
         },
       };
@@ -81,7 +82,7 @@ describe('ComponentData', () => {
                 backgroundColor: '',
                 pageName: 'Page 1',
               },
-            } as any,
+            } as unknown as Component,
             {
               key: 'comp-2',
               file_key: 'file-1',
@@ -94,7 +95,7 @@ describe('ComponentData', () => {
                 backgroundColor: '',
                 pageName: 'Page 2',
               },
-            } as any,
+            } as unknown as Component,
           ],
         },
       };
@@ -140,7 +141,7 @@ describe('ComponentData', () => {
                 backgroundColor: '#000000',
                 pageName: 'Test Page',
               },
-            } as any,
+            } as unknown as Component,
           ],
         },
       };
