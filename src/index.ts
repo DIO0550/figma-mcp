@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 import { createFigmaApiClient } from './api/figma-api-client.js';
 import { createFileTools } from './tools/file/index.js';
-import { createComponentTools } from './tools/component/index.js';
+import { GetComponentsTool, GetComponentsToolDefinition } from './tools/component/index.js';
 import { createStyleTools } from './tools/style/index.js';
 import { createImageTools } from './tools/image/index.js';
 import { GetCommentsTool, GetCommentsToolDefinition } from './tools/comment/index.js';
@@ -55,7 +55,7 @@ const apiClient = createFigmaApiClient(accessToken);
 
 // ツールの作成
 const fileTools = createFileTools(apiClient);
-const componentTools = createComponentTools(apiClient);
+const componentTool = GetComponentsTool.from(apiClient);
 const styleTools = createStyleTools(apiClient);
 const imageTools = createImageTools(apiClient);
 const commentTool = GetCommentsTool.from(apiClient);
@@ -75,9 +75,9 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         inputSchema: fileTools.getFileNodes.inputSchema,
       },
       {
-        name: componentTools.getComponents.name,
-        description: componentTools.getComponents.description,
-        inputSchema: componentTools.getComponents.inputSchema,
+        name: GetComponentsToolDefinition.name,
+        description: GetComponentsToolDefinition.description,
+        inputSchema: GetComponentsToolDefinition.inputSchema,
       },
       {
         name: styleTools.getStyles.name,
@@ -141,7 +141,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_components': {
         const validatedArgs = GetComponentsArgsSchema.parse(args);
-        const result = await componentTools.getComponents.execute(validatedArgs);
+        const result = await GetComponentsTool.execute(componentTool, validatedArgs);
         return {
           content: [
             {

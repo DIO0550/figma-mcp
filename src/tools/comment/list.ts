@@ -1,6 +1,6 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetCommentsResponse } from '../../types/api/responses/comment-responses.js';
-import { Comment } from '../../models/comment.js';
+import { Comment } from '../../models/comment/index.js';
 import { GetCommentsArgsSchema, type GetCommentsArgs } from './get-comments-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
 
