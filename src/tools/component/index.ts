@@ -1,13 +1,3 @@
-import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import { createGetComponentsTool } from './list.js';
-import type { ComponentTool } from './types.js';
-
-interface ComponentTools {
-  getComponents: ComponentTool;
-}
-
-export const createComponentTools = (apiClient: FigmaApiClient): ComponentTools => {
-  return {
-    getComponents: createGetComponentsTool(apiClient),
-  };
-};
+// 再エクスポート
+export { GetComponentsTool, GetComponentsToolDefinition } from './list.js';
+export type { GetComponentsArgs } from './get-components-args.js';

@@ -1,4 +1,4 @@
-import type { FigmaUser, Vector } from '../types/figma-types.js';
+import type { FigmaUser, Vector } from '../../types/figma-types.js';
 
 export interface Comment {
   readonly id: string;
