@@ -1,20 +1,16 @@
+import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { VersionTool } from './types.js';
 import type { GetVersionsResponse } from '../../types/api/responses/version-responses.js';
 import { GetVersionsArgsSchema, type GetVersionsArgs } from './get-versions-args.js';
 import { JsonSchema } from '../types.js';
 
-// 必要な最小限のインターフェース
-interface ApiClientWithVersions {
-  getVersions(fileKey: string): Promise<GetVersionsResponse>;
-}
-
-export const createGetVersionsTool = (apiClient: ApiClientWithVersions): VersionTool => {
+export const createGetVersionsTool = (apiClient: FigmaApiClient): VersionTool => {
   return {
     name: 'get_versions',
     description: 'Get version history of a Figma file with optional details',
     inputSchema: JsonSchema.from(GetVersionsArgsSchema),
     execute: async (args: GetVersionsArgs): Promise<GetVersionsResponse> => {
-      const response = await apiClient.getVersions(args.fileKey);
+      const response = await FigmaApiClient.getVersions(apiClient, args.fileKey);
 
       // includeDetailsが指定されている場合、詳細情報を含む
       // 実際のFigma APIはこの情報を直接提供しないので、

@@ -1,5 +1,5 @@
 import { createApiConfig } from './config.js';
-import { createHttpClient } from './client.js';
+import { createHttpClient, type HttpClient } from './client.js';
 import { createFilesApi, type FilesApi } from './endpoints/files.js';
 import { createNodesApi } from './endpoints/nodes.js';
 import { createComponentsApi } from './endpoints/components.js';
@@ -8,6 +8,7 @@ import { createImagesApi } from './endpoints/images.js';
 import { createCommentsApi } from './endpoints/comments.js';
 import { createVersionsApi } from './endpoints/versions.js';
 import { createTeamsApi } from './endpoints/teams.js';
+import { FigmaContext } from './context.js';
 import { getRuntimeConfig } from '../config/runtime-config.js';
 import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter.js';
 import type { GetComponentsResponse } from '../types/api/responses/component-responses.js';
@@ -17,84 +18,164 @@ import type { GetCommentsResponse } from '../types/api/responses/comment-respons
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
 import type { ExportImageOptions } from '../types/api/options/image-options.js';
 
-interface FigmaApiClientInterface {
-  files: FilesApi;
-  nodes: ReturnType<typeof createNodesApi>;
-  components: ReturnType<typeof createComponentsApi>;
-  styles: ReturnType<typeof createStylesApi>;
-  images: ReturnType<typeof createImagesApi>;
-  comments: ReturnType<typeof createCommentsApi>;
-  versions: ReturnType<typeof createVersionsApi>;
-  teams: ReturnType<typeof createTeamsApi>;
-  reinitialize(): void;
-  getComponents(fileKey: string): Promise<GetComponentsResponse>;
-  getStyles(fileKey: string): Promise<GetStylesResponse>;
-  exportImages(fileKey: string, options: ExportImageOptions): Promise<ExportImageResponse>;
-  getComments(fileKey: string): Promise<GetCommentsResponse>;
-  getVersions(fileKey: string): Promise<GetVersionsResponse>;
+/**
+ * FigmaApiClientのデータ構造
+ * 全てのAPIエンドポイントとコンテキスト情報を含む
+ */
+export interface FigmaApiClient {
+  /** Figma Context */
+  readonly context: FigmaContext;
+  /** HTTP Client */
+  readonly httpClient: HttpClient;
+  /** Files API endpoint */
+  readonly files: FilesApi;
+  /** Nodes API endpoint */
+  readonly nodes: ReturnType<typeof createNodesApi>;
+  /** Components API endpoint */
+  readonly components: ReturnType<typeof createComponentsApi>;
+  /** Styles API endpoint */
+  readonly styles: ReturnType<typeof createStylesApi>;
+  /** Images API endpoint */
+  readonly images: ReturnType<typeof createImagesApi>;
+  /** Comments API endpoint */
+  readonly comments: ReturnType<typeof createCommentsApi>;
+  /** Versions API endpoint */
+  readonly versions: ReturnType<typeof createVersionsApi>;
+  /** Teams API endpoint */
+  readonly teams: ReturnType<typeof createTeamsApi>;
 }
 
-export function createFigmaApiClient(accessToken: string, baseUrl?: string): FigmaApiClientInterface {
-  let files: FilesApi;
-  let nodes: ReturnType<typeof createNodesApi>;
-  let components: ReturnType<typeof createComponentsApi>;
-  let styles: ReturnType<typeof createStylesApi>;
-  let images: ReturnType<typeof createImagesApi>;
-  let comments: ReturnType<typeof createCommentsApi>;
-  let versions: ReturnType<typeof createVersionsApi>;
-  let teams: ReturnType<typeof createTeamsApi>;
-
-  const reinitialize = (): void => {
+/**
+ * FigmaApiClientのコンパニオンオブジェクト
+ * APIクライアントの作成と操作のための純粋関数を提供
+ */
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace FigmaApiClient {
+  /**
+   * アクセストークンから新しいFigmaApiClientを作成
+   */
+  export function create(accessToken: string, baseUrl?: string): FigmaApiClient {
     const runtimeConfig = getRuntimeConfig();
     const effectiveBaseUrl = runtimeConfig.baseUrl || baseUrl || process.env.FIGMA_API_BASE_URL;
-
+    
     const config = createApiConfig(accessToken, effectiveBaseUrl);
     const httpClient = createHttpClient(config);
+    const context = FigmaContext.from(accessToken, { baseUrl: effectiveBaseUrl });
+    
+    return {
+      context,
+      httpClient,
+      files: createFilesApi(httpClient),
+      nodes: createNodesApi(httpClient),
+      components: createComponentsApi(httpClient),
+      styles: createStylesApi(httpClient),
+      images: createImagesApi(httpClient),
+      comments: createCommentsApi(httpClient),
+      versions: createVersionsApi(httpClient),
+      teams: createTeamsApi(httpClient),
+    };
+  }
 
-    files = createFilesApi(httpClient);
-    nodes = createNodesApi(httpClient);
-    components = createComponentsApi(httpClient);
-    styles = createStylesApi(httpClient);
-    images = createImagesApi(httpClient);
-    comments = createCommentsApi(httpClient);
-    versions = createVersionsApi(httpClient);
-    teams = createTeamsApi(httpClient);
-  };
+  /**
+   * FigmaContextから新しいFigmaApiClientを作成
+   */
+  export function fromContext(context: FigmaContext): FigmaApiClient {
+    const config = createApiConfig(context.accessToken, context.baseUrl);
+    const httpClient = createHttpClient(config);
+    
+    return {
+      context,
+      httpClient,
+      files: createFilesApi(httpClient),
+      nodes: createNodesApi(httpClient),
+      components: createComponentsApi(httpClient),
+      styles: createStylesApi(httpClient),
+      images: createImagesApi(httpClient),
+      comments: createCommentsApi(httpClient),
+      versions: createVersionsApi(httpClient),
+      teams: createTeamsApi(httpClient),
+    };
+  }
 
-  reinitialize();
+  /**
+   * 環境変数から新しいFigmaApiClientを作成
+   */
+  export function fromEnv(): FigmaApiClient {
+    const context = FigmaContext.fromEnv();
+    return fromContext(context);
+  }
 
-  return {
-    get files(): FilesApi { return files; },
-    get nodes(): ReturnType<typeof createNodesApi> { return nodes; },
-    get components(): ReturnType<typeof createComponentsApi> { return components; },
-    get styles(): ReturnType<typeof createStylesApi> { return styles; },
-    get images(): ReturnType<typeof createImagesApi> { return images; },
-    get comments(): ReturnType<typeof createCommentsApi> { return comments; },
-    get versions(): ReturnType<typeof createVersionsApi> { return versions; },
-    get teams(): ReturnType<typeof createTeamsApi> { return teams; },
-    reinitialize,
-    async getComponents(fileKey: string): Promise<GetComponentsResponse> {
-      const response = await components.getComponents(fileKey);
-      return convertKeysToCamelCase(response);
-    },
-    async getStyles(fileKey: string): Promise<GetStylesResponse> {
-      const response = await styles.getStyles(fileKey);
-      return convertKeysToCamelCase(response);
-    },
-    async exportImages(fileKey: string, options: ExportImageOptions): Promise<ExportImageResponse> {
-      const snakeOptions = convertKeysToSnakeCase(options);
-      const response = await images.exportImages(fileKey, snakeOptions);
-      return convertKeysToCamelCase(response);
-    },
-    async getComments(fileKey: string): Promise<GetCommentsResponse> {
-      const response = await comments.getComments(fileKey);
-      return convertKeysToCamelCase(response);
-    },
-    async getVersions(fileKey: string): Promise<GetVersionsResponse> {
-      const response = await versions.getVersions(fileKey);
-      return convertKeysToCamelCase(response);
-    }
-  };
+  /**
+   * カスタムヘッダーを追加した新しいクライアントを作成
+   */
+  export function withHeaders(
+    client: FigmaApiClient,
+    headers: Record<string, string>
+  ): FigmaApiClient {
+    const newContext = FigmaContext.withHeaders(client.context, headers);
+    return fromContext(newContext);
+  }
+
+  /**
+   * コンポーネント一覧を取得（キャメルケース変換付き）
+   */
+  export async function getComponents(
+    client: FigmaApiClient,
+    fileKey: string
+  ): Promise<GetComponentsResponse> {
+    const response = await client.components.getComponents(fileKey);
+    return convertKeysToCamelCase(response);
+  }
+
+  /**
+   * スタイル一覧を取得（キャメルケース変換付き）
+   */
+  export async function getStyles(
+    client: FigmaApiClient,
+    fileKey: string
+  ): Promise<GetStylesResponse> {
+    const response = await client.styles.getStyles(fileKey);
+    return convertKeysToCamelCase(response);
+  }
+
+  /**
+   * 画像をエクスポート（キャメルケース変換付き）
+   */
+  export async function exportImages(
+    client: FigmaApiClient,
+    fileKey: string,
+    options: ExportImageOptions
+  ): Promise<ExportImageResponse> {
+    const snakeOptions = convertKeysToSnakeCase(options);
+    const response = await client.images.exportImages(fileKey, snakeOptions);
+    return convertKeysToCamelCase(response);
+  }
+
+  /**
+   * コメント一覧を取得（キャメルケース変換付き）
+   */
+  export async function getComments(
+    client: FigmaApiClient,
+    fileKey: string
+  ): Promise<GetCommentsResponse> {
+    const response = await client.comments.getComments(fileKey);
+    return convertKeysToCamelCase(response);
+  }
+
+  /**
+   * バージョン一覧を取得（キャメルケース変換付き）
+   */
+  export async function getVersions(
+    client: FigmaApiClient,
+    fileKey: string
+  ): Promise<GetVersionsResponse> {
+    const response = await client.versions.getVersions(fileKey);
+    return convertKeysToCamelCase(response);
+  }
 }
 
-export type FigmaApiClient = FigmaApiClientInterface;
+/**
+ * 新しいFigmaApiClientを作成する
+ * @deprecated Use FigmaApiClient.create() instead
+ */
+export const createFigmaApiClient = FigmaApiClient.create;

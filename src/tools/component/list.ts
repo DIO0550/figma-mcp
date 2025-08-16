@@ -1,4 +1,4 @@
-import type { FigmaApiClient } from '../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { ComponentTool } from './types.js';
 import type {
   GetComponentsResponse,
@@ -15,7 +15,7 @@ export const createGetComponentsTool = (apiClient: FigmaApiClient): ComponentToo
     description: 'Get components from a Figma file with optional metadata analysis',
     inputSchema: JsonSchema.from(GetComponentsArgsSchema),
     execute: async (args: GetComponentsArgs): Promise<GetComponentsResponse> => {
-      const response = await apiClient.getComponents(args.fileKey);
+      const response = await FigmaApiClient.getComponents(apiClient, args.fileKey);
       const result = { ...response };
 
       if (args.analyzeMetadata && response.meta.components.length > 0) {

@@ -8,7 +8,7 @@ import { createFileTools } from './tools/file/index.js';
 import { createComponentTools } from './tools/component/index.js';
 import { createStyleTools } from './tools/style/index.js';
 import { createImageTools } from './tools/image/index.js';
-import { createCommentTools } from './tools/comment/index.js';
+import { GetCommentsTool, GetCommentsToolDefinition } from './tools/comment/index.js';
 import { createVersionTools } from './tools/version/index.js';
 import { parseFigmaUrlTool, parseFigmaUrl } from './tools/parse-figma-url/index.js';
 import { Logger, LogLevel } from './utils/logger/index.js';
@@ -58,7 +58,7 @@ const fileTools = createFileTools(apiClient);
 const componentTools = createComponentTools(apiClient);
 const styleTools = createStyleTools(apiClient);
 const imageTools = createImageTools(apiClient);
-const commentTools = createCommentTools(apiClient);
+const commentTool = GetCommentsTool.from(apiClient);
 const versionTools = createVersionTools(apiClient);
 
 server.setRequestHandler(ListToolsRequestSchema, () => {
@@ -90,9 +90,9 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         inputSchema: imageTools.exportImages.inputSchema,
       },
       {
-        name: commentTools.getComments.name,
-        description: commentTools.getComments.description,
-        inputSchema: commentTools.getComments.inputSchema,
+        name: GetCommentsToolDefinition.name,
+        description: GetCommentsToolDefinition.description,
+        inputSchema: GetCommentsToolDefinition.inputSchema,
       },
       {
         name: versionTools.getVersions.name,
@@ -180,7 +180,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_comments': {
         const validatedArgs = GetCommentsArgsSchema.parse(args);
-        const result = await commentTools.getComments.execute(validatedArgs);
+        const result = await GetCommentsTool.execute(commentTool, validatedArgs);
         return {
           content: [
             {

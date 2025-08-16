@@ -6,12 +6,7 @@ interface VersionTools {
   getVersions: VersionTool;
 }
 
-// VersionTools作成に必要な最小限のインターフェース
-export interface VersionApiClient {
-  getVersions: FigmaApiClient['getVersions'];
-}
-
-export const createVersionTools = (apiClient: VersionApiClient): VersionTools => {
+export const createVersionTools = (apiClient: FigmaApiClient): VersionTools => {
   return {
     getVersions: createGetVersionsTool(apiClient),
   };
