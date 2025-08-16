@@ -87,7 +87,7 @@ describe('export-images', () => {
     // Assert
     expect(result).toBeDefined();
     expect(result.images).toBeDefined();
-    expect(result.images['1:2']).toContain('@3x');
+    expect(result.images['1:2']).toContain('scale=3');
   });
 
   test('複数のパラメータを組み合わせてエクスポートできる', async () => {
