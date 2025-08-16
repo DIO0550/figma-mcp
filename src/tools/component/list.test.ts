@@ -1,10 +1,12 @@
 import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import { FigmaApiClient } from '../../api/figma-api-client.js';
 import { MockFigmaServer } from '../../__tests__/mocks/server.js';
+import { GetComponentsTool } from './list.js';
 
 describe('get-components', () => {
   let mockServer: MockFigmaServer;
   let apiClient: FigmaApiClient;
+  let tool: GetComponentsTool;
 
   beforeAll(async () => {
     // モックサーバーを起動
@@ -13,6 +15,9 @@ describe('get-components', () => {
     
     // 実際のAPIクライアントを作成（モックサーバーに接続）
     apiClient = FigmaApiClient.create('test-token', 'http://localhost:3005');
+    
+    // ツールインスタンスを作成
+    tool = GetComponentsTool.from(apiClient);
   });
 
   afterAll(async () => {
@@ -24,9 +29,7 @@ describe('get-components', () => {
     const fileKey = 'test-file-key';
 
     // Act
-    const { createComponentTools } = await import('./index.js');
-    const tools = createComponentTools(apiClient);
-    const result = await tools.getComponents.execute({ fileKey });
+    const result = await GetComponentsTool.execute(tool, { fileKey });
 
     // Assert
     expect(result).toBeDefined();
@@ -46,9 +49,7 @@ describe('get-components', () => {
     const fileKey = 'empty-file-key';
 
     // Act
-    const { createComponentTools } = await import('./index.js');
-    const tools = createComponentTools(apiClient);
-    const result = await tools.getComponents.execute({ fileKey });
+    const result = await GetComponentsTool.execute(tool, { fileKey });
 
     // Assert
     expect(result).toBeDefined();
@@ -63,9 +64,7 @@ describe('get-components', () => {
     const fileKey = 'test-file-key';
 
     // Act
-    const { createComponentTools } = await import('./index.js');
-    const tools = createComponentTools(apiClient);
-    const result = await tools.getComponents.execute({
+    const result = await GetComponentsTool.execute(tool, {
       fileKey,
       analyzeMetadata: true,
     });
@@ -87,9 +86,7 @@ describe('get-components', () => {
     const fileKey = 'test-file-key';
 
     // Act
-    const { createComponentTools } = await import('./index.js');
-    const tools = createComponentTools(apiClient);
-    const result = await tools.getComponents.execute({
+    const result = await GetComponentsTool.execute(tool, {
       fileKey,
       organizeVariants: true,
     });
@@ -115,9 +112,7 @@ describe('get-components', () => {
     const fileKey = 'test-file-key';
 
     // Act
-    const { createComponentTools } = await import('./index.js');
-    const tools = createComponentTools(apiClient);
-    const result = await tools.getComponents.execute({
+    const result = await GetComponentsTool.execute(tool, {
       fileKey,
       analyzeMetadata: true,
       organizeVariants: true,
@@ -136,9 +131,6 @@ describe('get-components', () => {
     const fileKey = 'non-existent-file';
 
     // Act & Assert
-    const { createComponentTools } = await import('./index.js');
-    const tools = createComponentTools(apiClient);
-    
-    await expect(tools.getComponents.execute({ fileKey })).rejects.toThrow();
+    await expect(GetComponentsTool.execute(tool, { fileKey })).rejects.toThrow();
   });
 });
