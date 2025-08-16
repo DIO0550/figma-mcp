@@ -160,28 +160,6 @@ export interface FigmaUser {
   email: string;
 }
 
-export interface Comment {
-  id: string;
-  fileKey: string;
-  parentId?: string;
-  user: FigmaUser;
-  createdAt: string;
-  resolvedAt?: string;
-  message: string;
-  clientMeta: {
-    nodeId?: string[];
-    nodeOffset?: Vector;
-    [key: string]: unknown;
-  };
-  orderId: string;
-  reactions?: Reaction[];
-}
-
-export interface Reaction {
-  user: FigmaUser;
-  createdAt: string;
-  emoji: string;
-}
 
 export interface Version {
   id: string;

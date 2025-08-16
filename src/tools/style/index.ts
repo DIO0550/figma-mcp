@@ -6,12 +6,7 @@ interface StyleTools {
   getStyles: StyleTool;
 }
 
-// StyleTools作成に必要な最小限のインターフェース
-export interface StyleApiClient {
-  getStyles: FigmaApiClient['getStyles'];
-}
-
-export const createStyleTools = (apiClient: StyleApiClient): StyleTools => {
+export const createStyleTools = (apiClient: FigmaApiClient): StyleTools => {
   return {
     getStyles: createGetStylesTool(apiClient),
   };

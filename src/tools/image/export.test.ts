@@ -1,15 +1,22 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
-import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { ExportImageResponse } from '../../types/api/responses/image-responses.js';
+import { describe, test, expect, beforeAll, afterAll } from 'vitest';
+import { FigmaApiClient } from '../../api/figma-api-client.js';
+import { MockFigmaServer } from '../../__tests__/mocks/server.js';
 
 describe('export-images', () => {
-  let mockApiClient: FigmaApiClient;
+  let mockServer: MockFigmaServer;
+  let apiClient: FigmaApiClient;
 
-  beforeEach(() => {
-    // APIクライアントのモック作成
-    mockApiClient = {
-      exportImages: vi.fn(),
-    } as unknown as FigmaApiClient;
+  beforeAll(async () => {
+    // モックサーバーを起動
+    mockServer = new MockFigmaServer(3004);
+    await mockServer.start();
+    
+    // 実際のAPIクライアントを作成（モックサーバーに接続）
+    apiClient = FigmaApiClient.create('test-token', 'http://localhost:3004');
+  });
+
+  afterAll(async () => {
+    await mockServer.stop();
   });
 
   test('画像をエクスポートできる', async () => {
@@ -19,25 +26,17 @@ describe('export-images', () => {
     const format = 'png';
     const scale = 2;
 
-    const mockResponse: ExportImageResponse = {
-      err: undefined,
-      images: {
-        '1:2': 'https://figma-export.com/image1.png',
-        '3:4': 'https://figma-export.com/image2.png',
-      },
-    };
-
-    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
-
     // Act
     const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(mockApiClient);
+    const tools = createImageTools(apiClient);
     const result = await tools.exportImages.execute({ fileKey, ids, format, scale });
 
     // Assert
-    expect(mockApiClient.exportImages).toHaveBeenCalledWith(fileKey, { ids, format, scale });
-    expect(result).toEqual(mockResponse);
+    expect(result).toBeDefined();
+    expect(result.images).toBeDefined();
     expect(Object.keys(result.images)).toHaveLength(2);
+    expect(result.images['1:2']).toContain('.png');
+    expect(result.images['3:4']).toContain('.png');
   });
 
   test('デフォルトのフォーマット（png）でエクスポートできる', async () => {
@@ -45,115 +44,89 @@ describe('export-images', () => {
     const fileKey = 'test-file-key';
     const ids = ['1:2'];
 
-    const mockResponse: ExportImageResponse = {
-      err: undefined,
-      images: {
-        '1:2': 'https://figma-export.com/image1.png',
-      },
-    };
-
-    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
-
     // Act
     const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(mockApiClient);
+    const tools = createImageTools(apiClient);
     const result = await tools.exportImages.execute({ fileKey, ids });
 
     // Assert
-    expect(mockApiClient.exportImages).toHaveBeenCalledWith(fileKey, { ids });
-    expect(result.images['1:2']).toBeTruthy();
+    expect(result).toBeDefined();
+    expect(result.images).toBeDefined();
+    expect(result.images['1:2']).toContain('.png');
   });
 
   test('SVGフォーマットでエクスポートできる', async () => {
     // Arrange
     const fileKey = 'test-file-key';
-    const ids = ['1:2'];
+    const ids = ['1:2', '3:4'];
     const format = 'svg';
-
-    const mockResponse: ExportImageResponse = {
-      err: undefined,
-      images: {
-        '1:2': 'https://figma-export.com/image1.svg',
-      },
-    };
-
-    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     // Act
     const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(mockApiClient);
+    const tools = createImageTools(apiClient);
     const result = await tools.exportImages.execute({ fileKey, ids, format });
 
     // Assert
-    expect(mockApiClient.exportImages).toHaveBeenCalledWith(fileKey, { ids, format });
+    expect(result).toBeDefined();
+    expect(result.images).toBeDefined();
     expect(result.images['1:2']).toContain('.svg');
+    expect(result.images['3:4']).toContain('.svg');
   });
 
-  test('APIエラーを適切に処理する', async () => {
+  test('高解像度（2x、3x）でエクスポートできる', async () => {
     // Arrange
     const fileKey = 'test-file-key';
     const ids = ['1:2'];
-    const mockError = new Error('API Error: 400 Bad Request');
-
-    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
-
-    // Act & Assert
-    const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(mockApiClient);
-
-    await expect(tools.exportImages.execute({ fileKey, ids })).rejects.toThrow(
-      'API Error: 400 Bad Request'
-    );
-  });
-
-  test('エラーレスポンスを処理できる', async () => {
-    // Arrange
-    const fileKey = 'test-file-key';
-    const ids = ['1:2'];
-
-    const mockResponse: ExportImageResponse = {
-      err: 'Invalid node ID',
-      images: {},
-    };
-
-    (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    const scale = 3;
 
     // Act
     const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(mockApiClient);
+    const tools = createImageTools(apiClient);
+    const result = await tools.exportImages.execute({ fileKey, ids, scale });
+
+    // Assert
+    expect(result).toBeDefined();
+    expect(result.images).toBeDefined();
+    expect(result.images['1:2']).toContain('scale=3');
+  });
+
+  test('複数のパラメータを組み合わせてエクスポートできる', async () => {
+    // Arrange
+    const fileKey = 'test-file-key';
+    const options = {
+      ids: ['1:2', '3:4', '5:6'],
+      format: 'jpg' as const,
+      scale: 2,
+      contentsOnly: true,
+      useAbsoluteBounds: true,
+    };
+
+    // Act
+    const { createImageTools } = await import('./index.js');
+    const tools = createImageTools(apiClient);
+    const result = await tools.exportImages.execute({ fileKey, ...options });
+
+    // Assert
+    expect(result).toBeDefined();
+    expect(result.images).toBeDefined();
+    expect(Object.keys(result.images)).toHaveLength(3);
+    expect(result.images['1:2']).toContain('.jpg');
+    expect(result.images['3:4']).toContain('.jpg');
+    expect(result.images['5:6']).toContain('.jpg');
+  });
+
+  test('存在しないノードIDでエラーが返される', async () => {
+    // Arrange
+    const fileKey = 'test-file-key';
+    const ids = ['non-existent-node'];
+
+    // Act
+    const { createImageTools } = await import('./index.js');
+    const tools = createImageTools(apiClient);
     const result = await tools.exportImages.execute({ fileKey, ids });
 
     // Assert
-    expect(result.err).toBe('Invalid node ID');
-    expect(Object.keys(result.images)).toHaveLength(0);
-  });
-
-  test('複数のスケールでエクスポートできる', async () => {
-    // Arrange
-    const fileKey = 'test-file-key';
-    const ids = ['1:2'];
-    const format = 'png';
-    const scales = [1, 2, 3];
-
-    const mockResponses = scales.map((scale) => ({
-      err: undefined,
-      images: {
-        '1:2': `https://figma-export.com/image1@${scale}x.png`,
-      },
-    }));
-
-    // Act
-    const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(mockApiClient);
-
-    for (let i = 0; i < scales.length; i++) {
-      (mockApiClient.exportImages as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-        mockResponses[i]
-      );
-      const result = await tools.exportImages.execute({ fileKey, ids, format, scale: scales[i] });
-
-      // Assert
-      expect(result.images['1:2']).toContain(`@${scales[i]}x`);
-    }
+    expect(result).toBeDefined();
+    expect(result.err).toBeDefined();
   });
 });

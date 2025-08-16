@@ -1,3 +1,4 @@
+import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { StyleTool } from './types.js';
 import type {
   GetStylesResponse,
@@ -7,18 +8,13 @@ import type { Style } from '../../types/figma-types.js';
 import { GetStylesArgsSchema, type GetStylesArgs } from './get-styles-args.js';
 import { JsonSchema } from '../types.js';
 
-// 必要な最小限のインターフェース
-interface ApiClientWithStyles {
-  getStyles(fileKey: string): Promise<GetStylesResponse>;
-}
-
-export const createGetStylesTool = (apiClient: ApiClientWithStyles): StyleTool => {
+export const createGetStylesTool = (apiClient: FigmaApiClient): StyleTool => {
   return {
     name: 'get_styles',
     description: 'Get styles from a Figma file with optional categorization',
     inputSchema: JsonSchema.from(GetStylesArgsSchema),
     execute: async (args: GetStylesArgs): Promise<GetStylesResponse> => {
-      const response = await apiClient.getStyles(args.fileKey);
+      const response = await FigmaApiClient.getStyles(apiClient, args.fileKey);
 
       if (args.categorize && response.meta.styles.length > 0) {
         const { categorized, statistics } = categorizeStyles(response.meta.styles);

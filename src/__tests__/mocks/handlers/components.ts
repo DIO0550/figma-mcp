@@ -4,6 +4,26 @@ export const componentHandlers = {
   getComponents: (req: Request, res: Response): void => {
     const { fileKey } = req.params;
 
+    // 空のコンポーネントリストを返すケース
+    if (fileKey === 'empty-file-key') {
+      res.json({
+        meta: {
+          components: [],
+        },
+      });
+      return;
+    }
+
+    // 存在しないファイルのケース
+    if (fileKey === 'non-existent-file') {
+      res.status(404).json({
+        error: true,
+        message: 'File not found',
+      });
+      return;
+    }
+
+    // デフォルトのレスポンス
     const mockResponse = {
       meta: {
         components: [

@@ -1,13 +1,4 @@
-import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import { createGetCommentsTool } from './list.js';
-import type { CommentTool } from './types.js';
-
-interface CommentTools {
-  getComments: CommentTool;
-}
-
-export const createCommentTools = (apiClient: FigmaApiClient): CommentTools => {
-  return {
-    getComments: createGetCommentsTool(apiClient),
-  };
-};
+// 再エクスポート
+export { GetCommentsTool, GetCommentsToolDefinition } from './list.js';
+export type { CommentWithReplies } from './types.js';
+export type { GetCommentsArgs } from './get-comments-args.js';

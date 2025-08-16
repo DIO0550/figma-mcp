@@ -50,6 +50,15 @@ export const JsonSchema = {
   },
 };
 
+/**
+ * MCPツール定義の共通インターフェース
+ */
+export interface McpToolDefinition {
+  readonly name: string;
+  readonly description: string;
+  readonly inputSchema: JsonSchema;
+}
+
 export interface ToolDefinition<TArgs = unknown, TResult = unknown> {
   name: string;
   description: string;

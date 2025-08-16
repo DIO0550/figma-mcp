@@ -1,98 +1,93 @@
-import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { CommentWithReplies, CommentTool } from './types.js';
+import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetCommentsResponse } from '../../types/api/responses/comment-responses.js';
-import type { Comment } from '../../types/figma-types.js';
+import { Comment } from '../../models/comment.js';
 import { GetCommentsArgsSchema, type GetCommentsArgs } from './get-comments-args.js';
-import { JsonSchema } from '../types.js';
+import { JsonSchema, type McpToolDefinition } from '../types.js';
 
-export const createGetCommentsTool = (apiClient: FigmaApiClient): CommentTool => {
-  return {
-    name: 'get_comments',
-    description: 'Get comments from a Figma file with optional filtering',
-    inputSchema: JsonSchema.from(GetCommentsArgsSchema),
-    execute: async (args: GetCommentsArgs): Promise<GetCommentsResponse> => {
-      const response = await apiClient.getComments(args.fileKey);
+/**
+ * コメントツールの定義（定数オブジェクト）
+ */
+export const GetCommentsToolDefinition = {
+  name: 'get_comments' as const,
+  description: 'Get comments from a Figma file with optional filtering',
+  inputSchema: JsonSchema.from(GetCommentsArgsSchema),
+} as const satisfies McpToolDefinition;
 
-      // showResolvedがfalseの場合、未解決のコメントのみを返す
-      // デフォルト（undefinedまたはtrue）では全てのコメントを返す
-      let filteredComments =
-        args.showResolved === false
-          ? response.comments.filter(
-              (comment) => comment.resolvedAt === null || comment.resolvedAt === undefined
-            )
-          : response.comments;
+/**
+ * コメントにフィルターを適用する
+ */
+function applyFilters(comments: Comment[], args: GetCommentsArgs): Comment[] {
+  const filters: Array<(comments: Comment[]) => Comment[]> = [];
 
-      // userIdが指定されている場合、そのユーザーのコメントのみを返す
-      if (args.userId) {
-        filteredComments = filteredComments.filter((comment) => comment.user.id === args.userId);
-      }
-
-      // nodeIdが指定されている場合、そのノードに関連するコメントのみを返す
-      if (args.nodeId) {
-        const nodeId = args.nodeId;
-        filteredComments = filteredComments.filter(
-          (comment) => comment.clientMeta?.nodeId?.includes(nodeId) ?? false
-        );
-      }
-
-      // organizeThreadsが有効な場合、返信をスレッド構造に整理
-      if (args.organizeThreads) {
-        const organizedComments = organizeCommentsIntoThreads(filteredComments);
-        return {
-          ...response,
-          comments: organizedComments,
-        };
-      }
-
-      return {
-        ...response,
-        comments: filteredComments,
-      };
-    },
-  };
-};
-
-// コメントをスレッド構造に整理する関数
-function organizeCommentsIntoThreads(comments: Comment[]): CommentWithReplies[] {
-  const commentMap = new Map<string, CommentWithReplies>();
-  const rootComments: CommentWithReplies[] = [];
-
-  // まず全てのコメントをMapに格納
-  comments.forEach((comment) => {
-    commentMap.set(comment.id, { ...comment, replies: [] });
-  });
-
-  // parent_idに基づいてスレッド構造を構築
-  comments.forEach((comment) => {
-    const commentWithReplies = commentMap.get(comment.id)!;
-
-    if (!comment.parentId || comment.parentId === '') {
-      // ルートコメント
-      rootComments.push(commentWithReplies);
-    } else {
-      // 返信コメント
-      const parent = commentMap.get(comment.parentId);
-      if (parent) {
-        parent.replies = parent.replies || [];
-        parent.replies.push(commentWithReplies);
-      } else {
-        // 親が見つからない場合はルートとして扱う
-        rootComments.push(commentWithReplies);
-      }
-    }
-  });
-
-  // 返信を作成日時でソート
-  function sortReplies(comment: CommentWithReplies): void {
-    if (comment.replies && comment.replies.length > 0) {
-      comment.replies.sort(
-        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
-      comment.replies.forEach(sortReplies);
-    }
+  // showResolvedがfalseの場合、未解決のコメントのみを返す
+  if (args.showResolved === false) {
+    filters.push((comments) =>
+      comments.filter(
+        (comment) => comment.resolvedAt === null || comment.resolvedAt === undefined
+      )
+    );
   }
 
-  rootComments.forEach(sortReplies);
+  // userIdが指定されている場合、そのユーザーのコメントのみを返す
+  if (args.userId) {
+    const userId = args.userId;
+    filters.push((comments) =>
+      comments.filter((comment) => comment.user.id === userId)
+    );
+  }
 
-  return rootComments;
+  // nodeIdが指定されている場合、そのノードに関連するコメントのみを返す
+  if (args.nodeId) {
+    const nodeId = args.nodeId;
+    filters.push((comments) =>
+      comments.filter(
+        (comment) => comment.clientMeta?.nodeId?.includes(nodeId) ?? false
+      )
+    );
+  }
+
+  // すべてのフィルターを順番に適用
+  return filters.reduce((acc, filter) => filter(acc), comments);
 }
+
+/**
+ * ツールインスタンス（apiClientを保持）
+ */
+export interface GetCommentsTool {
+  readonly apiClient: FigmaApiClient;
+}
+
+/**
+ * コメントツールのコンパニオンオブジェクト（関数群）
+ */
+export const GetCommentsTool = {
+  /**
+   * apiClientからツールインスタンスを作成
+   */
+  from(apiClient: FigmaApiClient): GetCommentsTool {
+    return { apiClient };
+  },
+
+  /**
+   * コメント取得を実行
+   */
+  async execute(
+    tool: GetCommentsTool,
+    args: GetCommentsArgs
+  ): Promise<GetCommentsResponse> {
+    const response = await FigmaApiClient.getComments(tool.apiClient, args.fileKey);
+
+    // フィルターを順番に適用
+    const filteredComments = applyFilters(response.comments, args);
+
+    // organizeThreadsが有効な場合、返信をスレッド構造に整理
+    const finalComments = args.organizeThreads
+      ? Comment.organizeIntoThreads(filteredComments)
+      : filteredComments;
+
+    return {
+      ...response,
+      comments: finalComments,
+    };
+  },
+} as const;
