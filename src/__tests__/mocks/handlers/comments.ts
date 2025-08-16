@@ -4,6 +4,12 @@ export const commentHandlers = {
   getComments: (req: Request, res: Response): void => {
     const { fileKey } = req.params;
 
+    // empty-file-keyの場合は空のコメントリストを返す
+    if (fileKey === 'empty-file-key') {
+      res.json({ comments: [] });
+      return;
+    }
+
     const mockResponse = {
       comments: [
         {
