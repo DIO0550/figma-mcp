@@ -1,18 +1,18 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { createGetFileTool } from './info.js';
+import { GetFileTool, type GetFileTool as GetFileToolType } from './info.js';
 import type { FilesApi } from '../../api/endpoints/files.js';
 import type { FigmaFile } from '../../types/api/responses/index.js';
 
 describe('info tool', () => {
   let filesApi: FilesApi;
-  let get_file: ReturnType<typeof createGetFileTool>;
+  let tool: GetFileToolType;
 
   beforeEach(() => {
     filesApi = {
       getFile: vi.fn(),
       getFileNodes: vi.fn(),
     };
-    get_file = createGetFileTool(filesApi);
+    tool = GetFileTool.from(filesApi);
   });
 
   test('ファイル基本情報を取得できる', async () => {
@@ -38,7 +38,7 @@ describe('info tool', () => {
 
     vi.spyOn(filesApi, 'getFile').mockResolvedValue(mockFile);
 
-    const result = await get_file.execute({
+    const result = await GetFileTool.execute(tool, {
       file_key: 'test-file-key',
     });
 
@@ -80,7 +80,7 @@ describe('info tool', () => {
 
     vi.spyOn(filesApi, 'getFile').mockResolvedValue(mockFile);
 
-    await get_file.execute({
+    await GetFileTool.execute(tool, {
       file_key: 'test-file-key',
       branch_data: true,
     });
@@ -94,7 +94,7 @@ describe('info tool', () => {
     vi.spyOn(filesApi, 'getFile').mockRejectedValue(new Error('API Error'));
 
     await expect(
-      get_file.execute({
+      GetFileTool.execute(tool, {
         file_key: 'test-file-key',
       })
     ).rejects.toThrow('API Error');
