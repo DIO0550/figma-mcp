@@ -4,10 +4,15 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import dotenv from 'dotenv';
 
 import { createFigmaApiClient } from './api/figma-api-client.js';
-import { GetFileTool, GetFileToolDefinition, GetFileNodesTool, GetFileNodesToolDefinition } from './tools/file/index.js';
+import {
+  GetFileTool,
+  GetFileToolDefinition,
+  GetFileNodesTool,
+  GetFileNodesToolDefinition,
+} from './tools/file/index.js';
 import { GetComponentsTool, GetComponentsToolDefinition } from './tools/component/index.js';
 import { createStyleTools } from './tools/style/index.js';
-import { createImageTools } from './tools/image/index.js';
+import { ExportImagesTool, ExportImagesToolDefinition } from './tools/image/index.js';
 import { GetCommentsTool, GetCommentsToolDefinition } from './tools/comment/index.js';
 import { createVersionTools } from './tools/version/index.js';
 import { parseFigmaUrlTool, parseFigmaUrl } from './tools/parse-figma-url/index.js';
@@ -58,7 +63,7 @@ const getFileTool = GetFileTool.from(apiClient);
 const getFileNodesTool = GetFileNodesTool.from(apiClient);
 const componentTool = GetComponentsTool.from(apiClient);
 const styleTools = createStyleTools(apiClient);
-const imageTools = createImageTools(apiClient);
+const exportImagesTool = ExportImagesTool.from(apiClient);
 const commentTool = GetCommentsTool.from(apiClient);
 const versionTools = createVersionTools(apiClient);
 
@@ -86,9 +91,9 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         inputSchema: styleTools.getStyles.inputSchema,
       },
       {
-        name: imageTools.exportImages.name,
-        description: imageTools.exportImages.description,
-        inputSchema: imageTools.exportImages.inputSchema,
+        name: ExportImagesToolDefinition.name,
+        description: ExportImagesToolDefinition.description,
+        inputSchema: ExportImagesToolDefinition.inputSchema,
       },
       {
         name: GetCommentsToolDefinition.name,
@@ -168,7 +173,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'export_images': {
         const validatedArgs = ExportImagesArgsSchema.parse(args);
-        const result = await imageTools.exportImages.execute(validatedArgs);
+        const result = await ExportImagesTool.execute(exportImagesTool, validatedArgs);
         return {
           content: [
             {
