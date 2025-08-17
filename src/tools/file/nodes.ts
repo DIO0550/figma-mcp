@@ -1,5 +1,5 @@
 import type { GetFileOptions } from '../../types/index.js';
-import type { FilesApi } from '../../api/endpoints/files.js';
+import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { NodeEntry, FileNodesResponse } from './types.js';
 import type { McpToolDefinition } from '../types.js';
 import { GetFileNodesArgsSchema, type GetFileNodesArgs } from './get-file-nodes-args.js';
@@ -15,10 +15,10 @@ export const GetFileNodesToolDefinition = {
 } as const satisfies McpToolDefinition;
 
 /**
- * ツールインスタンス（filesApiを保持）
+ * ツールインスタンス（apiClientを保持）
  */
 export interface GetFileNodesTool {
-  readonly filesApi: FilesApi;
+  readonly apiClient: FigmaApiClient;
 }
 
 /**
@@ -26,10 +26,10 @@ export interface GetFileNodesTool {
  */
 export const GetFileNodesTool = {
   /**
-   * filesApiからツールインスタンスを作成
+   * apiClientからツールインスタンスを作成
    */
-  from(filesApi: FilesApi): GetFileNodesTool {
-    return { filesApi };
+  from(apiClient: FigmaApiClient): GetFileNodesTool {
+    return { apiClient };
   },
 
   /**
@@ -54,7 +54,7 @@ export const GetFileNodesTool = {
       }
     });
 
-    const response = await tool.filesApi.getFileNodes(args.file_key, args.ids, options);
+    const response = await tool.apiClient.files.getFileNodes(args.file_key, args.ids, options);
     const nodeEntries = Object.entries(response.nodes || {}) as NodeEntry[];
     const nodes = nodeEntries.map(([nodeId, nodeData]) => ({
       ...nodeData.document,

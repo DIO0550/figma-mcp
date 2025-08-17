@@ -1,5 +1,5 @@
 import type { GetFileOptions } from '../../types/index.js';
-import type { FilesApi } from '../../api/endpoints/files.js';
+import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { FileResponse } from './types.js';
 import type { McpToolDefinition } from '../types.js';
 import { GetFileArgsSchema, type GetFileArgs } from './get-file-args.js';
@@ -15,10 +15,10 @@ export const GetFileToolDefinition = {
 } as const satisfies McpToolDefinition;
 
 /**
- * ツールインスタンス（filesApiを保持）
+ * ツールインスタンス（apiClientを保持）
  */
 export interface GetFileTool {
-  readonly filesApi: FilesApi;
+  readonly apiClient: FigmaApiClient;
 }
 
 /**
@@ -26,10 +26,10 @@ export interface GetFileTool {
  */
 export const GetFileTool = {
   /**
-   * filesApiからツールインスタンスを作成
+   * apiClientからツールインスタンスを作成
    */
-  from(filesApi: FilesApi): GetFileTool {
-    return { filesApi };
+  from(apiClient: FigmaApiClient): GetFileTool {
+    return { apiClient };
   },
 
   /**
@@ -52,7 +52,7 @@ export const GetFileTool = {
       }
     });
 
-    const file = await tool.filesApi.getFile(args.file_key, options);
+    const file = await tool.apiClient.files.getFile(args.file_key, options);
     const documentChildren = file.document.children || [];
     const pagesCount = documentChildren.filter(
       (child) => 'type' in child && child.type === 'CANVAS'
