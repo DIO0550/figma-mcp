@@ -1,18 +1,23 @@
 import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import { FigmaApiClient } from '../../api/figma-api-client.js';
 import { MockFigmaServer } from '../../__tests__/mocks/server.js';
+import { ExportImagesTool } from './export.js';
 
 describe('export-images', () => {
   let mockServer: MockFigmaServer;
   let apiClient: FigmaApiClient;
+  let exportImagesTool: ExportImagesTool;
 
   beforeAll(async () => {
     // モックサーバーを起動
     mockServer = new MockFigmaServer(3004);
     await mockServer.start();
-    
+
     // 実際のAPIクライアントを作成（モックサーバーに接続）
     apiClient = FigmaApiClient.create('test-token', 'http://localhost:3004');
+
+    // ツールインスタンスを作成
+    exportImagesTool = ExportImagesTool.from(apiClient);
   });
 
   afterAll(async () => {
@@ -27,9 +32,12 @@ describe('export-images', () => {
     const scale = 2;
 
     // Act
-    const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(apiClient);
-    const result = await tools.exportImages.execute({ fileKey, ids, format, scale });
+    const result = await ExportImagesTool.execute(exportImagesTool, {
+      fileKey,
+      ids,
+      format,
+      scale,
+    });
 
     // Assert
     expect(result).toBeDefined();
@@ -45,9 +53,7 @@ describe('export-images', () => {
     const ids = ['1:2'];
 
     // Act
-    const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(apiClient);
-    const result = await tools.exportImages.execute({ fileKey, ids });
+    const result = await ExportImagesTool.execute(exportImagesTool, { fileKey, ids });
 
     // Assert
     expect(result).toBeDefined();
@@ -62,9 +68,7 @@ describe('export-images', () => {
     const format = 'svg';
 
     // Act
-    const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(apiClient);
-    const result = await tools.exportImages.execute({ fileKey, ids, format });
+    const result = await ExportImagesTool.execute(exportImagesTool, { fileKey, ids, format });
 
     // Assert
     expect(result).toBeDefined();
@@ -80,9 +84,7 @@ describe('export-images', () => {
     const scale = 3;
 
     // Act
-    const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(apiClient);
-    const result = await tools.exportImages.execute({ fileKey, ids, scale });
+    const result = await ExportImagesTool.execute(exportImagesTool, { fileKey, ids, scale });
 
     // Assert
     expect(result).toBeDefined();
@@ -102,9 +104,7 @@ describe('export-images', () => {
     };
 
     // Act
-    const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(apiClient);
-    const result = await tools.exportImages.execute({ fileKey, ...options });
+    const result = await ExportImagesTool.execute(exportImagesTool, { fileKey, ...options });
 
     // Assert
     expect(result).toBeDefined();
@@ -121,9 +121,7 @@ describe('export-images', () => {
     const ids = ['non-existent-node'];
 
     // Act
-    const { createImageTools } = await import('./index.js');
-    const tools = createImageTools(apiClient);
-    const result = await tools.exportImages.execute({ fileKey, ids });
+    const result = await ExportImagesTool.execute(exportImagesTool, { fileKey, ids });
 
     // Assert
     expect(result).toBeDefined();
