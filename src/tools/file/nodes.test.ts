@@ -1,19 +1,19 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { createGetFileNodesTool } from './nodes.js';
+import { GetFileNodesTool, type GetFileNodesTool as GetFileNodesToolType } from './nodes.js';
 import type { FilesApi } from '../../api/endpoints/files.js';
 import type { GetFileNodesResponse } from '../../types/api/responses/index.js';
 import { GetFileNodesArgsSchema } from './get-file-nodes-args.js';
 
 describe('nodes tool', () => {
   let filesApi: FilesApi;
-  let get_file_nodes: ReturnType<typeof createGetFileNodesTool>;
+  let tool: GetFileNodesToolType;
 
   beforeEach(() => {
     filesApi = {
       getFile: vi.fn(),
       getFileNodes: vi.fn(),
     };
-    get_file_nodes = createGetFileNodesTool(filesApi);
+    tool = GetFileNodesTool.from(filesApi);
   });
 
   test('指定したノードの情報を取得できる', async () => {
@@ -37,7 +37,7 @@ describe('nodes tool', () => {
 
     vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
 
-    const result = await get_file_nodes.execute({
+    const result = await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
       ids: ['1:2'],
     });
@@ -90,7 +90,7 @@ describe('nodes tool', () => {
 
     vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
 
-    const result = await get_file_nodes.execute({
+    const result = await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
       ids: ['1:2', '3:4'],
     });
@@ -120,7 +120,7 @@ describe('nodes tool', () => {
 
     vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
 
-    await get_file_nodes.execute({
+    await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
       ids: ['1:2'],
       depth: 3,
@@ -149,7 +149,7 @@ describe('nodes tool', () => {
 
     vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
 
-    await get_file_nodes.execute({
+    await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
       ids: ['1:2'],
       geometry: 'paths',
@@ -170,7 +170,7 @@ describe('nodes tool', () => {
 
     vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
 
-    await get_file_nodes.execute({
+    await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
       ids: ['1:2'],
       geometry: 'points',
@@ -191,7 +191,7 @@ describe('nodes tool', () => {
 
     vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
 
-    await get_file_nodes.execute({
+    await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
       ids: ['1:2'],
       depth: 2,
