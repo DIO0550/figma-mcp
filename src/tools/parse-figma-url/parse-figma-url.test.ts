@@ -1,20 +1,23 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { parseFigmaUrl } from './parse-figma-url.js';
+import { ParseFigmaUrlTool } from './parse-figma-url.js';
 import * as runtimeConfig from '../../config/runtime-config.js';
 
 // runtime-configをモック化
 vi.mock('../../config/runtime-config.js');
 
-describe('parseFigmaUrl tool', () => {
+describe('ParseFigmaUrlTool', () => {
+  let tool: ReturnType<typeof ParseFigmaUrlTool.create>;
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(runtimeConfig.setRuntimeConfig).mockImplementation(() => {});
+    tool = ParseFigmaUrlTool.create();
   });
 
   test('有効なファイルURLをパースして保存できる', () => {
     const url = 'https://www.figma.com/file/ABC123xyz/My-Design-File?node-id=1234-5678';
     
-    const result = parseFigmaUrl({ url });
+    const result = ParseFigmaUrlTool.execute(tool, { url });
 
     // 正しい結果を返すことを確認
     expect(result).toEqual({
@@ -39,7 +42,7 @@ describe('parseFigmaUrl tool', () => {
   test('有効なデザインURLをパースして保存できる', () => {
     const url = 'https://www.figma.com/design/XYZ789abc/Another-Design';
     
-    const result = parseFigmaUrl({ url });
+    const result = ParseFigmaUrlTool.execute(tool, { url });
 
     expect(result).toEqual({
       figmaInfo: {
@@ -54,7 +57,7 @@ describe('parseFigmaUrl tool', () => {
   test('ファイル名なしのURLも処理できる', () => {
     const url = 'https://www.figma.com/file/ABC123xyz';
     
-    const result = parseFigmaUrl({ url });
+    const result = ParseFigmaUrlTool.execute(tool, { url });
 
     expect(result).toEqual({
       figmaInfo: {
@@ -69,18 +72,18 @@ describe('parseFigmaUrl tool', () => {
   test('無効なURLの場合はエラーを返す', () => {
     const url = 'not-a-url';
     
-    expect(() => parseFigmaUrl({ url })).toThrow('Invalid URL');
+    expect(() => ParseFigmaUrlTool.execute(tool, { url })).toThrow('Invalid URL');
   });
 
   test('Figma以外のURLの場合はエラーを返す', () => {
     const url = 'https://example.com/file/ABC123xyz';
     
-    expect(() => parseFigmaUrl({ url })).toThrow('Not a Figma URL');
+    expect(() => ParseFigmaUrlTool.execute(tool, { url })).toThrow('Not a Figma URL');
   });
 
   test('サポートされていないFigmaのURLパターンの場合はエラーを返す', () => {
     const url = 'https://www.figma.com/proto/ABC123xyz/Prototype';
     
-    expect(() => parseFigmaUrl({ url })).toThrow('Unsupported Figma URL pattern');
+    expect(() => ParseFigmaUrlTool.execute(tool, { url })).toThrow('Unsupported Figma URL pattern');
   });
 });
