@@ -1,5 +1,5 @@
 import type { GetFileOptions } from '../../types/index.js';
-import { FigmaApiClient } from '../../api/figma-api-client.js';
+import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { NodeEntry, FileNodesResponse } from './types.js';
 import type { McpToolDefinition } from '../types.js';
 import { GetFileNodesArgsSchema, type GetFileNodesArgs } from './get-file-nodes-args.js';
