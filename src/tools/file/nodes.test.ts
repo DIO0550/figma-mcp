@@ -1,19 +1,21 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { GetFileNodesTool, type GetFileNodesTool as GetFileNodesToolType } from './nodes.js';
-import type { FilesApi } from '../../api/endpoints/files.js';
+import { GetFileNodesTool } from './nodes.js';
+import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetFileNodesResponse } from '../../types/api/responses/index.js';
 import { GetFileNodesArgsSchema } from './get-file-nodes-args.js';
 
 describe('nodes tool', () => {
-  let filesApi: FilesApi;
-  let tool: GetFileNodesToolType;
+  let apiClient: FigmaApiClient;
+  let tool: GetFileNodesTool;
 
   beforeEach(() => {
-    filesApi = {
-      getFile: vi.fn(),
-      getFileNodes: vi.fn(),
-    };
-    tool = GetFileNodesTool.from(filesApi);
+    apiClient = {
+      files: {
+        getFile: vi.fn(),
+        getFileNodes: vi.fn(),
+      },
+    } as unknown as FigmaApiClient;
+    tool = GetFileNodesTool.from(apiClient);
   });
 
   test('指定したノードの情報を取得できる', async () => {
@@ -35,7 +37,7 @@ describe('nodes tool', () => {
       },
     };
 
-    vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
 
     const result = await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -56,7 +58,7 @@ describe('nodes tool', () => {
       ],
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {});
+    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {});
   });
 
   test('複数のノードを取得できる', async () => {
@@ -88,7 +90,7 @@ describe('nodes tool', () => {
       },
     };
 
-    vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
 
     const result = await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -118,7 +120,7 @@ describe('nodes tool', () => {
       nodes: {},
     };
 
-    vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
 
     await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -126,7 +128,7 @@ describe('nodes tool', () => {
       depth: 3,
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { depth: 3 });
+    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { depth: 3 });
   });
 
   test('ノードIDが空の場合はエラーになる', () => {
@@ -147,7 +149,7 @@ describe('nodes tool', () => {
       nodes: {},
     };
 
-    vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
 
     await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -155,7 +157,7 @@ describe('nodes tool', () => {
       geometry: 'paths',
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
+    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
       geometry: 'paths',
     });
   });
@@ -168,7 +170,7 @@ describe('nodes tool', () => {
       nodes: {},
     };
 
-    vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
 
     await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -176,7 +178,7 @@ describe('nodes tool', () => {
       geometry: 'points',
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
+    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
       geometry: 'points',
     });
   });
@@ -189,7 +191,7 @@ describe('nodes tool', () => {
       nodes: {},
     };
 
-    vi.spyOn(filesApi, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
 
     await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -198,7 +200,7 @@ describe('nodes tool', () => {
       geometry: 'paths',
     });
 
-    expect(filesApi.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
+    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
       depth: 2,
       geometry: 'paths',
     });
