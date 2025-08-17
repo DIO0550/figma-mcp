@@ -4,7 +4,7 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import dotenv from 'dotenv';
 
 import { createFigmaApiClient } from './api/figma-api-client.js';
-import { createFileTools } from './tools/file/index.js';
+import { GetFileTool, GetFileToolDefinition, GetFileNodesTool, GetFileNodesToolDefinition } from './tools/file/index.js';
 import { GetComponentsTool, GetComponentsToolDefinition } from './tools/component/index.js';
 import { createStyleTools } from './tools/style/index.js';
 import { createImageTools } from './tools/image/index.js';
@@ -54,7 +54,8 @@ if (!accessToken) {
 const apiClient = createFigmaApiClient(accessToken);
 
 // ツールの作成
-const fileTools = createFileTools(apiClient);
+const getFileTool = GetFileTool.from(apiClient);
+const getFileNodesTool = GetFileNodesTool.from(apiClient);
 const componentTool = GetComponentsTool.from(apiClient);
 const styleTools = createStyleTools(apiClient);
 const imageTools = createImageTools(apiClient);
@@ -65,14 +66,14 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
   return {
     tools: [
       {
-        name: fileTools.getFile.name,
-        description: fileTools.getFile.description,
-        inputSchema: fileTools.getFile.inputSchema,
+        name: GetFileToolDefinition.name,
+        description: GetFileToolDefinition.description,
+        inputSchema: GetFileToolDefinition.inputSchema,
       },
       {
-        name: fileTools.getFileNodes.name,
-        description: fileTools.getFileNodes.description,
-        inputSchema: fileTools.getFileNodes.inputSchema,
+        name: GetFileNodesToolDefinition.name,
+        description: GetFileNodesToolDefinition.description,
+        inputSchema: GetFileNodesToolDefinition.inputSchema,
       },
       {
         name: GetComponentsToolDefinition.name,
@@ -115,7 +116,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case 'get_file': {
         const validatedArgs = GetFileArgsSchema.parse(args);
-        const result = await fileTools.getFile.execute(validatedArgs);
+        const result = await GetFileTool.execute(getFileTool, validatedArgs);
         return {
           content: [
             {
@@ -128,7 +129,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_file_nodes': {
         const validatedArgs = GetFileNodesArgsSchema.parse(args);
-        const result = await fileTools.getFileNodes.execute(validatedArgs);
+        const result = await GetFileNodesTool.execute(getFileNodesTool, validatedArgs);
         return {
           content: [
             {

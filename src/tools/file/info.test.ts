@@ -1,18 +1,20 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { GetFileTool, type GetFileTool as GetFileToolType } from './info.js';
-import type { FilesApi } from '../../api/endpoints/files.js';
+import { GetFileTool } from './info.js';
+import type { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { FigmaFile } from '../../types/api/responses/index.js';
 
 describe('info tool', () => {
-  let filesApi: FilesApi;
-  let tool: GetFileToolType;
+  let apiClient: FigmaApiClient;
+  let tool: GetFileTool;
 
   beforeEach(() => {
-    filesApi = {
-      getFile: vi.fn(),
-      getFileNodes: vi.fn(),
-    };
-    tool = GetFileTool.from(filesApi);
+    apiClient = {
+      files: {
+        getFile: vi.fn(),
+        getFileNodes: vi.fn(),
+      },
+    } as unknown as FigmaApiClient;
+    tool = GetFileTool.from(apiClient);
   });
 
   test('ファイル基本情報を取得できる', async () => {
@@ -36,7 +38,7 @@ describe('info tool', () => {
       linkAccess: 'view',
     };
 
-    vi.spyOn(filesApi, 'getFile').mockResolvedValue(mockFile);
+    vi.spyOn(apiClient.files, 'getFile').mockResolvedValue(mockFile);
 
     const result = await GetFileTool.execute(tool, {
       file_key: 'test-file-key',
@@ -54,7 +56,7 @@ describe('info tool', () => {
       stylesCount: 0,
     });
 
-    expect(filesApi.getFile).toHaveBeenCalledWith('test-file-key', {});
+    expect(apiClient.files.getFile).toHaveBeenCalledWith('test-file-key', {});
   });
 
   test('ブランチデータを含めてファイル情報を取得できる', async () => {
@@ -78,20 +80,20 @@ describe('info tool', () => {
       linkAccess: 'view',
     };
 
-    vi.spyOn(filesApi, 'getFile').mockResolvedValue(mockFile);
+    vi.spyOn(apiClient.files, 'getFile').mockResolvedValue(mockFile);
 
     await GetFileTool.execute(tool, {
       file_key: 'test-file-key',
       branch_data: true,
     });
 
-    expect(filesApi.getFile).toHaveBeenCalledWith('test-file-key', {
+    expect(apiClient.files.getFile).toHaveBeenCalledWith('test-file-key', {
       branchData: true,
     });
   });
 
   test('エラーが発生した場合は適切にエラーを返す', async () => {
-    vi.spyOn(filesApi, 'getFile').mockRejectedValue(new Error('API Error'));
+    vi.spyOn(apiClient.files, 'getFile').mockRejectedValue(new Error('API Error'));
 
     await expect(
       GetFileTool.execute(tool, {
