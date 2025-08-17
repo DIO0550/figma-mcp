@@ -15,7 +15,7 @@ import { createStyleTools } from './tools/style/index.js';
 import { ExportImagesTool, ExportImagesToolDefinition } from './tools/image/index.js';
 import { GetCommentsTool, GetCommentsToolDefinition } from './tools/comment/index.js';
 import { createVersionTools } from './tools/version/index.js';
-import { parseFigmaUrlTool, parseFigmaUrl } from './tools/parse-figma-url/index.js';
+import { ParseFigmaUrlTool, ParseFigmaUrlToolDefinition } from './tools/parse-figma-url/index.js';
 import { Logger, LogLevel } from './utils/logger/index.js';
 
 import { GetFileArgsSchema } from './tools/file/get-file-args.js';
@@ -25,7 +25,7 @@ import { GetStylesArgsSchema } from './tools/style/get-styles-args.js';
 import { ExportImagesArgsSchema } from './tools/image/export-images-args.js';
 import { GetCommentsArgsSchema } from './tools/comment/get-comments-args.js';
 import { GetVersionsArgsSchema } from './tools/version/get-versions-args.js';
-import { parseFigmaUrlArgsSchema } from './tools/parse-figma-url/parse-figma-url-args.js';
+import { ParseFigmaUrlArgsSchema } from './tools/parse-figma-url/parse-figma-url-args.js';
 
 dotenv.config();
 
@@ -66,6 +66,7 @@ const styleTools = createStyleTools(apiClient);
 const exportImagesTool = ExportImagesTool.from(apiClient);
 const commentTool = GetCommentsTool.from(apiClient);
 const versionTools = createVersionTools(apiClient);
+const parseFigmaUrlTool = ParseFigmaUrlTool.create();
 
 server.setRequestHandler(ListToolsRequestSchema, () => {
   return {
@@ -106,9 +107,9 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         inputSchema: versionTools.getVersions.inputSchema,
       },
       {
-        name: parseFigmaUrlTool.name,
-        description: parseFigmaUrlTool.description,
-        inputSchema: parseFigmaUrlTool.inputSchema,
+        name: ParseFigmaUrlToolDefinition.name,
+        description: ParseFigmaUrlToolDefinition.description,
+        inputSchema: ParseFigmaUrlToolDefinition.inputSchema,
       },
     ],
   };
@@ -211,8 +212,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'parse_figma_url': {
-        const validatedArgs = parseFigmaUrlArgsSchema.parse(args);
-        const result = parseFigmaUrl(validatedArgs);
+        const validatedArgs = ParseFigmaUrlArgsSchema.parse(args);
+        const result = ParseFigmaUrlTool.execute(parseFigmaUrlTool, validatedArgs);
         return {
           content: [
             {
