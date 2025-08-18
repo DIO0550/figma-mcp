@@ -11,7 +11,7 @@ import {
   GetFileNodesToolDefinition,
 } from './tools/file/index.js';
 import { GetComponentsTool, GetComponentsToolDefinition } from './tools/component/index.js';
-import { createStyleTools } from './tools/style/index.js';
+import { GetStylesTool, GetStylesToolDefinition } from './tools/style/index.js';
 import { ExportImagesTool, ExportImagesToolDefinition } from './tools/image/index.js';
 import { GetCommentsTool, GetCommentsToolDefinition } from './tools/comment/index.js';
 import { createVersionTools } from './tools/version/index.js';
@@ -62,7 +62,7 @@ const apiClient = createFigmaApiClient(accessToken);
 const getFileTool = GetFileTool.from(apiClient);
 const getFileNodesTool = GetFileNodesTool.from(apiClient);
 const componentTool = GetComponentsTool.from(apiClient);
-const styleTools = createStyleTools(apiClient);
+const getStylesTool = GetStylesTool.from(apiClient);
 const exportImagesTool = ExportImagesTool.from(apiClient);
 const commentTool = GetCommentsTool.from(apiClient);
 const versionTools = createVersionTools(apiClient);
@@ -87,9 +87,9 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         inputSchema: GetComponentsToolDefinition.inputSchema,
       },
       {
-        name: styleTools.getStyles.name,
-        description: styleTools.getStyles.description,
-        inputSchema: styleTools.getStyles.inputSchema,
+        name: GetStylesToolDefinition.name,
+        description: GetStylesToolDefinition.description,
+        inputSchema: GetStylesToolDefinition.inputSchema,
       },
       {
         name: ExportImagesToolDefinition.name,
@@ -161,7 +161,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_styles': {
         const validatedArgs = GetStylesArgsSchema.parse(args);
-        const result = await styleTools.getStyles.execute(validatedArgs);
+        const result = await GetStylesTool.execute(getStylesTool, validatedArgs);
         return {
           content: [
             {

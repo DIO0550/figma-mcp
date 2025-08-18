@@ -1,6 +1,7 @@
 import type { FigmaContext } from '../context.js';
 import type { FigmaFile } from '../../types/api/responses/file-responses.js';
-import type { Document, Node, Component, Style } from '../../types/figma-types.js';
+import type { Document, Node, Component } from '../../types/figma-types.js';
+import type { Style } from '../../models/style/style.js';
 
 /**
  * Figmaファイルのデータ構造
