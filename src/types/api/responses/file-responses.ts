@@ -1,6 +1,7 @@
 // ファイル関連のAPIレスポンス型定義
 
-import type { Document, Component, ComponentSet, Style } from '../../figma-types.js';
+import type { Document, Component, ComponentSet } from '../../figma-types.js';
+import type { Style } from '../../../models/style/style.js';
 
 export interface FigmaFile {
   document: Document;

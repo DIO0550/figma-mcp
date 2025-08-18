@@ -1,6 +1,7 @@
 // ノード関連のAPIレスポンス型定義
 
-import type { Node, Component, Style } from '../../figma-types.js';
+import type { Node, Component } from '../../figma-types.js';
+import type { Style } from '../../../models/style/style.js';
 
 export interface GetNodesResponse {
   nodes: Record<

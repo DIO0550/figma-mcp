@@ -1,6 +1,6 @@
 // スタイル関連のAPIレスポンス型定義
 
-import type { Style } from '../../figma-types.js';
+import type { Style } from '../../../models/style/style.js';
 
 export interface StyleStatistics {
   total: number;

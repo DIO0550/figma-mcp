@@ -1,4 +1,5 @@
-import type { Node, Component, Style } from '../../types/index.js';
+import type { Node, Component } from '../../types/index.js';
+import type { Style } from '../../models/style/style.js';
 import type { ToolDefinition } from '../types.js';
 import type { GetFileArgs } from './get-file-args.js';
 import type { GetFileNodesArgs } from './get-file-nodes-args.js';
