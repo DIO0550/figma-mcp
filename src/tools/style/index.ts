@@ -1,5 +1,12 @@
+// 再エクスポート
+export { GetStylesTool, GetStylesToolDefinition } from './list.js';
+export type { GetStylesArgs } from './get-styles-args.js';
+export { Style } from '../../models/style/style.js';
+export type { Style as StyleType, CategorizedStyles } from '../../models/style/style.js';
+
+// 互換性のために残しておく（後で削除予定）
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import { createGetStylesTool } from './list.js';
+import { GetStylesTool, GetStylesToolDefinition } from './list.js';
 import type { StyleTool } from './types.js';
 
 interface StyleTools {
@@ -7,7 +14,13 @@ interface StyleTools {
 }
 
 export const createStyleTools = (apiClient: FigmaApiClient): StyleTools => {
+  const tool = GetStylesTool.from(apiClient);
   return {
-    getStyles: createGetStylesTool(apiClient),
+    getStyles: {
+      name: GetStylesToolDefinition.name,
+      description: GetStylesToolDefinition.description,
+      inputSchema: GetStylesToolDefinition.inputSchema,
+      execute: (args) => GetStylesTool.execute(tool, args),
+    },
   };
 };
