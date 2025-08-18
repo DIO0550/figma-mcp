@@ -26,9 +26,9 @@ describe('get-styles', () => {
     const fileKey = 'test-file-key';
 
     // Act
-    const { createStyleTools } = await import('./index.js');
-    const tools = createStyleTools(apiClient);
-    const result = await tools.getStyles.execute({ fileKey });
+    const { GetStylesTool } = await import('./list.js');
+    const tool = GetStylesTool.from(apiClient);
+    const result = await GetStylesTool.execute(tool, { fileKey });
 
     // Assert - モックサーバーは4つのスタイルを返す
     expect(result.meta.styles).toHaveLength(4);
@@ -44,10 +44,10 @@ describe('get-styles', () => {
     const fileKey = 'test-file-key';
 
     // Act & Assert
-    const { createStyleTools } = await import('./index.js');
-    const tools = createStyleTools(errorClient);
+    const { GetStylesTool } = await import('./list.js');
+    const tool = GetStylesTool.from(errorClient);
 
-    await expect(tools.getStyles.execute({ fileKey })).rejects.toThrow();
+    await expect(GetStylesTool.execute(tool, { fileKey })).rejects.toThrow();
   });
 
   test('空のスタイルリストを処理できる', async () => {
@@ -61,9 +61,9 @@ describe('get-styles', () => {
     const fileKey = 'test-file-key';
 
     // Act
-    const { createStyleTools } = await import('./index.js');
-    const tools = createStyleTools(apiClient);
-    const result = await tools.getStyles.execute({
+    const { GetStylesTool } = await import('./list.js');
+    const tool = GetStylesTool.from(apiClient);
+    const result = await GetStylesTool.execute(tool, {
       fileKey,
       categorize: true,
     });
@@ -80,9 +80,9 @@ describe('get-styles', () => {
     const fileKey = 'test-file-key';
 
     // Act
-    const { createStyleTools } = await import('./index.js');
-    const tools = createStyleTools(apiClient);
-    const result = await tools.getStyles.execute({ fileKey });
+    const { GetStylesTool } = await import('./list.js');
+    const tool = GetStylesTool.from(apiClient);
+    const result = await GetStylesTool.execute(tool, { fileKey });
 
     // Assert - モックサーバーは各タイプを1つずつ返す
     const fillStyles = result.meta.styles.filter((s) => s.styleType === 'FILL');
