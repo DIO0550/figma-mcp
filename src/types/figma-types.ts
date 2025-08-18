@@ -138,17 +138,6 @@ export interface ComponentSet {
   documentationLinks: DocumentationLink[];
 }
 
-export interface Style {
-  key: string;
-  fileKey: string;
-  nodeId: string;
-  styleType: 'FILL' | 'TEXT' | 'EFFECT' | 'GRID';
-  name: string;
-  description: string;
-  remote?: boolean;
-  sortPosition?: string;
-}
-
 export interface DocumentationLink {
   uri: string;
 }
