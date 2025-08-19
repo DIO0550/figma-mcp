@@ -1,53 +1,45 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { VersionTool } from './types.js';
 import type { GetVersionsResponse } from '../../types/api/responses/version-responses.js';
 import { GetVersionsArgsSchema, type GetVersionsArgs } from './get-versions-args.js';
-import { JsonSchema } from '../types.js';
+import { JsonSchema, type McpToolDefinition } from '../types.js';
 
-export const createGetVersionsTool = (apiClient: FigmaApiClient): VersionTool => {
-  return {
-    name: 'get_versions',
-    description: 'Get version history of a Figma file with optional details',
-    inputSchema: JsonSchema.from(GetVersionsArgsSchema),
-    execute: async (args: GetVersionsArgs): Promise<GetVersionsResponse> => {
-      const response = await FigmaApiClient.getVersions(apiClient, args.fileKey);
+/**
+ * バージョン取得ツールの定義（定数オブジェクト）
+ */
+export const GetVersionsToolDefinition = {
+  name: 'get_versions' as const,
+  description: 'Get version history of a Figma file with optional details',
+  inputSchema: JsonSchema.from(GetVersionsArgsSchema),
+} as const satisfies McpToolDefinition;
 
-      // includeDetailsが指定されている場合、詳細情報を含む
-      // 実際のFigma APIはこの情報を直接提供しないので、
-      // ここではモックとして実装（実際のAPIでは別のエンドポイントが必要）
-      if (args.includeDetails) {
-        // 本来は各バージョンごとに追加のAPI呼び出しが必要
-        // ここではレスポンスをそのまま返す
-      }
+/**
+ * ツールインスタンス（apiClientを保持）
+ */
+export interface GetVersionsTool {
+  readonly apiClient: FigmaApiClient;
+}
 
-      // comparePairが指定されている場合、バージョン間の差分を計算
-      // 実際のFigma APIでは、各バージョンのファイル情報を取得して比較する必要がある
-      if (args.comparePair && args.comparePair.length === 2) {
-        const [fromVersionId, toVersionId] = args.comparePair;
+/**
+ * バージョン取得ツールのコンパニオンオブジェクト（関数群）
+ */
+export const GetVersionsTool = {
+  /**
+   * apiClientからツールインスタンスを作成
+   * @param apiClient - Figma APIクライアント
+   * @returns GetVersionsToolインスタンス
+   */
+  from(apiClient: FigmaApiClient): GetVersionsTool {
+    return { apiClient };
+  },
 
-        // 本来はここで各バージョンのファイル詳細を取得して比較
-        // モックとしてcomparisonデータを追加
-        return {
-          ...response,
-          comparison: {
-            from: fromVersionId,
-            to: toVersionId,
-            changes: {
-              pagesAdded: [],
-              pagesRemoved: [],
-              pagesModified: [],
-              componentsAdded: 0,
-              componentsRemoved: 0,
-              componentsModified: 0,
-              stylesAdded: 0,
-              stylesRemoved: 0,
-              stylesModified: 0,
-            },
-          },
-        };
-      }
-
-      return response;
-    },
-  };
+  /**
+   * バージョン取得を実行
+   * @param tool - GetVersionsToolインスタンス
+   * @param args - バージョン取得の引数（fileKeyを含む）
+   * @returns バージョン一覧のレスポンス
+   */
+  async execute(tool: GetVersionsTool, args: GetVersionsArgs): Promise<GetVersionsResponse> {
+    return FigmaApiClient.getVersions(tool.apiClient, args.fileKey);
+  },
 };
+
