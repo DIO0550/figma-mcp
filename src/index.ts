@@ -14,7 +14,7 @@ import { GetComponentsTool, GetComponentsToolDefinition } from './tools/componen
 import { GetStylesTool, GetStylesToolDefinition } from './tools/style/index.js';
 import { ExportImagesTool, ExportImagesToolDefinition } from './tools/image/index.js';
 import { GetCommentsTool, GetCommentsToolDefinition } from './tools/comment/index.js';
-import { createVersionTools } from './tools/version/index.js';
+import { GetVersionsTool, GetVersionsToolDefinition } from './tools/version/index.js';
 import { ParseFigmaUrlTool, ParseFigmaUrlToolDefinition } from './tools/parse-figma-url/index.js';
 import { Logger, LogLevel } from './utils/logger/index.js';
 
@@ -65,7 +65,7 @@ const componentTool = GetComponentsTool.from(apiClient);
 const getStylesTool = GetStylesTool.from(apiClient);
 const exportImagesTool = ExportImagesTool.from(apiClient);
 const commentTool = GetCommentsTool.from(apiClient);
-const versionTools = createVersionTools(apiClient);
+const getVersionsTool = GetVersionsTool.from(apiClient);
 const parseFigmaUrlTool = ParseFigmaUrlTool.create();
 
 server.setRequestHandler(ListToolsRequestSchema, () => {
@@ -102,9 +102,9 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
         inputSchema: GetCommentsToolDefinition.inputSchema,
       },
       {
-        name: versionTools.getVersions.name,
-        description: versionTools.getVersions.description,
-        inputSchema: versionTools.getVersions.inputSchema,
+        name: GetVersionsToolDefinition.name,
+        description: GetVersionsToolDefinition.description,
+        inputSchema: GetVersionsToolDefinition.inputSchema,
       },
       {
         name: ParseFigmaUrlToolDefinition.name,
@@ -200,7 +200,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_versions': {
         const validatedArgs = GetVersionsArgsSchema.parse(args);
-        const result = await versionTools.getVersions.execute(validatedArgs);
+        const result = await GetVersionsTool.execute(getVersionsTool, validatedArgs);
         return {
           content: [
             {
