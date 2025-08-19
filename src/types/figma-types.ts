@@ -148,16 +148,3 @@ export interface FigmaUser {
   imgUrl: string;
   email: string;
 }
-
-
-export interface Version {
-  id: string;
-  createdAt: string;
-  label: string;
-  description: string;
-  user: FigmaUser;
-  thumbnailUrl?: string;
-  pagesChanged?: string[];
-  componentsChanged?: number;
-  stylesChanged?: number;
-}
