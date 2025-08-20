@@ -3,7 +3,7 @@
  * 実行時に動的な設定更新を可能にする
  */
 
-import { FigmaInfo } from './figma-info.js';
+import { FigmaInfo } from './figma-info/figma-info.js';
 
 export interface RuntimeConfig {
   /** Figma APIベースURLのオーバーライド */

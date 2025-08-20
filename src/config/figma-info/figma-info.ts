@@ -2,8 +2,8 @@
  * FigmaInfo型とFigma URLパース用のコンパニオンオブジェクト
  */
 
-import { QueryParams } from '../constants/query-params.js';
-import { ErrorMessages } from '../constants/error-messages.js';
+import { QueryParams } from '../../constants/query-params.js';
+import { ErrorMessages } from '../../constants/error-messages.js';
 
 /**
  * サポートされているFigma URLのタイプ
