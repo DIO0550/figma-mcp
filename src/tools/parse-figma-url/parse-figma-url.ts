@@ -1,5 +1,5 @@
 import { parseFigmaUrl as parseUrl } from '../../utils/figma-url-parser.js';
-import { setRuntimeConfig } from '../../config/runtime-config.js';
+import { setRuntimeConfig } from '../../config/runtime-config/runtime-config.js';
 import { ParseFigmaUrlArgsSchema, type ParseFigmaUrlArgs } from './parse-figma-url-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
 
