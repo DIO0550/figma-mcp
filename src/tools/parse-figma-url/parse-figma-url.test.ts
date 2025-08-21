@@ -1,9 +1,9 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { ParseFigmaUrlTool } from './parse-figma-url.js';
-import * as runtimeConfig from '../../config/runtime-config.js';
+import * as runtimeConfig from '../../config/runtime-config/runtime-config.js';
 
 // runtime-configをモック化
-vi.mock('../../config/runtime-config.js');
+vi.mock('../../config/runtime-config/runtime-config.js');
 
 describe('ParseFigmaUrlTool', () => {
   let tool: ReturnType<typeof ParseFigmaUrlTool.create>;

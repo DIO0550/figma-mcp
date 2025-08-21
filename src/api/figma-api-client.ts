@@ -9,7 +9,7 @@ import { createCommentsApi } from './endpoints/comments.js';
 import { createVersionsApi } from './endpoints/versions.js';
 import { createTeamsApi } from './endpoints/teams.js';
 import { FigmaContext } from './context.js';
-import { getRuntimeConfig } from '../config/runtime-config.js';
+import { getRuntimeConfig } from '../config/runtime-config/runtime-config.js';
 import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter.js';
 import type { GetComponentsResponse } from '../types/api/responses/component-responses.js';
 import type { GetStylesResponse } from '../types/api/responses/style-responses.js';
