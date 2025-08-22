@@ -1,5 +1,5 @@
-import type { FigmaContext } from '../context.js';
-import type { ExportImageResponse } from '../../types/api/responses/image-responses.js';
+import type { FigmaContext } from '../../context.js';
+import type { ExportImageResponse } from '../../../types/api/responses/image-responses.js';
 
 /**
  * 画像エクスポートのフォーマット

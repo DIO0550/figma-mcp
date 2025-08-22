@@ -1,5 +1,5 @@
-import type { FigmaContext } from '../context.js';
-import type { GetComponentsResponse } from '../../types/api/responses/component-responses.js';
+import type { FigmaContext } from '../../context.js';
+import type { GetComponentsResponse } from '../../../types/api/responses/component-responses.js';
 
 /**
  * APIレスポンスのコンポーネント型

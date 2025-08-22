@@ -1,4 +1,4 @@
-import type { FigmaContext } from '../context.js';
+import type { FigmaContext } from '../../context.js';
 
 /**
  * 画像エクスポートのフォーマット
