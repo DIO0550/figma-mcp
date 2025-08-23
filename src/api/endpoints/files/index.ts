@@ -1,5 +1,5 @@
-import type { HttpClient } from '../client.js';
-import type { FigmaFile, GetFileOptions, GetFileNodesResponse } from '../../types/index.js';
+import type { HttpClient } from '../../client.js';
+import type { FigmaFile, GetFileOptions, GetFileNodesResponse } from '../../../types/index.js';
 
 export interface FilesApi {
   getFile: (fileKey: string, options?: GetFileOptions) => Promise<FigmaFile>;

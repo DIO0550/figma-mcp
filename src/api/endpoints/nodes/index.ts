@@ -1,9 +1,9 @@
 // ノード関連のAPI関数
 
-import type { HttpClient } from '../client.js';
-import type { GetNodesResponse } from '../../types/index.js';
-import type { GetNodesOptions } from '../../types/api/options/node-options.js';
-import type { DeepSnakeCase } from '../../utils/type-transformers.js';
+import type { HttpClient } from '../../client.js';
+import type { GetNodesResponse } from '../../../types/index.js';
+import type { GetNodesOptions } from '../../../types/api/options/node-options.js';
+import type { DeepSnakeCase } from '../../../utils/type-transformers.js';
 
 export interface NodesApi {
   getNodes: (fileKey: string, options: DeepSnakeCase<GetNodesOptions>) => Promise<GetNodesResponse>;

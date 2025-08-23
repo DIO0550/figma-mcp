@@ -1,7 +1,7 @@
 // コンポーネント関連のAPI関数
 
-import type { HttpClient } from '../client.js';
-import type { GetComponentsResponse, GetComponentSetsResponse } from '../../types/index.js';
+import type { HttpClient } from '../../client.js';
+import type { GetComponentsResponse, GetComponentSetsResponse } from '../../../types/index.js';
 
 export interface ComponentsApi {
   getComponents: (fileKey: string) => Promise<GetComponentsResponse>;
