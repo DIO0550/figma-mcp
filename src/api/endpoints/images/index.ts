@@ -1,9 +1,9 @@
 // 画像エクスポート関連のAPI関数
 
-import type { HttpClient } from '../client.js';
-import type { ExportImageResponse } from '../../types/index.js';
-import type { ExportImageOptions } from '../../types/api/options/image-options.js';
-import type { DeepSnakeCase } from '../../utils/type-transformers.js';
+import type { HttpClient } from '../../client.js';
+import type { ExportImageResponse } from '../../../types/index.js';
+import type { ExportImageOptions } from '../../../types/api/options/image-options.js';
+import type { DeepSnakeCase } from '../../../utils/type-transformers.js';
 
 export interface ImagesApi {
   exportImages: (fileKey: string, options: DeepSnakeCase<ExportImageOptions>) => Promise<ExportImageResponse>;
