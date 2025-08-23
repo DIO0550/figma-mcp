@@ -1,7 +1,7 @@
 // コメント関連のAPI関数
 
-import type { HttpClient } from '../client.js';
-import type { GetCommentsResponse, Comment, PostCommentOptions } from '../../types/index.js';
+import type { HttpClient } from '../../client.js';
+import type { GetCommentsResponse, Comment, PostCommentOptions } from '../../../types/index.js';
 
 export interface CommentsApi {
   getComments: (fileKey: string) => Promise<GetCommentsResponse>;
