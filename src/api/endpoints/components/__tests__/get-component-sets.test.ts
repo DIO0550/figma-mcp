@@ -1,5 +1,5 @@
 import { test, expect, vi } from 'vitest';
-import { createComponentsApi } from '../index';
+import { fileComponentSetsApi } from '../index';
 import type { HttpClient } from '../../../client';
 import type { GetComponentSetsResponse } from '../../../../types';
 import { TestData } from '../../../../constants';
@@ -11,7 +11,7 @@ function createMockHttpClient(): HttpClient {
   };
 }
 
-test('createComponentsApi.getComponentSetsでコンポーネントセット一覧を取得できる', async () => {
+test('fileComponentSetsApiでコンポーネントセット一覧を取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
     const mockResponse: GetComponentSetsResponse = {
       meta: {
@@ -27,8 +27,7 @@ test('createComponentsApi.getComponentSetsでコンポーネントセット一�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-  const result = await componentsApi.getComponentSets(TestData.FILE_KEY);
+  const result = await fileComponentSetsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(mockHttpClient.get).toHaveBeenCalledWith(
     '/v1/files/test-file-key/component_sets'
@@ -36,7 +35,7 @@ test('createComponentsApi.getComponentSetsでコンポーネントセット一�
   expect(result).toEqual(mockResponse);
 });
 
-test('createComponentsApi.getComponentSetsで空のコンポーネントセット一覧を取得できる', async () => {
+test('fileComponentSetsApiで空のコンポーネントセット一覧を取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
   const mockResponse: GetComponentSetsResponse = {
     meta: {
@@ -46,13 +45,12 @@ test('createComponentsApi.getComponentSetsで空のコンポーネントセッ�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-  const result = await componentsApi.getComponentSets(TestData.FILE_KEY);
+  const result = await fileComponentSetsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.meta.componentSets).toHaveLength(0);
 });
 
-test('createComponentsApi.getComponentSetsで複数のコンポーネントセットを正しく取得できる', async () => {
+test('fileComponentSetsApiで複数のコンポーネントセットを正しく取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
     const mockResponse: GetComponentSetsResponse = {
       meta: {
@@ -73,15 +71,14 @@ test('createComponentsApi.getComponentSetsで複数のコンポーネントセ�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-  const result = await componentsApi.getComponentSets(TestData.FILE_KEY);
+  const result = await fileComponentSetsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.meta.componentSets).toHaveLength(2);
   expect(result.meta.componentSets[0].name).toBe('Button Set');
   expect(result.meta.componentSets[1].name).toBe('Input Set');
 });
 
-test('createComponentsApi.getComponentSetsでエラーレスポンスを正しく処理できる', async () => {
+test('fileComponentSetsApiでエラーレスポンスを正しく処理できる', async () => {
   const mockHttpClient = createMockHttpClient();
   const mockResponse: GetComponentSetsResponse = {
     meta: {
@@ -91,42 +88,36 @@ test('createComponentsApi.getComponentSetsでエラーレスポンスを正し�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-  const result = await componentsApi.getComponentSets(TestData.FILE_KEY);
+  const result = await fileComponentSetsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.meta.componentSets).toHaveLength(0);
 });
 
-test('createComponentsApi.getComponentSetsでHTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
+test('fileComponentSetsApiでHTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
   const mockHttpClient = createMockHttpClient();
   const expectedError = new Error('Network error');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(expectedError);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-
-  await expect(componentsApi.getComponentSets(TestData.FILE_KEY)).rejects.toThrow('Network error');
+  await expect(fileComponentSetsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow('Network error');
 });
 
-test('createComponentsApi.getComponentSetsで認証エラーが適切に処理される', async () => {
+test('fileComponentSetsApiで認証エラーが適切に処理される', async () => {
   const mockHttpClient = createMockHttpClient();
   const authError = new Error('Unauthorized');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(authError);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-
-  await expect(componentsApi.getComponentSets(TestData.FILE_KEY)).rejects.toThrow('Unauthorized');
+  await expect(fileComponentSetsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow('Unauthorized');
 });
 
-test('createComponentsApi.getComponentSetsで特殊文字を含むファイルキーが正しくエンコードされる', async () => {
+test('fileComponentSetsApiで特殊文字を含むファイルキーが正しくエンコードされる', async () => {
   const mockHttpClient = createMockHttpClient();
   const mockResponse: GetComponentSetsResponse = {
     meta: { componentSets: [] },
   };
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
   const specialFileKey = 'file:key/with-special@chars';
-  await componentsApi.getComponentSets(specialFileKey);
+  await fileComponentSetsApi(mockHttpClient, specialFileKey);
 
   expect(mockHttpClient.get).toHaveBeenCalledWith(
     '/v1/files/file:key/with-special@chars/component_sets'

@@ -1,5 +1,5 @@
 import { test, expect, vi } from 'vitest';
-import { createComponentsApi } from '../index';
+import { fileComponentsApi } from '../index';
 import type { HttpClient } from '../../../client';
 import type { GetComponentsResponse } from '../../../../types';
 import { TestData } from '../../../../constants';
@@ -11,7 +11,7 @@ function createMockHttpClient(): HttpClient {
   };
 }
 
-test('createComponentsApi.getComponentsでコンポーネント一覧を取得できる', async () => {
+test('fileComponentsApiでコンポーネント一覧を取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
   const mockResponse: GetComponentsResponse = {
       error: false,
@@ -33,8 +33,7 @@ test('createComponentsApi.getComponentsでコンポーネント一覧を取得�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-  const result = await componentsApi.getComponents(TestData.FILE_KEY);
+  const result = await fileComponentsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(mockHttpClient.get).toHaveBeenCalledWith(
     '/v1/files/test-file-key/components'
@@ -42,7 +41,7 @@ test('createComponentsApi.getComponentsでコンポーネント一覧を取得�
   expect(result).toEqual(mockResponse);
 });
 
-test('createComponentsApi.getComponentsで空のコンポーネント一覧を取得できる', async () => {
+test('fileComponentsApiで空のコンポーネント一覧を取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
   const mockResponse: GetComponentsResponse = {
     error: false,
@@ -53,13 +52,12 @@ test('createComponentsApi.getComponentsで空のコンポーネント一覧を�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-  const result = await componentsApi.getComponents(TestData.FILE_KEY);
+  const result = await fileComponentsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.meta.components).toHaveLength(0);
 });
 
-test('createComponentsApi.getComponentsで複数のコンポーネントを正しく取得できる', async () => {
+test('fileComponentsApiで複数のコンポーネントを正しく取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
     const mockResponse: GetComponentsResponse = {
       error: false,
@@ -83,15 +81,14 @@ test('createComponentsApi.getComponentsで複数のコンポーネントを正�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-  const result = await componentsApi.getComponents(TestData.FILE_KEY);
+  const result = await fileComponentsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.meta.components).toHaveLength(2);
   expect(result.meta.components[0].name).toBe('Button');
   expect(result.meta.components[1].name).toBe('Input');
 });
 
-test('createComponentsApi.getComponentsでエラーレスポンスを正しく処理できる', async () => {
+test('fileComponentsApiでエラーレスポンスを正しく処理できる', async () => {
   const mockHttpClient = createMockHttpClient();
   const mockResponse: GetComponentsResponse = {
     error: true,
@@ -103,34 +100,29 @@ test('createComponentsApi.getComponentsでエラーレスポンスを正しく�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-  const result = await componentsApi.getComponents(TestData.FILE_KEY);
+  const result = await fileComponentsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.error).toBe(true);
   expect(result.status).toBe(403);
 });
 
-test('createComponentsApi.getComponentsでHTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
+test('fileComponentsApiでHTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
   const mockHttpClient = createMockHttpClient();
   const expectedError = new Error('Network error');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(expectedError);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-
-  await expect(componentsApi.getComponents(TestData.FILE_KEY)).rejects.toThrow('Network error');
+  await expect(fileComponentsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow('Network error');
 });
 
-test('createComponentsApi.getComponentsでタイムアウトエラーが適切に処理される', async () => {
+test('fileComponentsApiでタイムアウトエラーが適切に処理される', async () => {
   const mockHttpClient = createMockHttpClient();
   const timeoutError = new Error('Request timeout');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(timeoutError);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
-
-  await expect(componentsApi.getComponents(TestData.FILE_KEY)).rejects.toThrow('Request timeout');
+  await expect(fileComponentsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow('Request timeout');
 });
 
-test('createComponentsApi.getComponentsで特殊文字を含むファイルキーが正しくエンコードされる', async () => {
+test('fileComponentsApiで特殊文字を含むファイルキーが正しくエンコードされる', async () => {
   const mockHttpClient = createMockHttpClient();
   const mockResponse: GetComponentsResponse = {
     error: false,
@@ -138,9 +130,8 @@ test('createComponentsApi.getComponentsで特殊文字を含むファイルキ�
   };
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const componentsApi = createComponentsApi(mockHttpClient);
   const specialFileKey = 'file:key/with-special@chars';
-  await componentsApi.getComponents(specialFileKey);
+  await fileComponentsApi(mockHttpClient, specialFileKey);
 
   expect(mockHttpClient.get).toHaveBeenCalledWith(
     '/v1/files/file:key/with-special@chars/components'

@@ -2,7 +2,7 @@ import { createApiConfig } from './config.js';
 import { createHttpClient, type HttpClient } from './client.js';
 import { createFilesApi, type FilesApi } from './endpoints/files/index.js';
 import { createNodesApi } from './endpoints/nodes/index.js';
-import { createComponentsApi } from './endpoints/components/index.js';
+import { fileComponentsApi, fileComponentSetsApi } from './endpoints/components/index.js';
 import { createStylesApi } from './endpoints/styles/index.js';
 import { createImagesApi } from './endpoints/images/index.js';
 import { createCommentsApi } from './endpoints/comments/index.js';
@@ -11,7 +11,10 @@ import { createTeamsApi } from './endpoints/teams/index.js';
 import { FigmaContext } from './context.js';
 import { getRuntimeConfig } from '../config/runtime-config/runtime-config.js';
 import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter.js';
-import type { GetComponentsResponse } from '../types/api/responses/component-responses.js';
+import type {
+  GetComponentsResponse,
+  GetComponentSetsResponse,
+} from '../types/api/responses/component-responses.js';
 import type { GetStylesResponse } from '../types/api/responses/style-responses.js';
 import type { ExportImageResponse } from '../types/api/responses/image-responses.js';
 import type { GetCommentsResponse } from '../types/api/responses/comment-responses.js';
@@ -31,8 +34,6 @@ export interface FigmaApiClient {
   readonly files: FilesApi;
   /** Nodes API endpoint */
   readonly nodes: ReturnType<typeof createNodesApi>;
-  /** Components API endpoint */
-  readonly components: ReturnType<typeof createComponentsApi>;
   /** Styles API endpoint */
   readonly styles: ReturnType<typeof createStylesApi>;
   /** Images API endpoint */
@@ -57,17 +58,16 @@ export namespace FigmaApiClient {
   export function create(accessToken: string, baseUrl?: string): FigmaApiClient {
     const runtimeConfig = getRuntimeConfig();
     const effectiveBaseUrl = runtimeConfig.baseUrl || baseUrl || process.env.FIGMA_API_BASE_URL;
-    
+
     const config = createApiConfig(accessToken, effectiveBaseUrl);
     const httpClient = createHttpClient(config);
     const context = FigmaContext.from(accessToken, { baseUrl: effectiveBaseUrl });
-    
+
     return {
       context,
       httpClient,
       files: createFilesApi(httpClient),
       nodes: createNodesApi(httpClient),
-      components: createComponentsApi(httpClient),
       styles: createStylesApi(httpClient),
       images: createImagesApi(httpClient),
       comments: createCommentsApi(httpClient),
@@ -82,13 +82,12 @@ export namespace FigmaApiClient {
   export function fromContext(context: FigmaContext): FigmaApiClient {
     const config = createApiConfig(context.accessToken, context.baseUrl);
     const httpClient = createHttpClient(config);
-    
+
     return {
       context,
       httpClient,
       files: createFilesApi(httpClient),
       nodes: createNodesApi(httpClient),
-      components: createComponentsApi(httpClient),
       styles: createStylesApi(httpClient),
       images: createImagesApi(httpClient),
       comments: createCommentsApi(httpClient),
@@ -123,7 +122,18 @@ export namespace FigmaApiClient {
     client: FigmaApiClient,
     fileKey: string
   ): Promise<GetComponentsResponse> {
-    const response = await client.components.getComponents(fileKey);
+    const response = await fileComponentsApi(client.httpClient, fileKey);
+    return convertKeysToCamelCase(response);
+  }
+
+  /**
+   * コンポーネントセット一覧を取得（キャメルケース変換付き）
+   */
+  export async function getComponentSets(
+    client: FigmaApiClient,
+    fileKey: string
+  ): Promise<GetComponentSetsResponse> {
+    const response = await fileComponentSetsApi(client.httpClient, fileKey);
     return convertKeysToCamelCase(response);
   }
 
