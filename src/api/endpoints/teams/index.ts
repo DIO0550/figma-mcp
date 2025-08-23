@@ -1,7 +1,7 @@
 // チーム・プロジェクト関連のAPI関数
 
-import type { HttpClient } from '../client.js';
-import type { GetTeamProjectsResponse, GetProjectFilesResponse } from '../../types/index.js';
+import type { HttpClient } from '../../client.js';
+import type { GetTeamProjectsResponse, GetProjectFilesResponse } from '../../../types/index.js';
 
 export interface TeamsApi {
   getTeamProjects: (teamId: string) => Promise<GetTeamProjectsResponse>;
