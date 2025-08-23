@@ -1,7 +1,7 @@
 // バージョン関連のAPI関数
 
-import type { HttpClient } from '../client.js';
-import type { GetVersionsResponse } from '../../types/index.js';
+import type { HttpClient } from '../../client.js';
+import type { GetVersionsResponse } from '../../../types/index.js';
 
 export interface VersionsApi {
   getVersions: (fileKey: string) => Promise<GetVersionsResponse>;
