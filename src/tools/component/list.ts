@@ -1,5 +1,5 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetComponentsResponse } from '../../types/api/responses/component-responses.js';
+import type { FileComponentsApiResponse } from '../../types/api/responses/component-responses.js';
 import { Component } from '../../models/component/index.js';
 import { GetComponentsArgsSchema, type GetComponentsArgs } from './get-components-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
@@ -37,7 +37,7 @@ export const GetComponentsTool = {
   async execute(
     tool: GetComponentsTool,
     args: GetComponentsArgs
-  ): Promise<GetComponentsResponse> {
+  ): Promise<FileComponentsApiResponse> {
     const response = await FigmaApiClient.getComponents(tool.apiClient, args.fileKey);
     const result = { ...response };
 

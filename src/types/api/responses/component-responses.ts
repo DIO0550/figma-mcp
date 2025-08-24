@@ -16,7 +16,7 @@ export interface VariantSet {
   properties: Record<string, string[]>;
 }
 
-export interface GetComponentsResponse {
+export interface FileComponentsApiResponse {
   error?: boolean;
   status?: number;
   meta: {
@@ -26,7 +26,7 @@ export interface GetComponentsResponse {
   variantSets?: Record<string, VariantSet>;
 }
 
-export interface GetComponentSetsResponse {
+export interface FileComponentSetsApiResponse {
   meta: {
     componentSets: Array<{
       key: string;
