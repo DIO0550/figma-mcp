@@ -1,7 +1,7 @@
 import { test, expect, vi } from 'vitest';
-import { createCommentsApi } from '../index';
+import { postFileCommentApi } from '../index';
 import type { HttpClient } from '../../../client';
-import type { Comment, PostCommentOptions } from '../../../../types';
+import type { PostFileCommentApiResponse, PostCommentOptions } from '../../../../types';
 import { TestData } from '../../../../constants';
 
 function createMockHttpClient(): HttpClient {
@@ -11,9 +11,9 @@ function createMockHttpClient(): HttpClient {
   };
 }
 
-test('createCommentsApi.postCommentで新しいコメントを投稿できる', async () => {
+test('postFileCommentApiで新しいコメントを投稿できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockComment: Comment = {
+  const mockComment: PostFileCommentApiResponse = {
     id: 'comment-1',
     fileKey: TestData.FILE_KEY,
     parentId: '',
@@ -32,7 +32,6 @@ test('createCommentsApi.postCommentで新しいコメントを投稿できる', 
 
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const commentsApi = createCommentsApi(mockHttpClient);
   const options: PostCommentOptions = {
     message: 'New comment',
     client_meta: {
@@ -41,7 +40,7 @@ test('createCommentsApi.postCommentで新しいコメントを投稿できる', 
     },
   };
 
-  const result = await commentsApi.postComment(TestData.FILE_KEY, options);
+  const result = await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
   expect(mockHttpClient.post).toHaveBeenCalledWith(
     '/v1/files/test-file-key/comments',
@@ -53,9 +52,9 @@ test('createCommentsApi.postCommentで新しいコメントを投稿できる', 
   expect(result).toEqual(mockComment);
 });
 
-test('createCommentsApi.postCommentで既存のコメントへの返信を投稿できる', async () => {
+test('postFileCommentApiで既存のコメントへの返信を投稿できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockComment: Comment = {
+  const mockComment: PostFileCommentApiResponse = {
     id: 'comment-2',
     fileKey: TestData.FILE_KEY,
     parentId: 'comment-1',
@@ -74,7 +73,6 @@ test('createCommentsApi.postCommentで既存のコメントへの返信を投稿
 
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const commentsApi = createCommentsApi(mockHttpClient);
   const options: PostCommentOptions = {
     message: 'Reply comment',
     client_meta: {
@@ -84,7 +82,7 @@ test('createCommentsApi.postCommentで既存のコメントへの返信を投稿
     comment_id: 'comment-1',
   };
 
-  const result = await commentsApi.postComment(TestData.FILE_KEY, options);
+  const result = await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
   expect(mockHttpClient.post).toHaveBeenCalledWith(
     '/v1/files/test-file-key/comments',
@@ -97,29 +95,27 @@ test('createCommentsApi.postCommentで既存のコメントへの返信を投稿
   expect(result.parentId).toBe('comment-1');
 });
 
-test('createCommentsApi.postCommentでcomment_idが未定義の場合はbodyに含まれない', async () => {
+test('postFileCommentApiでcomment_idが未定義の場合はbodyに含まれない', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockComment = {} as Comment;
+  const mockComment = {} as PostFileCommentApiResponse;
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const commentsApi = createCommentsApi(mockHttpClient);
   const options: PostCommentOptions = {
     message: 'Test',
     client_meta: { x: 0, y: 0 },
   };
 
-  await commentsApi.postComment(TestData.FILE_KEY, options);
+  await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
   const calledBody = vi.mocked(mockHttpClient.post).mock.calls[0][1];
   expect(calledBody).not.toHaveProperty('comment_id');
 });
 
-test('createCommentsApi.postCommentで異なる座標位置でコメントを投稿できる', async () => {
+test('postFileCommentApiで異なる座標位置でコメントを投稿できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockComment = {} as Comment;
+  const mockComment = {} as PostFileCommentApiResponse;
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const commentsApi = createCommentsApi(mockHttpClient);
   const options: PostCommentOptions = {
     message: 'Test at different position',
     client_meta: {
@@ -128,7 +124,7 @@ test('createCommentsApi.postCommentで異なる座標位置でコメントを投
     },
   };
 
-  await commentsApi.postComment(TestData.FILE_KEY, options);
+  await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
   expect(mockHttpClient.post).toHaveBeenCalledWith(
     '/v1/files/test-file-key/comments',
@@ -139,81 +135,76 @@ test('createCommentsApi.postCommentで異なる座標位置でコメントを投
   );
 });
 
-test('createCommentsApi.postCommentで空のメッセージでもコメントを投稿できる', async () => {
+test('postFileCommentApiで空のメッセージでもコメントを投稿できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockComment = {} as Comment;
+  const mockComment = {} as PostFileCommentApiResponse;
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const commentsApi = createCommentsApi(mockHttpClient);
   const options: PostCommentOptions = {
     message: '',
     client_meta: { x: 0, y: 0 },
   };
 
-  await commentsApi.postComment(TestData.FILE_KEY, options);
+  await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
   const calledBody = vi.mocked(mockHttpClient.post).mock.calls[0][1];
   expect(calledBody).toHaveProperty('message', '');
 });
 
-test('createCommentsApi.postCommentで長いメッセージを含むコメントを投稿できる', async () => {
+test('postFileCommentApiで長いメッセージを含むコメントを投稿できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockComment = {} as Comment;
+  const mockComment = {} as PostFileCommentApiResponse;
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
   const longMessage = 'A'.repeat(1000);
-  const commentsApi = createCommentsApi(mockHttpClient);
   const options: PostCommentOptions = {
     message: longMessage,
     client_meta: { x: 0, y: 0 },
   };
 
-  await commentsApi.postComment(TestData.FILE_KEY, options);
+  await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
   const calledBody = vi.mocked(mockHttpClient.post).mock.calls[0][1];
   expect(calledBody).toHaveProperty('message', longMessage);
 });
 
-test('createCommentsApi.postCommentでHTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
+test('postFileCommentApiでHTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
   const mockHttpClient = createMockHttpClient();
   const expectedError = new Error('Network error');
   vi.mocked(mockHttpClient.post).mockRejectedValueOnce(expectedError);
 
-  const commentsApi = createCommentsApi(mockHttpClient);
   const options: PostCommentOptions = {
     message: 'Test',
     client_meta: { x: 0, y: 0 },
   };
 
-  await expect(commentsApi.postComment(TestData.FILE_KEY, options)).rejects.toThrow('Network error');
+  await expect(postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options)).rejects.toThrow('Network error');
 });
 
-test('createCommentsApi.postCommentで権限エラーが適切に処理される', async () => {
+test('postFileCommentApiで権限エラーが適切に処理される', async () => {
   const mockHttpClient = createMockHttpClient();
   const permissionError = new Error('Forbidden');
   vi.mocked(mockHttpClient.post).mockRejectedValueOnce(permissionError);
 
-  const commentsApi = createCommentsApi(mockHttpClient);
   const options: PostCommentOptions = {
     message: 'Test',
     client_meta: { x: 0, y: 0 },
   };
 
-  await expect(commentsApi.postComment(TestData.FILE_KEY, options)).rejects.toThrow('Forbidden');
+  await expect(postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options)).rejects.toThrow('Forbidden');
 });
 
-test('createCommentsApi.postCommentで特殊文字を含むメッセージを正しく送信できる', async () => {
+test('postFileCommentApiで特殊文字を含むメッセージを正しく送信できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockComment = {} as Comment;
+  const mockComment = {} as PostFileCommentApiResponse;
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const commentsApi = createCommentsApi(mockHttpClient);
   const options: PostCommentOptions = {
     message: 'Message with "quotes" and 日本語',
     client_meta: { x: 0, y: 0 },
   };
 
-  await commentsApi.postComment(TestData.FILE_KEY, options);
+  await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
   const calledBody = vi.mocked(mockHttpClient.post).mock.calls[0][1];
   expect(calledBody).toHaveProperty('message', 'Message with "quotes" and 日本語');

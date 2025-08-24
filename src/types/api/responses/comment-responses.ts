@@ -2,6 +2,8 @@
 
 import type { Comment } from '../../../models/comment/index.js';
 
-export interface GetCommentsResponse {
+export interface GetFileCommentsApiResponse {
   comments: Comment[];
 }
+
+export type PostFileCommentApiResponse = Comment;
