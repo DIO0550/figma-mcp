@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ComponentData } from '../component.js';
 import type { FigmaContext } from '../../../context.js';
-import type { GetComponentsResponse } from '../../../../types/api/responses/component-responses.js';
+import type { FileComponentsApiResponse } from '../../../../types/api/responses/component-responses.js';
 import type { Component } from '../../../../types/figma-types.js';
 
 describe('ComponentData.fetchAll', () => {
@@ -18,7 +18,7 @@ describe('ComponentData.fetchAll', () => {
   });
 
   it('指定されたファイルのコンポーネント一覧を取得できる', async () => {
-    const mockResponse: GetComponentsResponse = {
+    const mockResponse: FileComponentsApiResponse = {
       meta: {
         components: [
           {

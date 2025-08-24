@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { ComponentData } from '../component.js';
-import type { GetComponentsResponse } from '../../../../types/api/responses/component-responses.js';
+import type { FileComponentsApiResponse } from '../../../../types/api/responses/component-responses.js';
 import type { Component } from '../../../../types/figma-types.js';
 
 describe('ComponentData.fromResponse', () => {
   it('Figma APIレスポンスからComponentDataを作成できる', () => {
-    const response: GetComponentsResponse = {
+    const response: FileComponentsApiResponse = {
       meta: {
         components: [
           {
@@ -35,7 +35,7 @@ describe('ComponentData.fromResponse', () => {
   });
 
   it('複数のコンポーネントを処理できる', () => {
-    const response: GetComponentsResponse = {
+    const response: FileComponentsApiResponse = {
       meta: {
         components: [
           {
@@ -76,7 +76,7 @@ describe('ComponentData.fromResponse', () => {
   });
 
   it('空のレスポンスを処理できる', () => {
-    const response: GetComponentsResponse = {
+    const response: FileComponentsApiResponse = {
       meta: {
         components: [],
       },

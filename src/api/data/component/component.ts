@@ -1,5 +1,5 @@
 import type { FigmaContext } from '../../context.js';
-import type { GetComponentsResponse } from '../../../types/api/responses/component-responses.js';
+import type { FileComponentsApiResponse } from '../../../types/api/responses/component-responses.js';
 
 /**
  * APIレスポンスのコンポーネント型
@@ -59,7 +59,7 @@ export namespace ComponentData {
   /**
    * Figma APIレスポンスからComponentDataの配列を作成
    */
-  export function fromResponse(response: GetComponentsResponse): ComponentData[] {
+  export function fromResponse(response: FileComponentsApiResponse): ComponentData[] {
     if (!response.meta?.components) {
       return [];
     }
@@ -99,7 +99,7 @@ export namespace ComponentData {
       throw new Error(`Failed to fetch components: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json() as GetComponentsResponse;
+    const data = await response.json() as FileComponentsApiResponse;
     return fromResponse(data);
   }
 

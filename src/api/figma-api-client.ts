@@ -12,8 +12,8 @@ import { FigmaContext } from './context.js';
 import { getRuntimeConfig } from '../config/runtime-config/runtime-config.js';
 import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter.js';
 import type {
-  GetComponentsResponse,
-  GetComponentSetsResponse,
+  FileComponentsApiResponse,
+  FileComponentSetsApiResponse,
 } from '../types/api/responses/component-responses.js';
 import type { GetStylesResponse } from '../types/api/responses/style-responses.js';
 import type { ExportImageResponse } from '../types/api/responses/image-responses.js';
@@ -121,7 +121,7 @@ export namespace FigmaApiClient {
   export async function getComponents(
     client: FigmaApiClient,
     fileKey: string
-  ): Promise<GetComponentsResponse> {
+  ): Promise<FileComponentsApiResponse> {
     const response = await fileComponentsApi(client.httpClient, fileKey);
     return convertKeysToCamelCase(response);
   }
@@ -132,7 +132,7 @@ export namespace FigmaApiClient {
   export async function getComponentSets(
     client: FigmaApiClient,
     fileKey: string
-  ): Promise<GetComponentSetsResponse> {
+  ): Promise<FileComponentSetsApiResponse> {
     const response = await fileComponentSetsApi(client.httpClient, fileKey);
     return convertKeysToCamelCase(response);
   }
