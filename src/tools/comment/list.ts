@@ -1,5 +1,5 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetCommentsResponse } from '../../types/api/responses/comment-responses.js';
+import type { GetFileCommentsApiResponse } from '../../types/api/responses/comment-responses.js';
 import { Comment } from '../../models/comment/index.js';
 import { GetCommentsArgsSchema, type GetCommentsArgs } from './get-comments-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
@@ -74,7 +74,7 @@ export const GetCommentsTool = {
   async execute(
     tool: GetCommentsTool,
     args: GetCommentsArgs
-  ): Promise<GetCommentsResponse> {
+  ): Promise<GetFileCommentsApiResponse> {
     const response = await FigmaApiClient.getComments(tool.apiClient, args.fileKey);
 
     // フィルターを順番に適用
