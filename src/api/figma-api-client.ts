@@ -5,7 +5,7 @@ import { createNodesApi } from './endpoints/nodes/index.js';
 import { fileComponentsApi, fileComponentSetsApi } from './endpoints/components/index.js';
 import { createStylesApi } from './endpoints/styles/index.js';
 import { createImagesApi } from './endpoints/images/index.js';
-import { createCommentsApi } from './endpoints/comments/index.js';
+import { getFileCommentsApi } from './endpoints/comments/index.js';
 import { createVersionsApi } from './endpoints/versions/index.js';
 import { createTeamsApi } from './endpoints/teams/index.js';
 import { FigmaContext } from './context.js';
@@ -17,7 +17,7 @@ import type {
 } from '../types/api/responses/component-responses.js';
 import type { GetStylesResponse } from '../types/api/responses/style-responses.js';
 import type { ExportImageResponse } from '../types/api/responses/image-responses.js';
-import type { GetCommentsResponse } from '../types/api/responses/comment-responses.js';
+import type { GetFileCommentsApiResponse } from '../types/api/responses/comment-responses.js';
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
 import type { ExportImageOptions } from '../types/api/options/image-options.js';
 
@@ -38,8 +38,6 @@ export interface FigmaApiClient {
   readonly styles: ReturnType<typeof createStylesApi>;
   /** Images API endpoint */
   readonly images: ReturnType<typeof createImagesApi>;
-  /** Comments API endpoint */
-  readonly comments: ReturnType<typeof createCommentsApi>;
   /** Versions API endpoint */
   readonly versions: ReturnType<typeof createVersionsApi>;
   /** Teams API endpoint */
@@ -70,7 +68,6 @@ export namespace FigmaApiClient {
       nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
       images: createImagesApi(httpClient),
-      comments: createCommentsApi(httpClient),
       versions: createVersionsApi(httpClient),
       teams: createTeamsApi(httpClient),
     };
@@ -90,7 +87,6 @@ export namespace FigmaApiClient {
       nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
       images: createImagesApi(httpClient),
-      comments: createCommentsApi(httpClient),
       versions: createVersionsApi(httpClient),
       teams: createTeamsApi(httpClient),
     };
@@ -167,8 +163,8 @@ export namespace FigmaApiClient {
   export async function getComments(
     client: FigmaApiClient,
     fileKey: string
-  ): Promise<GetCommentsResponse> {
-    const response = await client.comments.getComments(fileKey);
+  ): Promise<GetFileCommentsApiResponse> {
+    const response = await getFileCommentsApi(client.httpClient, fileKey);
     return convertKeysToCamelCase(response);
   }
 
