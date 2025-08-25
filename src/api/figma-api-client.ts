@@ -2,7 +2,6 @@ import { createApiConfig } from './config.js';
 import { createHttpClient, type HttpClient } from './client.js';
 import { getFileApi } from './endpoints/file/index.js';
 import { getFileNodesApi } from './endpoints/file-nodes/index.js';
-import { createFilesApi, type FilesApi } from './endpoints/files-compat.js';
 import { createNodesApi } from './endpoints/nodes/index.js';
 import { fileComponentsApi, fileComponentSetsApi } from './endpoints/components/index.js';
 import { createStylesApi } from './endpoints/styles/index.js';
@@ -33,8 +32,6 @@ export interface FigmaApiClient {
   readonly context: FigmaContext;
   /** HTTP Client */
   readonly httpClient: HttpClient;
-  /** Files API endpoint */
-  readonly files: FilesApi;
   /** Nodes API endpoint */
   readonly nodes: ReturnType<typeof createNodesApi>;
   /** Styles API endpoint */
@@ -67,7 +64,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      files: createFilesApi(httpClient),
       nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
       images: createImagesApi(httpClient),
@@ -86,7 +82,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      files: createFilesApi(httpClient),
       nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
       images: createImagesApi(httpClient),

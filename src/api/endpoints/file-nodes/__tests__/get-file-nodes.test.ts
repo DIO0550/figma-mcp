@@ -1,7 +1,7 @@
 import { test, expect, vi } from 'vitest';
 import { getFileNodesApi } from '../index.js';
 import type { HttpClient } from '../../../client.js';
-import type { GetFileNodesResponse, GetFileOptions } from '../../../../types/index.js';
+import type { GetFileNodesApiResponse, GetFileOptions } from '../../../../types/index.js';
 import { TestData } from '../../../../constants/index.js';
 
 function createMockHttpClient(): HttpClient {
@@ -13,7 +13,7 @@ function createMockHttpClient(): HttpClient {
 
 test('getFileNodesApiでノード情報を取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockResponse: GetFileNodesResponse = {
+  const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
     thumbnailUrl: 'https://example.com/thumb.png',
@@ -48,7 +48,7 @@ test('getFileNodesApiでノード情報を取得できる', async () => {
 
 test('getFileNodesApiで複数のノードIDを指定できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileNodesResponse);
+  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileNodesApiResponse);
 
   await getFileNodesApi(mockHttpClient, TestData.FILE_KEY, ['1:1', '2:2', '3:3']);
 
@@ -81,7 +81,7 @@ test.each([
   'getFileNodesApiでオプション$optionsを正しくパラメータ化する',
   async ({ options, expectedParams }) => {
     const mockHttpClient = createMockHttpClient();
-    vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileNodesResponse);
+    vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileNodesApiResponse);
 
     await getFileNodesApi(mockHttpClient, TestData.FILE_KEY, ['1:1'], options);
 
@@ -100,7 +100,7 @@ test('getFileNodesApiで複数のオプションを組み合わせて使用で�
     branchData: false,
   };
 
-  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileNodesResponse);
+  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileNodesApiResponse);
 
   await getFileNodesApi(mockHttpClient, TestData.FILE_KEY, ['1:1', '2:2'], options);
 

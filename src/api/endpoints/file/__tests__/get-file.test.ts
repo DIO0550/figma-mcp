@@ -1,7 +1,8 @@
 import { test, expect, vi } from 'vitest';
 import { getFileApi } from '../index.js';
 import type { HttpClient } from '../../../client.js';
-import type { FigmaFile, GetFileOptions } from '../../../../types/index.js';
+import type { GetFileOptions } from '../../../../types/index.js';
+import type { GetFileApiResponse } from '../../../../types/api/responses/file-responses.js';
 import { TestData } from '../../../../constants/index.js';
 
 function createMockHttpClient(): HttpClient {
@@ -13,7 +14,7 @@ function createMockHttpClient(): HttpClient {
 
 test('getFileApiでファイル情報を取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockFile: FigmaFile = {
+  const mockFile: GetFileApiResponse = {
     document: {
       id: '0:0',
       name: 'Document',
@@ -37,19 +38,19 @@ test('getFileApiでファイル情報を取得できる', async () => {
 
   const result = await getFileApi(mockHttpClient, TestData.FILE_KEY);
 
-  expect(mockHttpClient.get).toHaveBeenCalledWith('/v1/files/test-file-key', new URLSearchParams());
+  expect(mockHttpClient.get).toHaveBeenCalledWith('/v1/files/test-file-key', undefined);
   expect(result).toEqual(mockFile);
 });
 
 test('getFileApiでオプションなしでファイル情報を取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const mockFile = {} as FigmaFile;
+  const mockFile = {} as GetFileApiResponse;
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockFile);
 
   await getFileApi(mockHttpClient, TestData.FILE_KEY);
 
   const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
-  expect(calledParams?.toString()).toBe('');
+  expect(calledParams).toBeUndefined();
 });
 
 test.each([
@@ -81,7 +82,7 @@ test.each([
   'getFileApiでオプション$optionsを正しくパラメータ化する',
   async ({ options, expectedParams }) => {
     const mockHttpClient = createMockHttpClient();
-    vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
+    vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileApiResponse);
 
     await getFileApi(mockHttpClient, TestData.FILE_KEY, options);
 
@@ -101,7 +102,7 @@ test('getFileApiで複数のオプションを組み合わせて使用できる'
     branchData: false,
   };
 
-  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
+  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileApiResponse);
 
   await getFileApi(mockHttpClient, TestData.FILE_KEY, options);
 
@@ -118,7 +119,7 @@ test('getFileApiで複数のオプションを組み合わせて使用できる'
 
 test('getFileApiでdepthが0の場合も正しくパラメータ化される', async () => {
   const mockHttpClient = createMockHttpClient();
-  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
+  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileApiResponse);
 
   await getFileApi(mockHttpClient, TestData.FILE_KEY, { depth: 0 });
 
@@ -128,7 +129,7 @@ test('getFileApiでdepthが0の場合も正しくパラメータ化される', a
 
 test('getFileApiでbranchDataがfalseの場合も正しくパラメータ化される', async () => {
   const mockHttpClient = createMockHttpClient();
-  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
+  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileApiResponse);
 
   await getFileApi(mockHttpClient, TestData.FILE_KEY, { branchData: false });
 
@@ -138,7 +139,7 @@ test('getFileApiでbranchDataがfalseの場合も正しくパラメータ化さ�
 
 test('getFileApiで空のidsが渡された場合、空文字列のパラメータになる', async () => {
   const mockHttpClient = createMockHttpClient();
-  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
+  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileApiResponse);
 
   await getFileApi(mockHttpClient, TestData.FILE_KEY, { ids: [] });
 
@@ -148,7 +149,7 @@ test('getFileApiで空のidsが渡された場合、空文字列のパラメー�
 
 test('getFileApiで特殊文字を含むnode IDが適切にエンコードされる', async () => {
   const mockHttpClient = createMockHttpClient();
-  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
+  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileApiResponse);
 
   await getFileApi(mockHttpClient, TestData.FILE_KEY, { ids: ['1:1', 'I123:456', 'S789;012'] });
 
@@ -158,7 +159,7 @@ test('getFileApiで特殊文字を含むnode IDが適切にエンコードされ
 
 test('getFileApiで無効なgeometry値が渡された場合でも処理される', async () => {
   const mockHttpClient = createMockHttpClient();
-  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as FigmaFile);
+  vi.mocked(mockHttpClient.get).mockResolvedValueOnce({} as GetFileApiResponse);
 
   // @ts-expect-error - Testing invalid geometry value
   await getFileApi(mockHttpClient, TestData.FILE_KEY, { geometry: 'invalid' });

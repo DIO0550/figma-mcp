@@ -14,7 +14,7 @@ export interface GetNodesResponse {
   >;
 }
 
-export interface GetFileNodesResponse {
+export interface GetFileNodesApiResponse {
   name: string;
   lastModified: string;
   thumbnailUrl?: string;
@@ -28,3 +28,6 @@ export interface GetFileNodesResponse {
     }
   >;
 }
+
+// 後方互換性のためのエイリアス（廃止予定）
+export interface GetFileNodesResponse extends GetFileNodesApiResponse {}

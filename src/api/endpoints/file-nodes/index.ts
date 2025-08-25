@@ -1,7 +1,45 @@
 // ファイルノード関連のAPI呼び出し関数
 
 import type { HttpClient } from '../../client.js';
-import type { GetFileNodesResponse, GetFileOptions } from '../../../types/index.js';
+import type { GetFileOptions } from '../../../types/index.js';
+import type { GetFileNodesApiResponse } from '../../../types/api/responses/node-responses.js';
+import { camelToSnakeCase } from '../../../utils/case-converter.js';
+
+/**
+ * 値を適切な文字列に変換
+ */
+function valueToString(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.join(',');
+  }
+  if (typeof value === 'boolean' || typeof value === 'number') {
+    return String(value);
+  }
+  return value as string;
+}
+
+/**
+ * GetFileNodesAPIのパラメータを構築
+ */
+function buildFileNodesParams(ids: string[], options?: GetFileOptions): URLSearchParams {
+  const params = new URLSearchParams();
+
+  // 必須パラメータ
+  params.append('ids', ids.join(','));
+
+  // ガード節: オプションがない場合は早期リターン
+  if (!options) return params;
+
+  // Object.entriesでオプションを処理
+  Object.entries(options).forEach(([key, value]) => {
+    if (value !== undefined) {
+      const paramName = camelToSnakeCase(key);
+      params.append(paramName, valueToString(value));
+    }
+  });
+
+  return params;
+}
 
 /**
  * ファイルノード情報を取得
@@ -11,18 +49,7 @@ export async function getFileNodesApi(
   fileKey: string,
   ids: string[],
   options?: GetFileOptions
-): Promise<GetFileNodesResponse> {
-  const params = new URLSearchParams();
-  params.append('ids', ids.join(','));
-
-  if (options) {
-    if (options.version) params.append('version', options.version);
-    if (options.depth !== undefined) params.append('depth', options.depth.toString());
-    if (options.geometry) params.append('geometry', options.geometry);
-    if (options.pluginData) params.append('plugin_data', options.pluginData);
-    if (options.branchData !== undefined)
-      params.append('branch_data', options.branchData.toString());
-  }
-
-  return client.get<GetFileNodesResponse>(`/v1/files/${fileKey}/nodes`, params);
+): Promise<GetFileNodesApiResponse> {
+  const params = buildFileNodesParams(ids, options);
+  return client.get<GetFileNodesApiResponse>(`/v1/files/${fileKey}/nodes`, params);
 }
