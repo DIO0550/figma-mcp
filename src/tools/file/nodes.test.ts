@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { GetFileNodesTool } from './nodes.js';
-import type { FigmaApiClient } from '../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { GetFileNodesResponse } from '../../types/api/responses/index.js';
 import { GetFileNodesArgsSchema } from './get-file-nodes-args.js';
 
@@ -9,12 +9,7 @@ describe('nodes tool', () => {
   let tool: GetFileNodesTool;
 
   beforeEach(() => {
-    apiClient = {
-      files: {
-        getFile: vi.fn(),
-        getFileNodes: vi.fn(),
-      },
-    } as unknown as FigmaApiClient;
+    apiClient = {} as FigmaApiClient;
     tool = GetFileNodesTool.from(apiClient);
   });
 
@@ -37,7 +32,7 @@ describe('nodes tool', () => {
       },
     };
 
-    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(FigmaApiClient, 'getFileNodes').mockResolvedValue(mockResponse);
 
     const result = await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -58,7 +53,12 @@ describe('nodes tool', () => {
       ],
     });
 
-    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {});
+    expect(FigmaApiClient.getFileNodes).toHaveBeenCalledWith(
+      apiClient,
+      'test-file-key',
+      ['1:2'],
+      {}
+    );
   });
 
   test('複数のノードを取得できる', async () => {
@@ -90,7 +90,7 @@ describe('nodes tool', () => {
       },
     };
 
-    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(FigmaApiClient, 'getFileNodes').mockResolvedValue(mockResponse);
 
     const result = await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -120,7 +120,7 @@ describe('nodes tool', () => {
       nodes: {},
     };
 
-    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(FigmaApiClient, 'getFileNodes').mockResolvedValue(mockResponse);
 
     await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -128,7 +128,9 @@ describe('nodes tool', () => {
       depth: 3,
     });
 
-    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], { depth: 3 });
+    expect(FigmaApiClient.getFileNodes).toHaveBeenCalledWith(apiClient, 'test-file-key', ['1:2'], {
+      depth: 3,
+    });
   });
 
   test('ノードIDが空の場合はエラーになる', () => {
@@ -149,7 +151,7 @@ describe('nodes tool', () => {
       nodes: {},
     };
 
-    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(FigmaApiClient, 'getFileNodes').mockResolvedValue(mockResponse);
 
     await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -157,7 +159,7 @@ describe('nodes tool', () => {
       geometry: 'paths',
     });
 
-    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
+    expect(FigmaApiClient.getFileNodes).toHaveBeenCalledWith(apiClient, 'test-file-key', ['1:2'], {
       geometry: 'paths',
     });
   });
@@ -170,7 +172,7 @@ describe('nodes tool', () => {
       nodes: {},
     };
 
-    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(FigmaApiClient, 'getFileNodes').mockResolvedValue(mockResponse);
 
     await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -178,7 +180,7 @@ describe('nodes tool', () => {
       geometry: 'points',
     });
 
-    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
+    expect(FigmaApiClient.getFileNodes).toHaveBeenCalledWith(apiClient, 'test-file-key', ['1:2'], {
       geometry: 'points',
     });
   });
@@ -191,7 +193,7 @@ describe('nodes tool', () => {
       nodes: {},
     };
 
-    vi.spyOn(apiClient.files, 'getFileNodes').mockResolvedValue(mockResponse);
+    vi.spyOn(FigmaApiClient, 'getFileNodes').mockResolvedValue(mockResponse);
 
     await GetFileNodesTool.execute(tool, {
       file_key: 'test-file-key',
@@ -200,7 +202,7 @@ describe('nodes tool', () => {
       geometry: 'paths',
     });
 
-    expect(apiClient.files.getFileNodes).toHaveBeenCalledWith('test-file-key', ['1:2'], {
+    expect(FigmaApiClient.getFileNodes).toHaveBeenCalledWith(apiClient, 'test-file-key', ['1:2'], {
       depth: 2,
       geometry: 'paths',
     });
