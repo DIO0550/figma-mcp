@@ -1,5 +1,5 @@
 import type { GetFileOptions } from '../../types/index.js';
-import type { FigmaApiClient } from '../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { NodeEntry, FileNodesResponse } from './types.js';
 import type { McpToolDefinition } from '../types.js';
 import { GetFileNodesArgsSchema, type GetFileNodesArgs } from './get-file-nodes-args.js';
@@ -35,10 +35,7 @@ export const GetFileNodesTool = {
   /**
    * ノード情報取得を実行
    */
-  async execute(
-    tool: GetFileNodesTool,
-    args: GetFileNodesArgs
-  ): Promise<FileNodesResponse> {
+  async execute(tool: GetFileNodesTool, args: GetFileNodesArgs): Promise<FileNodesResponse> {
     const options: GetFileOptions = {
       depth: args.depth,
       geometry: args.geometry,
@@ -54,7 +51,12 @@ export const GetFileNodesTool = {
       }
     });
 
-    const response = await tool.apiClient.files.getFileNodes(args.file_key, args.ids, options);
+    const response = await FigmaApiClient.getFileNodes(
+      tool.apiClient,
+      args.file_key,
+      args.ids,
+      options
+    );
     const nodeEntries = Object.entries(response.nodes || {}) as NodeEntry[];
     const nodes = nodeEntries.map(([nodeId, nodeData]) => ({
       ...nodeData.document,

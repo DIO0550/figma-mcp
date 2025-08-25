@@ -1,6 +1,7 @@
 import { createApiConfig } from './config.js';
 import { createHttpClient, type HttpClient } from './client.js';
-import { createFilesApi, type FilesApi } from './endpoints/files/index.js';
+import { getFileApi } from './endpoints/file/index.js';
+import { getFileNodesApi } from './endpoints/file-nodes/index.js';
 import { createNodesApi } from './endpoints/nodes/index.js';
 import { fileComponentsApi, fileComponentSetsApi } from './endpoints/components/index.js';
 import { createStylesApi } from './endpoints/styles/index.js';
@@ -20,6 +21,7 @@ import type { ExportImageResponse } from '../types/api/responses/image-responses
 import type { GetFileCommentsApiResponse } from '../types/api/responses/comment-responses.js';
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
 import type { ExportImageOptions } from '../types/api/options/image-options.js';
+import type { FigmaFile, GetFileOptions, GetFileNodesResponse } from '../types/index.js';
 
 /**
  * FigmaApiClientのデータ構造
@@ -30,8 +32,6 @@ export interface FigmaApiClient {
   readonly context: FigmaContext;
   /** HTTP Client */
   readonly httpClient: HttpClient;
-  /** Files API endpoint */
-  readonly files: FilesApi;
   /** Nodes API endpoint */
   readonly nodes: ReturnType<typeof createNodesApi>;
   /** Styles API endpoint */
@@ -64,7 +64,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      files: createFilesApi(httpClient),
       nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
       images: createImagesApi(httpClient),
@@ -83,7 +82,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      files: createFilesApi(httpClient),
       nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
       images: createImagesApi(httpClient),
@@ -177,6 +175,31 @@ export namespace FigmaApiClient {
   ): Promise<GetVersionsResponse> {
     const response = await client.versions.getVersions(fileKey);
     return convertKeysToCamelCase(response);
+  }
+
+  /**
+   * ファイル情報を取得（キャメルケース変換付き）
+   */
+  export async function getFile(
+    client: FigmaApiClient,
+    fileKey: string,
+    options?: GetFileOptions
+  ): Promise<FigmaFile> {
+    const response = await getFileApi(client.httpClient, fileKey, options);
+    return convertKeysToCamelCase(response) as FigmaFile;
+  }
+
+  /**
+   * ファイルノード情報を取得（キャメルケース変換付き）
+   */
+  export async function getFileNodes(
+    client: FigmaApiClient,
+    fileKey: string,
+    ids: string[],
+    options?: GetFileOptions
+  ): Promise<GetFileNodesResponse> {
+    const response = await getFileNodesApi(client.httpClient, fileKey, ids, options);
+    return convertKeysToCamelCase(response) as GetFileNodesResponse;
   }
 }
 
