@@ -10,36 +10,33 @@
         "esbenp.prettier-vscode",
         "GitHub.copilot",
         "GitHub.copilot-chat",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-      }
-    }
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+      },
+    },
   },
   "forwardPorts": [8765],
   "portsAttributes": {
     "8765": {
       "label": "MCP Server",
-      "onAutoForward": "notify"
-    }
+      "onAutoForward": "notify",
+    },
   },
   "remoteUser": "node",
   "containerEnv": {
-    "GITHUB_TOKEN": "${localEnv:GITHUB_PERSONAL_ACCESS_TOKEN}"
+    "GITHUB_TOKEN": "${localEnv:GITHUB_PERSONAL_ACCESS_TOKEN}",
   },
   "features": {
     "ghcr.io/devcontainers/features/git:1": {
       "version": "latest",
-      "ppa": false
+      "ppa": false,
     },
     "ghcr.io/devcontainers/features/github-cli:1": {
-      "version": "latest"
+      "version": "latest",
     },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
-    }
-  }
+  },
 }
