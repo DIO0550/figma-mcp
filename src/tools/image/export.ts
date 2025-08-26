@@ -1,5 +1,5 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { ExportImageResponse } from '../../types/api/responses/image-responses.js';
+import type { ImageApiResponse } from '../../types/api/responses/image-responses.js';
 import { ExportImagesArgsSchema, type ExportImagesArgs } from './export-images-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
 
@@ -33,7 +33,7 @@ export const ExportImagesTool = {
   /**
    * 画像エクスポートを実行
    */
-  async execute(tool: ExportImagesTool, args: ExportImagesArgs): Promise<ExportImageResponse> {
+  async execute(tool: ExportImagesTool, args: ExportImagesArgs): Promise<ImageApiResponse> {
     const { fileKey, ...options } = args;
     return FigmaApiClient.exportImages(tool.apiClient, fileKey, options);
   },

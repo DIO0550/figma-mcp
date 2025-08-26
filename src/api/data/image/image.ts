@@ -1,5 +1,5 @@
 import type { FigmaContext } from '../../context.js';
-import type { ExportImageResponse } from '../../../types/api/responses/image-responses.js';
+import type { ImageApiResponse } from '../../../types/api/responses/image-responses.js';
 
 /**
  * 画像エクスポートのフォーマット
@@ -66,7 +66,7 @@ export namespace ImageExport {
     }
 
     const url = `${context.baseUrl}/v1/images/${fileKey}?${params.toString()}`;
-    
+
     const response = await globalThis.fetch(url, {
       method: 'GET',
       headers: context.headers,
@@ -76,7 +76,7 @@ export namespace ImageExport {
       throw new Error(`Failed to fetch images: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json() as ExportImageResponse;
+    const data = (await response.json()) as ImageApiResponse;
 
     return {
       nodeIds: options.nodeIds,
@@ -98,9 +98,7 @@ export namespace ImageExport {
       return [];
     }
 
-    const promises = optionsList.map(options =>
-      fetch(context, fileKey, options)
-    );
+    const promises = optionsList.map((options) => fetch(context, fileKey, options));
 
     return await Promise.all(promises);
   }

@@ -1,12 +1,12 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { createImagesApi } from '../index';
+import { imagesApi } from '../index';
 import type { HttpClient } from '../../../client';
-import type { ExportImageResponse } from '../../../../types';
+import type { ImageApiResponse } from '../../../../types';
 import type { DeepSnakeCase } from '../../../../utils/type-transformers';
 import type { ExportImageOptions } from '../../../../types/api/options/image-options';
 import { TestData } from '../../../../constants';
 
-describe('createImagesApi - exportImages', () => {
+describe('imagesApi', () => {
   let mockHttpClient: HttpClient;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('createImagesApi - exportImages', () => {
   });
 
   test('画像をエクスポートできる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: {
         '1:1': 'https://example.com/image1.png',
@@ -28,25 +28,24 @@ describe('createImagesApi - exportImages', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['1:1', '2:2'],
     };
 
-    const result = await imagesApi.exportImages(TestData.FILE_KEY, options);
+    const result = await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     expect(mockHttpClient.get).toHaveBeenCalledWith(
       '/v1/images/test-file-key',
       expect.any(URLSearchParams)
     );
-    
+
     const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
     expect(calledParams?.toString()).toContain('ids=1%3A1%2C2%3A2');
     expect(result).toEqual(mockResponse);
   });
 
   test('単一の画像をエクスポートできる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: {
         '1:1': 'https://example.com/image.png',
@@ -55,65 +54,61 @@ describe('createImagesApi - exportImages', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['1:1'],
     };
 
-    const result = await imagesApi.exportImages(TestData.FILE_KEY, options);
+    const result = await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     expect(result.images).toHaveProperty('1:1');
   });
 
   test('スケールオプションを指定してエクスポートできる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: { '1:1': 'https://example.com/image.png' },
     };
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['1:1'],
       scale: 2,
     };
 
-    await imagesApi.exportImages(TestData.FILE_KEY, options);
+    await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
     expect(calledParams?.toString()).toContain('scale=2');
   });
 
   test('フォーマットオプションを指定してエクスポートできる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: { '1:1': 'https://example.com/image.svg' },
     };
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['1:1'],
       format: 'svg',
     };
 
-    await imagesApi.exportImages(TestData.FILE_KEY, options);
+    await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
     expect(calledParams?.toString()).toContain('format=svg');
   });
 
   test('SVGオプションを指定してエクスポートできる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: { '1:1': 'https://example.com/image.svg' },
     };
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['1:1'],
       format: 'svg',
@@ -121,7 +116,7 @@ describe('createImagesApi - exportImages', () => {
       svg_simplify_stroke: false,
     };
 
-    await imagesApi.exportImages(TestData.FILE_KEY, options);
+    await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
     expect(calledParams?.toString()).toContain('svg_include_id=true');
@@ -129,54 +124,51 @@ describe('createImagesApi - exportImages', () => {
   });
 
   test('use_absolute_boundsオプションを指定してエクスポートできる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: { '1:1': 'https://example.com/image.png' },
     };
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['1:1'],
       use_absolute_bounds: true,
     };
 
-    await imagesApi.exportImages(TestData.FILE_KEY, options);
+    await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
     expect(calledParams?.toString()).toContain('use_absolute_bounds=true');
   });
 
   test('バージョンオプションを指定してエクスポートできる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: { '1:1': 'https://example.com/image.png' },
     };
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['1:1'],
       version: '123456',
     };
 
-    await imagesApi.exportImages(TestData.FILE_KEY, options);
+    await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
     expect(calledParams?.toString()).toContain('version=123456');
   });
 
   test('すべてのオプションを組み合わせてエクスポートできる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: { '1:1': 'https://example.com/image.png' },
     };
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['1:1', '2:2'],
       scale: 3,
@@ -185,11 +177,11 @@ describe('createImagesApi - exportImages', () => {
       version: '789',
     };
 
-    await imagesApi.exportImages(TestData.FILE_KEY, options);
+    await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
     const paramString = calledParams?.toString() ?? '';
-    
+
     expect(paramString).toContain('ids=1%3A1%2C2%3A2');
     expect(paramString).toContain('scale=3');
     expect(paramString).toContain('format=pdf');
@@ -198,19 +190,18 @@ describe('createImagesApi - exportImages', () => {
   });
 
   test('エラーレスポンスを正しく処理できる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: 'Invalid node ID',
       images: {},
     };
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['invalid'],
     };
 
-    const result = await imagesApi.exportImages(TestData.FILE_KEY, options);
+    const result = await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     expect(result.err).toBe('Invalid node ID');
     expect(Object.keys(result.images)).toHaveLength(0);
@@ -220,47 +211,46 @@ describe('createImagesApi - exportImages', () => {
     const expectedError = new Error('Network error');
     vi.mocked(mockHttpClient.get).mockRejectedValueOnce(expectedError);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['1:1'],
     };
 
-    await expect(imagesApi.exportImages(TestData.FILE_KEY, options)).rejects.toThrow('Network error');
+    await expect(imagesApi(mockHttpClient, TestData.FILE_KEY, options)).rejects.toThrow(
+      'Network error'
+    );
   });
 
   test('空のidsが渡された場合でも処理される', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: {},
     };
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: [],
     };
 
-    await imagesApi.exportImages(TestData.FILE_KEY, options);
+    await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
     expect(calledParams?.toString()).toBe('ids=');
   });
 
   test('特殊文字を含むnode IDが適切にエンコードされる', async () => {
-    const mockResponse: ExportImageResponse = {
+    const mockResponse: ImageApiResponse = {
       err: undefined,
       images: {},
     };
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const imagesApi = createImagesApi(mockHttpClient);
     const options: DeepSnakeCase<ExportImageOptions> = {
       ids: ['I:123', 'S;456', '7:8'],
     };
 
-    await imagesApi.exportImages(TestData.FILE_KEY, options);
+    await imagesApi(mockHttpClient, TestData.FILE_KEY, options);
 
     const calledParams = vi.mocked(mockHttpClient.get).mock.calls[0][1];
     expect(calledParams?.toString()).toBe('ids=I%3A123%2CS%3B456%2C7%3A8');
