@@ -5,7 +5,7 @@ import { getFileNodesApi } from './endpoints/file-nodes/index.js';
 import { createNodesApi } from './endpoints/nodes/index.js';
 import { fileComponentsApi, fileComponentSetsApi } from './endpoints/components/index.js';
 import { createStylesApi } from './endpoints/styles/index.js';
-import { createImagesApi } from './endpoints/images/index.js';
+import { imagesApi } from './endpoints/images/index.js';
 import { getFileCommentsApi } from './endpoints/comments/index.js';
 import { createVersionsApi } from './endpoints/versions/index.js';
 import { createTeamsApi } from './endpoints/teams/index.js';
@@ -17,7 +17,7 @@ import type {
   FileComponentSetsApiResponse,
 } from '../types/api/responses/component-responses.js';
 import type { GetStylesResponse } from '../types/api/responses/style-responses.js';
-import type { ExportImageResponse } from '../types/api/responses/image-responses.js';
+import type { ImageApiResponse } from '../types/api/responses/image-responses.js';
 import type { GetFileCommentsApiResponse } from '../types/api/responses/comment-responses.js';
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
 import type { ExportImageOptions } from '../types/api/options/image-options.js';
@@ -36,8 +36,6 @@ export interface FigmaApiClient {
   readonly nodes: ReturnType<typeof createNodesApi>;
   /** Styles API endpoint */
   readonly styles: ReturnType<typeof createStylesApi>;
-  /** Images API endpoint */
-  readonly images: ReturnType<typeof createImagesApi>;
   /** Versions API endpoint */
   readonly versions: ReturnType<typeof createVersionsApi>;
   /** Teams API endpoint */
@@ -66,7 +64,6 @@ export namespace FigmaApiClient {
       httpClient,
       nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
-      images: createImagesApi(httpClient),
       versions: createVersionsApi(httpClient),
       teams: createTeamsApi(httpClient),
     };
@@ -84,7 +81,6 @@ export namespace FigmaApiClient {
       httpClient,
       nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
-      images: createImagesApi(httpClient),
       versions: createVersionsApi(httpClient),
       teams: createTeamsApi(httpClient),
     };
@@ -149,9 +145,9 @@ export namespace FigmaApiClient {
     client: FigmaApiClient,
     fileKey: string,
     options: ExportImageOptions
-  ): Promise<ExportImageResponse> {
+  ): Promise<ImageApiResponse> {
     const snakeOptions = convertKeysToSnakeCase(options);
-    const response = await client.images.exportImages(fileKey, snakeOptions);
+    const response = await imagesApi(client.httpClient, fileKey, snakeOptions);
     return convertKeysToCamelCase(response);
   }
 
