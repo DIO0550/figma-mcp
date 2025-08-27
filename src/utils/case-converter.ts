@@ -46,49 +46,47 @@ export function camelToSnakeCase(str: string): string {
 }
 
 /**
- * オブジェクトのキーをスネークケースからキャメルケースに変換
+ * オブジェクトのキーを再帰的に変換する汎用関数
  */
-export function convertKeysToCamelCase<T>(obj: T): DeepCamelCase<T> {
+function convertKeysRecursively<T, R>(
+  obj: T,
+  keyConverter: (key: string) => string,
+  recursiveFn: (value: unknown) => unknown
+): R {
   if (obj === null || obj === undefined) {
-    return obj as DeepCamelCase<T>;
+    return obj as unknown as R;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item): unknown => convertKeysToCamelCase(item)) as DeepCamelCase<T>;
+    return obj.map((item): unknown => recursiveFn(item)) as R;
   }
 
   if (typeof obj === 'object' && obj.constructor === Object) {
     const converted: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
-      const camelKey = snakeToCamelCase(key);
-      converted[camelKey] = convertKeysToCamelCase(value);
+      const newKey = keyConverter(key);
+      converted[newKey] = recursiveFn(value);
     }
-    return converted as DeepCamelCase<T>;
+    return converted as R;
   }
 
-  return obj as DeepCamelCase<T>;
+  return obj as unknown as R;
+}
+
+/**
+ * オブジェクトのキーをスネークケースからキャメルケースに変換
+ */
+export function convertKeysToCamelCase<T>(obj: T): DeepCamelCase<T> {
+  return convertKeysRecursively<T, DeepCamelCase<T>>(obj, snakeToCamelCase, (value) =>
+    convertKeysToCamelCase(value)
+  );
 }
 
 /**
  * オブジェクトのキーをキャメルケースからスネークケースに変換
  */
 export function convertKeysToSnakeCase<T>(obj: T): DeepSnakeCase<T> {
-  if (obj === null || obj === undefined) {
-    return obj as DeepSnakeCase<T>;
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map((item): unknown => convertKeysToSnakeCase(item)) as DeepSnakeCase<T>;
-  }
-
-  if (typeof obj === 'object' && obj.constructor === Object) {
-    const converted: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(obj)) {
-      const snakeKey = camelToSnakeCase(key);
-      converted[snakeKey] = convertKeysToSnakeCase(value);
-    }
-    return converted as DeepSnakeCase<T>;
-  }
-
-  return obj as DeepSnakeCase<T>;
+  return convertKeysRecursively<T, DeepSnakeCase<T>>(obj, camelToSnakeCase, (value) =>
+    convertKeysToSnakeCase(value)
+  );
 }
