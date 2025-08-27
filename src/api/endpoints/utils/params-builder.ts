@@ -20,7 +20,8 @@ export function valueToString(value: unknown): string {
     return String(value);
   }
 
-  return value as string;
+  // 型安全性を確保: 明示的にString()を使用
+  return String(value);
 }
 
 /**
@@ -55,8 +56,8 @@ export function buildUrlParams<T = Record<string, unknown>>(
 
   if (requiredParams) {
     for (const [key, value] of Object.entries(requiredParams)) {
-      const stringValue = Array.isArray(value) ? value.join(',') : value;
-      params.append(key, stringValue);
+      // valueToString関数を再利用して一貫性を保つ
+      params.append(key, valueToString(value));
     }
   }
 
