@@ -20,7 +20,7 @@ import type { GetStylesResponse } from '../types/api/responses/style-responses.j
 import type { ImageApiResponse } from '../types/api/responses/image-responses.js';
 import type { GetFileCommentsApiResponse } from '../types/api/responses/comment-responses.js';
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
-import type { ExportImageOptions } from '../types/api/options/image-options.js';
+import type { ImageApiOptions } from '../types/api/options/image-options.js';
 import type { FigmaFile, GetFileOptions, GetFileNodesResponse } from '../types/index.js';
 
 /**
@@ -144,7 +144,7 @@ export namespace FigmaApiClient {
   export async function exportImages(
     client: FigmaApiClient,
     fileKey: string,
-    options: ExportImageOptions
+    options: ImageApiOptions
   ): Promise<ImageApiResponse> {
     const snakeOptions = convertKeysToSnakeCase(options);
     const response = await imagesApi(client.httpClient, fileKey, snakeOptions);

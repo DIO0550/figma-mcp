@@ -3,7 +3,7 @@ import { imagesApi } from '../index';
 import type { HttpClient } from '../../../client';
 import type { ImageApiResponse } from '../../../../types';
 import type { DeepSnakeCase } from '../../../../utils/type-transformers';
-import type { ExportImageOptions } from '../../../../types/api/options/image-options';
+import type { ImageApiOptions } from '../../../../types/api/options/image-options';
 import { TestData } from '../../../../constants';
 
 describe('imagesApi', () => {
@@ -28,7 +28,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['1:1', '2:2'],
     };
 
@@ -54,7 +54,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['1:1'],
     };
 
@@ -71,7 +71,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['1:1'],
       scale: 2,
     };
@@ -90,7 +90,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['1:1'],
       format: 'svg',
     };
@@ -109,7 +109,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['1:1'],
       format: 'svg',
       svg_include_id: true,
@@ -131,7 +131,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['1:1'],
       use_absolute_bounds: true,
     };
@@ -150,7 +150,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['1:1'],
       version: '123456',
     };
@@ -169,7 +169,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['1:1', '2:2'],
       scale: 3,
       format: 'pdf',
@@ -197,7 +197,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['invalid'],
     };
 
@@ -211,7 +211,7 @@ describe('imagesApi', () => {
     const expectedError = new Error('Network error');
     vi.mocked(mockHttpClient.get).mockRejectedValueOnce(expectedError);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['1:1'],
     };
 
@@ -228,7 +228,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: [],
     };
 
@@ -246,7 +246,7 @@ describe('imagesApi', () => {
 
     vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-    const options: DeepSnakeCase<ExportImageOptions> = {
+    const options: DeepSnakeCase<ImageApiOptions> = {
       ids: ['I:123', 'S;456', '7:8'],
     };
 
