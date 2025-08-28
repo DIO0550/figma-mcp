@@ -2,14 +2,14 @@
 
 import type { HttpClient } from '../../client.js';
 import type { ImageApiResponse } from '../../../types/index.js';
-import type { ExportImageOptions } from '../../../types/api/options/image-options.js';
+import type { ImageApiOptions } from '../../../types/api/options/image-options.js';
 import type { DeepSnakeCase } from '../../../utils/type-transformers.js';
 import { buildUrlParams } from '../utils/params-builder.js';
 
 export async function imagesApi(
   client: HttpClient,
   fileKey: string,
-  options: DeepSnakeCase<ExportImageOptions>
+  options: DeepSnakeCase<ImageApiOptions>
 ): Promise<ImageApiResponse> {
   const { ids, ...restOptions } = options;
   const params = buildUrlParams(restOptions, { ids });

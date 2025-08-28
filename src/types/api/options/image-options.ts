@@ -1,6 +1,6 @@
 // 画像エクスポート関連のAPIオプション型定義
 
-export interface ExportImageOptions {
+export interface ImageApiOptions {
   ids: string[];
   scale?: number;
   format?: 'jpg' | 'png' | 'svg' | 'pdf';
