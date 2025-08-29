@@ -4,6 +4,7 @@ import type { HttpClient } from '../../client.js';
 import type {
   GetFileCommentsApiResponse,
   PostFileCommentApiResponse,
+  GetFileCommentsOptions,
   PostCommentOptions,
 } from '../../../types/index.js';
 import { buildUrlParams, buildRequestBody } from '../utils/params-builder.js';
@@ -11,7 +12,7 @@ import { buildUrlParams, buildRequestBody } from '../utils/params-builder.js';
 export async function getFileCommentsApi(
   client: HttpClient,
   fileKey: string,
-  options?: Record<string, unknown>
+  options?: GetFileCommentsOptions
 ): Promise<GetFileCommentsApiResponse> {
   const params = buildUrlParams(options);
   return client.get<GetFileCommentsApiResponse>(`/v1/files/${fileKey}/comments`, params);
