@@ -8,12 +8,10 @@ import type {
 } from '../../../types/index.js';
 import { buildUrlParams, buildRequestBody } from '../utils/params-builder.js';
 
-export interface GetFileCommentsOptions {}
-
 export async function getFileCommentsApi(
   client: HttpClient,
   fileKey: string,
-  options?: GetFileCommentsOptions
+  options?: Record<string, unknown>
 ): Promise<GetFileCommentsApiResponse> {
   const params = buildUrlParams(options);
   return client.get<GetFileCommentsApiResponse>(`/v1/files/${fileKey}/comments`, params);
