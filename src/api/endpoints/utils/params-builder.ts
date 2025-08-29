@@ -102,17 +102,25 @@ export function buildUrlParams<T = Record<string, unknown>>(
  * // { node_id: '1:2', format_options: { scale: 2 } }
  */
 export function buildRequestBody<T>(data: T): DeepSnakeCase<T> {
+  // 型ガードを使用して安全性を確保
+  if (data == null || typeof data !== 'object') {
+    return data as DeepSnakeCase<T>;
+  }
+
   const result: Record<string, unknown> = {};
 
-  for (const [key, value] of Object.entries(data as Record<string, unknown>)) {
+  // 型ガードによりdataがオブジェクトであることが保証される
+  for (const [key, value] of Object.entries(data)) {
     if (value === undefined) {
       continue;
     }
 
     const snakeKey = camelToSnakeCase(key);
 
+    // 型ガードを使用してオブジェクトかどうかを判定
     if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-      result[snakeKey] = buildRequestBody(value as Record<string, unknown>);
+      // 再帰的にオブジェクトを処理
+      result[snakeKey] = buildRequestBody(value);
     } else {
       result[snakeKey] = value;
     }
