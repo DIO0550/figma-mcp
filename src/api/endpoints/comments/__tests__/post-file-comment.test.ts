@@ -34,7 +34,7 @@ test('postFileCommentApiで新しいコメントを投稿できる', async () =>
 
   const options: PostCommentOptions = {
     message: 'New comment',
-    client_meta: {
+    clientMeta: {
       x: 100,
       y: 200,
     },
@@ -42,13 +42,10 @@ test('postFileCommentApiで新しいコメントを投稿できる', async () =>
 
   const result = await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
-  expect(mockHttpClient.post).toHaveBeenCalledWith(
-    '/v1/files/test-file-key/comments',
-    {
-      message: 'New comment',
-      client_meta: { x: 100, y: 200 },
-    }
-  );
+  expect(mockHttpClient.post).toHaveBeenCalledWith('/v1/files/test-file-key/comments', {
+    message: 'New comment',
+    client_meta: { x: 100, y: 200 },
+  });
   expect(result).toEqual(mockComment);
 });
 
@@ -75,23 +72,20 @@ test('postFileCommentApiで既存のコメントへの返信を投稿できる',
 
   const options: PostCommentOptions = {
     message: 'Reply comment',
-    client_meta: {
+    clientMeta: {
       x: 100,
       y: 200,
     },
-    comment_id: 'comment-1',
+    commentId: 'comment-1',
   };
 
   const result = await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
-  expect(mockHttpClient.post).toHaveBeenCalledWith(
-    '/v1/files/test-file-key/comments',
-    {
-      message: 'Reply comment',
-      client_meta: { x: 100, y: 200 },
-      comment_id: 'comment-1',
-    }
-  );
+  expect(mockHttpClient.post).toHaveBeenCalledWith('/v1/files/test-file-key/comments', {
+    message: 'Reply comment',
+    client_meta: { x: 100, y: 200 },
+    comment_id: 'comment-1',
+  });
   expect(result.parentId).toBe('comment-1');
 });
 
@@ -102,7 +96,7 @@ test('postFileCommentApiでcomment_idが未定義の場合はbodyに含まれな
 
   const options: PostCommentOptions = {
     message: 'Test',
-    client_meta: { x: 0, y: 0 },
+    clientMeta: { x: 0, y: 0 },
   };
 
   await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
@@ -118,7 +112,7 @@ test('postFileCommentApiで異なる座標位置でコメントを投稿でき�
 
   const options: PostCommentOptions = {
     message: 'Test at different position',
-    client_meta: {
+    clientMeta: {
       x: 500,
       y: 750,
     },
@@ -126,13 +120,10 @@ test('postFileCommentApiで異なる座標位置でコメントを投稿でき�
 
   await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
 
-  expect(mockHttpClient.post).toHaveBeenCalledWith(
-    '/v1/files/test-file-key/comments',
-    {
-      message: 'Test at different position',
-      client_meta: { x: 500, y: 750 },
-    }
-  );
+  expect(mockHttpClient.post).toHaveBeenCalledWith('/v1/files/test-file-key/comments', {
+    message: 'Test at different position',
+    client_meta: { x: 500, y: 750 },
+  });
 });
 
 test('postFileCommentApiで空のメッセージでもコメントを投稿できる', async () => {
@@ -142,7 +133,7 @@ test('postFileCommentApiで空のメッセージでもコメントを投稿で�
 
   const options: PostCommentOptions = {
     message: '',
-    client_meta: { x: 0, y: 0 },
+    clientMeta: { x: 0, y: 0 },
   };
 
   await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
@@ -159,7 +150,7 @@ test('postFileCommentApiで長いメッセージを含むコメントを投稿�
   const longMessage = 'A'.repeat(1000);
   const options: PostCommentOptions = {
     message: longMessage,
-    client_meta: { x: 0, y: 0 },
+    clientMeta: { x: 0, y: 0 },
   };
 
   await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
@@ -175,10 +166,12 @@ test('postFileCommentApiでHTTPクライアントがエラーをスローした�
 
   const options: PostCommentOptions = {
     message: 'Test',
-    client_meta: { x: 0, y: 0 },
+    clientMeta: { x: 0, y: 0 },
   };
 
-  await expect(postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options)).rejects.toThrow('Network error');
+  await expect(postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options)).rejects.toThrow(
+    'Network error'
+  );
 });
 
 test('postFileCommentApiで権限エラーが適切に処理される', async () => {
@@ -188,10 +181,12 @@ test('postFileCommentApiで権限エラーが適切に処理される', async ()
 
   const options: PostCommentOptions = {
     message: 'Test',
-    client_meta: { x: 0, y: 0 },
+    clientMeta: { x: 0, y: 0 },
   };
 
-  await expect(postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options)).rejects.toThrow('Forbidden');
+  await expect(postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options)).rejects.toThrow(
+    'Forbidden'
+  );
 });
 
 test('postFileCommentApiで特殊文字を含むメッセージを正しく送信できる', async () => {
@@ -201,7 +196,7 @@ test('postFileCommentApiで特殊文字を含むメッセージを正しく送�
 
   const options: PostCommentOptions = {
     message: 'Message with "quotes" and 日本語',
-    client_meta: { x: 0, y: 0 },
+    clientMeta: { x: 0, y: 0 },
   };
 
   await postFileCommentApi(mockHttpClient, TestData.FILE_KEY, options);
