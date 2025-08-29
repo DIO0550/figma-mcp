@@ -2,9 +2,9 @@
 
 export interface PostCommentOptions {
   message: string;
-  client_meta: {
+  clientMeta: {
     x: number;
     y: number;
   };
-  comment_id?: string;
+  commentId?: string;
 }

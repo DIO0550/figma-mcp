@@ -1,4 +1,5 @@
 import { camelToSnakeCase } from '../../../utils/case-converter.js';
+import type { DeepSnakeCase } from '../../../utils/type-transformers.js';
 
 /**
  * 任意の値をFigma APIのクエリパラメータ値として使用可能な文字列に変換する
@@ -73,4 +74,49 @@ export function buildUrlParams<T = Record<string, unknown>>(
   }
 
   return params;
+}
+
+/**
+ * オプショナルなフィールドを含むリクエストボディを構築する
+ *
+ * undefined値のフィールドは自動的に除外される
+ * camelCaseのプロパティ名は自動的にsnake_caseに変換される（Figma APIの仕様に準拠）
+ *
+ * @param data - リクエストボディのデータ（camelCase可）
+ * @returns snake_caseに変換され、undefinedフィールドが除外されたリクエストボディ
+ *
+ * @example
+ * buildRequestBody({
+ *   message: 'Hello',
+ *   clientMeta: { x: 10, y: 20 },
+ *   commentId: undefined
+ * })
+ * // { message: 'Hello', client_meta: { x: 10, y: 20 } }
+ *
+ * @example
+ * buildRequestBody({
+ *   nodeId: '1:2',
+ *   formatOptions: { scale: 2 },
+ *   optional: undefined
+ * })
+ * // { node_id: '1:2', format_options: { scale: 2 } }
+ */
+export function buildRequestBody<T>(data: T): DeepSnakeCase<T> {
+  const result: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(data as Record<string, unknown>)) {
+    if (value === undefined) {
+      continue;
+    }
+
+    const snakeKey = camelToSnakeCase(key);
+
+    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      result[snakeKey] = buildRequestBody(value as Record<string, unknown>);
+    } else {
+      result[snakeKey] = value;
+    }
+  }
+
+  return result as DeepSnakeCase<T>;
 }

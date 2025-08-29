@@ -41,9 +41,7 @@ test('getFileCommentsApiでコメント一覧を取得できる', async () => {
 
   const result = await getFileCommentsApi(mockHttpClient, TestData.FILE_KEY);
 
-  expect(mockHttpClient.get).toHaveBeenCalledWith(
-    '/v1/files/test-file-key/comments'
-  );
+  expect(mockHttpClient.get).toHaveBeenCalledWith('/v1/files/test-file-key/comments', undefined);
   expect(result).toEqual(mockResponse);
 });
 
@@ -143,7 +141,9 @@ test('getFileCommentsApiでHTTPクライアントがエラーをスローした�
   const expectedError = new Error('Network error');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(expectedError);
 
-  await expect(getFileCommentsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow('Network error');
+  await expect(getFileCommentsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow(
+    'Network error'
+  );
 });
 
 test('getFileCommentsApiで認証エラーが適切に処理される', async () => {
@@ -151,7 +151,9 @@ test('getFileCommentsApiで認証エラーが適切に処理される', async ()
   const authError = new Error('Unauthorized');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(authError);
 
-  await expect(getFileCommentsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow('Unauthorized');
+  await expect(getFileCommentsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow(
+    'Unauthorized'
+  );
 });
 
 test('getFileCommentsApiで特殊文字を含むファイルキーが正しくエンコードされる', async () => {
@@ -163,6 +165,7 @@ test('getFileCommentsApiで特殊文字を含むファイルキーが正しく�
   await getFileCommentsApi(mockHttpClient, specialFileKey);
 
   expect(mockHttpClient.get).toHaveBeenCalledWith(
-    '/v1/files/file:key/with-special@chars/comments'
+    '/v1/files/file:key/with-special@chars/comments',
+    undefined
   );
 });
