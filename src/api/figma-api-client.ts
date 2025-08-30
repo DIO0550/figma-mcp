@@ -8,7 +8,8 @@ import { getStylesApi } from './endpoints/styles/index.js';
 import { imagesApi } from './endpoints/images/index.js';
 import { getFileCommentsApi } from './endpoints/comments/index.js';
 import { createVersionsApi } from './endpoints/versions/index.js';
-import { createTeamsApi } from './endpoints/teams/index.js';
+import { getTeamProjectsApi } from './endpoints/team/index.js';
+import { getProjectFilesApi } from './endpoints/project/index.js';
 import { FigmaContext } from './context.js';
 import { getRuntimeConfig } from '../config/runtime-config/runtime-config.js';
 import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter.js';
@@ -20,6 +21,7 @@ import type { GetStylesApiResponse } from '../types/api/responses/style-response
 import type { ImageApiResponse } from '../types/api/responses/image-responses.js';
 import type { GetFileCommentsApiResponse } from '../types/api/responses/comment-responses.js';
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
+import type { GetProjectFilesApiOptions } from '../types/api/responses/project-api-responses.js';
 import type { ImageApiOptions } from '../types/api/options/image-options.js';
 import type {
   FigmaFile,
@@ -40,8 +42,6 @@ export interface FigmaApiClient {
   readonly httpClient: HttpClient;
   /** Versions API endpoint */
   readonly versions: ReturnType<typeof createVersionsApi>;
-  /** Teams API endpoint */
-  readonly teams: ReturnType<typeof createTeamsApi>;
 }
 
 /**
@@ -65,7 +65,6 @@ export namespace FigmaApiClient {
       context,
       httpClient,
       versions: createVersionsApi(httpClient),
-      teams: createTeamsApi(httpClient),
     };
   }
 
@@ -80,7 +79,6 @@ export namespace FigmaApiClient {
       context,
       httpClient,
       versions: createVersionsApi(httpClient),
-      teams: createTeamsApi(httpClient),
     };
   }
 
@@ -207,6 +205,29 @@ export namespace FigmaApiClient {
     const snakeOptions = convertKeysToSnakeCase(options);
     const response = await getNodesApi(client.httpClient, fileKey, snakeOptions);
     return convertKeysToCamelCase(response) as GetNodesResponse;
+  }
+
+  /**
+   * チームのプロジェクト一覧を取得（キャメルケース変換付き）
+   */
+  export async function getTeamProjects(
+    client: FigmaApiClient,
+    teamId: string
+  ): Promise<Record<string, unknown>> {
+    const response = await getTeamProjectsApi(client.httpClient, teamId);
+    return convertKeysToCamelCase(response);
+  }
+
+  /**
+   * プロジェクトのファイル一覧を取得（キャメルケース変換付き）
+   */
+  export async function getProjectFiles(
+    client: FigmaApiClient,
+    projectId: string,
+    options?: GetProjectFilesApiOptions
+  ): Promise<Record<string, unknown>> {
+    const response = await getProjectFilesApi(client.httpClient, projectId, options);
+    return convertKeysToCamelCase(response);
   }
 }
 
