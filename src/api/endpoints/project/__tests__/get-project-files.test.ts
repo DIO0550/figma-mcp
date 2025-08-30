@@ -1,83 +1,87 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { test, expect, vi } from 'vitest';
 import type { HttpClient } from '../../../client.js';
 import type { GetProjectFilesApiResponse } from '../../../../types/index.js';
 import { getProjectFilesApi } from '../index.js';
 
-describe('getProjectFilesApi', () => {
-  let mockClient: HttpClient;
+test('getProjectFilesApi: プロジェクトのファイル一覧を取得できる', async () => {
+  const mockClient: HttpClient = {
+    get: vi.fn(),
+    post: vi.fn(),
+  };
 
-  beforeEach(() => {
-    mockClient = {
-      get: vi.fn(),
-      post: vi.fn(),
-    };
-  });
+  const projectId = 'proj-123';
+  const mockResponse: GetProjectFilesApiResponse = {
+    files: [
+      {
+        key: 'file-key-1',
+        name: 'Component Library',
+        thumbnailUrl: 'https://example.com/thumb1.png',
+        lastModified: '2024-01-01T00:00:00Z',
+      },
+      {
+        key: 'file-key-2',
+        name: 'Icons',
+        thumbnailUrl: 'https://example.com/thumb2.png',
+        lastModified: '2024-01-02T00:00:00Z',
+      },
+    ],
+  };
 
-  it('プロジェクトのファイル一覧を取得できる', async () => {
-    const projectId = 'proj-123';
-    const mockResponse: GetProjectFilesApiResponse = {
-      files: [
-        {
-          key: 'file-key-1',
-          name: 'Component Library',
-          thumbnailUrl: 'https://example.com/thumb1.png',
-          lastModified: '2024-01-01T00:00:00Z',
-        },
-        {
-          key: 'file-key-2',
-          name: 'Icons',
-          thumbnailUrl: 'https://example.com/thumb2.png',
-          lastModified: '2024-01-02T00:00:00Z',
-        },
-      ],
-    };
+  vi.mocked(mockClient.get).mockResolvedValue(mockResponse);
 
-    vi.mocked(mockClient.get).mockResolvedValue(mockResponse);
+  const result = await getProjectFilesApi(mockClient, projectId);
 
-    const result = await getProjectFilesApi(mockClient, projectId);
+  expect(mockClient.get).toHaveBeenCalledWith(`/v1/projects/${projectId}/files`, undefined);
+  expect(result).toEqual(mockResponse);
+});
 
-    expect(mockClient.get).toHaveBeenCalledWith(`/v1/projects/${projectId}/files`, undefined);
-    expect(result).toEqual(mockResponse);
-  });
+test('getProjectFilesApi: ブランチデータ付きでファイル一覧を取得できる', async () => {
+  const mockClient: HttpClient = {
+    get: vi.fn(),
+    post: vi.fn(),
+  };
 
-  it('ブランチデータ付きでファイル一覧を取得できる', async () => {
-    const projectId = 'proj-123';
-    const options = { branchData: true };
-    const mockResponse: GetProjectFilesApiResponse = {
-      files: [
-        {
-          key: 'file-key-1',
-          name: 'Component Library',
-          thumbnailUrl: 'https://example.com/thumb1.png',
-          lastModified: '2024-01-01T00:00:00Z',
-          branches: [
-            {
-              key: 'branch-1',
-              name: 'feature-branch',
-              thumbnailUrl: 'https://example.com/branch-thumb.png',
-              lastModified: '2024-01-03T00:00:00Z',
-            },
-          ],
-        },
-      ],
-    };
+  const projectId = 'proj-123';
+  const options = { branchData: true };
+  const mockResponse: GetProjectFilesApiResponse = {
+    files: [
+      {
+        key: 'file-key-1',
+        name: 'Component Library',
+        thumbnailUrl: 'https://example.com/thumb1.png',
+        lastModified: '2024-01-01T00:00:00Z',
+        branches: [
+          {
+            key: 'branch-1',
+            name: 'feature-branch',
+            thumbnailUrl: 'https://example.com/branch-thumb.png',
+            lastModified: '2024-01-03T00:00:00Z',
+          },
+        ],
+      },
+    ],
+  };
 
-    vi.mocked(mockClient.get).mockResolvedValue(mockResponse);
+  vi.mocked(mockClient.get).mockResolvedValue(mockResponse);
 
-    const result = await getProjectFilesApi(mockClient, projectId, options);
+  const result = await getProjectFilesApi(mockClient, projectId, options);
 
-    const expectedParams = new URLSearchParams();
-    expectedParams.append('branch_data', 'true');
-    expect(mockClient.get).toHaveBeenCalledWith(`/v1/projects/${projectId}/files`, expectedParams);
-    expect(result).toEqual(mockResponse);
-  });
+  const expectedParams = new URLSearchParams();
+  expectedParams.append('branch_data', 'true');
+  expect(mockClient.get).toHaveBeenCalledWith(`/v1/projects/${projectId}/files`, expectedParams);
+  expect(result).toEqual(mockResponse);
+});
 
-  it('エラーが発生した場合、エラーをスローする', async () => {
-    const projectId = 'proj-123';
-    const error = new Error('Network error');
+test('getProjectFilesApi: エラーが発生した場合、エラーをスローする', async () => {
+  const mockClient: HttpClient = {
+    get: vi.fn(),
+    post: vi.fn(),
+  };
 
-    vi.mocked(mockClient.get).mockRejectedValue(error);
+  const projectId = 'proj-123';
+  const error = new Error('Network error');
 
-    await expect(getProjectFilesApi(mockClient, projectId)).rejects.toThrow('Network error');
-  });
+  vi.mocked(mockClient.get).mockRejectedValue(error);
+
+  await expect(getProjectFilesApi(mockClient, projectId)).rejects.toThrow('Network error');
 });
