@@ -1,16 +1,11 @@
-// スタイル関連のAPI関数
+// スタイル関連のAPI呼び出し関数
 
 import type { HttpClient } from '../../client.js';
-import type { GetStylesResponse } from '../../../types/index.js';
+import type { GetStylesApiResponse } from '../../../types/index.js';
 
-export interface StylesApi {
-  getStyles: (fileKey: string) => Promise<GetStylesResponse>;
-}
-
-export function createStylesApi(client: HttpClient): StylesApi {
-  return {
-    getStyles: async (fileKey: string): Promise<GetStylesResponse> => {
-      return client.get<GetStylesResponse>(`/v1/files/${fileKey}/styles`);
-    },
-  };
+export async function getStylesApi(
+  client: HttpClient,
+  fileKey: string
+): Promise<GetStylesApiResponse> {
+  return client.get<GetStylesApiResponse>(`/v1/files/${fileKey}/styles`);
 }
