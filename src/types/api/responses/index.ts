@@ -7,4 +7,5 @@ export * from './style-responses.js';
 export * from './image-responses.js';
 export * from './comment-responses.js';
 export * from './version-responses.js';
-export * from './team-responses.js';
+export * from './team-api-responses.js';
+export * from './project-api-responses.js';
