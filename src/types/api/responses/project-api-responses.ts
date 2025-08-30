@@ -1,19 +1,19 @@
 // プロジェクト関連のAPIレスポンス型定義
 
 export interface GetProjectFilesApiOptions {
-  branch_data?: boolean;
+  branchData?: boolean;
 }
 
 export interface ProjectFile {
   key: string;
   name: string;
-  thumbnail_url: string;
-  last_modified: string;
+  thumbnailUrl: string;
+  lastModified: string;
   branches?: Array<{
     key: string;
     name: string;
-    thumbnail_url: string;
-    last_modified: string;
+    thumbnailUrl: string;
+    lastModified: string;
   }>;
 }
 

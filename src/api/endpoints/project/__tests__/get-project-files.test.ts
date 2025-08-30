@@ -20,14 +20,14 @@ describe('getProjectFilesApi', () => {
         {
           key: 'file-key-1',
           name: 'Component Library',
-          thumbnail_url: 'https://example.com/thumb1.png',
-          last_modified: '2024-01-01T00:00:00Z',
+          thumbnailUrl: 'https://example.com/thumb1.png',
+          lastModified: '2024-01-01T00:00:00Z',
         },
         {
           key: 'file-key-2',
           name: 'Icons',
-          thumbnail_url: 'https://example.com/thumb2.png',
-          last_modified: '2024-01-02T00:00:00Z',
+          thumbnailUrl: 'https://example.com/thumb2.png',
+          lastModified: '2024-01-02T00:00:00Z',
         },
       ],
     };
@@ -42,20 +42,20 @@ describe('getProjectFilesApi', () => {
 
   it('ブランチデータ付きでファイル一覧を取得できる', async () => {
     const projectId = 'proj-123';
-    const options = { branch_data: true };
+    const options = { branchData: true };
     const mockResponse: GetProjectFilesApiResponse = {
       files: [
         {
           key: 'file-key-1',
           name: 'Component Library',
-          thumbnail_url: 'https://example.com/thumb1.png',
-          last_modified: '2024-01-01T00:00:00Z',
+          thumbnailUrl: 'https://example.com/thumb1.png',
+          lastModified: '2024-01-01T00:00:00Z',
           branches: [
             {
               key: 'branch-1',
               name: 'feature-branch',
-              thumbnail_url: 'https://example.com/branch-thumb.png',
-              last_modified: '2024-01-03T00:00:00Z',
+              thumbnailUrl: 'https://example.com/branch-thumb.png',
+              lastModified: '2024-01-03T00:00:00Z',
             },
           ],
         },
