@@ -4,7 +4,7 @@ import { getFileApi } from './endpoints/file/index.js';
 import { getFileNodesApi } from './endpoints/file-nodes/index.js';
 import { getNodesApi } from './endpoints/nodes/index.js';
 import { fileComponentsApi, fileComponentSetsApi } from './endpoints/components/index.js';
-import { createStylesApi } from './endpoints/styles/index.js';
+import { getStylesApi } from './endpoints/styles/index.js';
 import { imagesApi } from './endpoints/images/index.js';
 import { getFileCommentsApi } from './endpoints/comments/index.js';
 import { createVersionsApi } from './endpoints/versions/index.js';
@@ -16,7 +16,7 @@ import type {
   FileComponentsApiResponse,
   FileComponentSetsApiResponse,
 } from '../types/api/responses/component-responses.js';
-import type { GetStylesResponse } from '../types/api/responses/style-responses.js';
+import type { GetStylesApiResponse } from '../types/api/responses/style-responses.js';
 import type { ImageApiResponse } from '../types/api/responses/image-responses.js';
 import type { GetFileCommentsApiResponse } from '../types/api/responses/comment-responses.js';
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
@@ -38,8 +38,6 @@ export interface FigmaApiClient {
   readonly context: FigmaContext;
   /** HTTP Client */
   readonly httpClient: HttpClient;
-  /** Styles API endpoint */
-  readonly styles: ReturnType<typeof createStylesApi>;
   /** Versions API endpoint */
   readonly versions: ReturnType<typeof createVersionsApi>;
   /** Teams API endpoint */
@@ -66,7 +64,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      styles: createStylesApi(httpClient),
       versions: createVersionsApi(httpClient),
       teams: createTeamsApi(httpClient),
     };
@@ -82,7 +79,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      styles: createStylesApi(httpClient),
       versions: createVersionsApi(httpClient),
       teams: createTeamsApi(httpClient),
     };
@@ -135,8 +131,8 @@ export namespace FigmaApiClient {
   export async function getStyles(
     client: FigmaApiClient,
     fileKey: string
-  ): Promise<GetStylesResponse> {
-    const response = await client.styles.getStyles(fileKey);
+  ): Promise<GetStylesApiResponse> {
+    const response = await getStylesApi(client.httpClient, fileKey);
     return convertKeysToCamelCase(response);
   }
 

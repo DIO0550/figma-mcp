@@ -1,5 +1,5 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetStylesResponse } from '../../types/api/responses/style-responses.js';
+import type { GetStylesApiResponse } from '../../types/api/responses/style-responses.js';
 import { GetStylesArgsSchema, type GetStylesArgs } from './get-styles-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
 import { Style } from '../../models/style/style.js';
@@ -34,7 +34,7 @@ export const GetStylesTool = {
   /**
    * スタイル取得を実行
    */
-  async execute(tool: GetStylesTool, args: GetStylesArgs): Promise<GetStylesResponse> {
+  async execute(tool: GetStylesTool, args: GetStylesArgs): Promise<GetStylesApiResponse> {
     const response = await FigmaApiClient.getStyles(tool.apiClient, args.fileKey);
 
     if (args.categorize && response.meta.styles.length > 0) {

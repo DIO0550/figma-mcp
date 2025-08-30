@@ -8,7 +8,7 @@ export interface StyleStatistics {
   namingConsistency: number;
 }
 
-export interface GetStylesResponse {
+export interface GetStylesApiResponse {
   error?: boolean;
   status?: number;
   meta: {

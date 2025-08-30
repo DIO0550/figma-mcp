@@ -1,16 +1,16 @@
 import { test, expect, vi } from 'vitest';
-import { createStylesApi } from '../index';
+import { getStylesApi } from '../index';
 import type { HttpClient } from '../../../client';
-import type { GetStylesResponse } from '../../../../types';
+import type { GetStylesApiResponse } from '../../../../types';
 import { TestData } from '../../../../constants';
 
-test('createStylesApi.getStyles - スタイル一覧を取得できる', async () => {
+test('getStylesApi - スタイル一覧を取得できる', async () => {
   const mockHttpClient: HttpClient = {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse: GetStylesResponse = {
+  const mockResponse: GetStylesApiResponse = {
     error: false,
     meta: {
       styles: [
@@ -28,22 +28,19 @@ test('createStylesApi.getStyles - スタイル一覧を取得できる', async (
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const stylesApi = createStylesApi(mockHttpClient);
-  const result = await stylesApi.getStyles(TestData.FILE_KEY);
+  const result = await getStylesApi(mockHttpClient, TestData.FILE_KEY);
 
-  expect(mockHttpClient.get).toHaveBeenCalledWith(
-    '/v1/files/test-file-key/styles'
-  );
+  expect(mockHttpClient.get).toHaveBeenCalledWith('/v1/files/test-file-key/styles');
   expect(result).toEqual(mockResponse);
 });
 
-test('createStylesApi.getStyles - 空のスタイル一覧を取得できる', async () => {
+test('getStylesApi - 空のスタイル一覧を取得できる', async () => {
   const mockHttpClient: HttpClient = {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse: GetStylesResponse = {
+  const mockResponse: GetStylesApiResponse = {
     error: false,
     meta: {
       styles: [],
@@ -52,19 +49,18 @@ test('createStylesApi.getStyles - 空のスタイル一覧を取得できる', a
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const stylesApi = createStylesApi(mockHttpClient);
-  const result = await stylesApi.getStyles(TestData.FILE_KEY);
+  const result = await getStylesApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.meta.styles).toHaveLength(0);
 });
 
-test('createStylesApi.getStyles - 複数のスタイルタイプを正しく取得できる', async () => {
+test('getStylesApi - 複数のスタイルタイプを正しく取得できる', async () => {
   const mockHttpClient: HttpClient = {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse: GetStylesResponse = {
+  const mockResponse: GetStylesApiResponse = {
     error: false,
     meta: {
       styles: [
@@ -98,8 +94,7 @@ test('createStylesApi.getStyles - 複数のスタイルタイプを正しく取�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const stylesApi = createStylesApi(mockHttpClient);
-  const result = await stylesApi.getStyles(TestData.FILE_KEY);
+  const result = await getStylesApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.meta.styles).toHaveLength(3);
   expect(result.meta.styles[0].styleType).toBe('FILL');
@@ -107,13 +102,13 @@ test('createStylesApi.getStyles - 複数のスタイルタイプを正しく取�
   expect(result.meta.styles[2].styleType).toBe('EFFECT');
 });
 
-test('createStylesApi.getStyles - エラーレスポンスを正しく処理できる', async () => {
+test('getStylesApi - エラーレスポンスを正しく処理できる', async () => {
   const mockHttpClient: HttpClient = {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse: GetStylesResponse = {
+  const mockResponse: GetStylesApiResponse = {
     error: true,
     status: 403,
     meta: {
@@ -123,20 +118,19 @@ test('createStylesApi.getStyles - エラーレスポンスを正しく処理で�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const stylesApi = createStylesApi(mockHttpClient);
-  const result = await stylesApi.getStyles(TestData.FILE_KEY);
+  const result = await getStylesApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.error).toBe(true);
   expect(result.status).toBe(403);
 });
 
-test('createStylesApi.getStyles - 説明がないスタイルも正しく取得できる', async () => {
+test('getStylesApi - 説明がないスタイルも正しく取得できる', async () => {
   const mockHttpClient: HttpClient = {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse: GetStylesResponse = {
+  const mockResponse: GetStylesApiResponse = {
     error: false,
     meta: {
       styles: [
@@ -154,13 +148,12 @@ test('createStylesApi.getStyles - 説明がないスタイルも正しく取得�
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const stylesApi = createStylesApi(mockHttpClient);
-  const result = await stylesApi.getStyles(TestData.FILE_KEY);
+  const result = await getStylesApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.meta.styles[0].description).toBe('');
 });
 
-test('createStylesApi.getStyles - HTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
+test('getStylesApi - HTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
   const mockHttpClient: HttpClient = {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
@@ -169,12 +162,10 @@ test('createStylesApi.getStyles - HTTPクライアントがエラーをスロー
   const expectedError = new Error('Network error');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(expectedError);
 
-  const stylesApi = createStylesApi(mockHttpClient);
-
-  await expect(stylesApi.getStyles(TestData.FILE_KEY)).rejects.toThrow('Network error');
+  await expect(getStylesApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow('Network error');
 });
 
-test('createStylesApi.getStyles - 認証エラーが適切に処理される', async () => {
+test('getStylesApi - 認証エラーが適切に処理される', async () => {
   const mockHttpClient: HttpClient = {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
@@ -183,33 +174,28 @@ test('createStylesApi.getStyles - 認証エラーが適切に処理される', a
   const authError = new Error('Unauthorized');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(authError);
 
-  const stylesApi = createStylesApi(mockHttpClient);
-
-  await expect(stylesApi.getStyles(TestData.FILE_KEY)).rejects.toThrow('Unauthorized');
+  await expect(getStylesApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow('Unauthorized');
 });
 
-test('createStylesApi.getStyles - 特殊文字を含むファイルキーが正しくエンコードされる', async () => {
+test('getStylesApi - 特殊文字を含むファイルキーが正しくエンコードされる', async () => {
   const mockHttpClient: HttpClient = {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse: GetStylesResponse = {
+  const mockResponse: GetStylesApiResponse = {
     error: false,
     meta: { styles: [] },
   };
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const stylesApi = createStylesApi(mockHttpClient);
   const specialFileKey = 'file:key/with-special@chars';
-  await stylesApi.getStyles(specialFileKey);
+  await getStylesApi(mockHttpClient, specialFileKey);
 
-  expect(mockHttpClient.get).toHaveBeenCalledWith(
-    '/v1/files/file:key/with-special@chars/styles'
-  );
+  expect(mockHttpClient.get).toHaveBeenCalledWith('/v1/files/file:key/with-special@chars/styles');
 });
 
-test('createStylesApi.getStyles - タイムアウトエラーが適切に処理される', async () => {
+test('getStylesApi - タイムアウトエラーが適切に処理される', async () => {
   const mockHttpClient: HttpClient = {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
@@ -218,7 +204,5 @@ test('createStylesApi.getStyles - タイムアウトエラーが適切に処理�
   const timeoutError = new Error('Request timeout');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(timeoutError);
 
-  const stylesApi = createStylesApi(mockHttpClient);
-
-  await expect(stylesApi.getStyles(TestData.FILE_KEY)).rejects.toThrow('Request timeout');
+  await expect(getStylesApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow('Request timeout');
 });
