@@ -32,6 +32,8 @@ RUN apt-get update && apt-get install -y \
     locales \
     language-pack-ja \
     fonts-noto-cjk \
+    ripgrep \
+    vim \
     && locale-gen ja_JP.UTF-8 \
     && update-locale LANG=ja_JP.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
@@ -55,8 +57,6 @@ RUN apt-get update && apt-get install -y \
     fcitx-mozc \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Claude Code CLI
-RUN npm install -g @anthropic-ai/claude-code
 
 # Copy built binaries from build stages
 COPY --from=github-builder /tmp/github-mcp-server/github-mcp-server /usr/local/bin/
@@ -70,6 +70,12 @@ RUN chmod +x /usr/local/bin/github-mcp-server \
 USER node
 WORKDIR /home/node
 
+# Install Claude Code CLI
+# RUN npm install -g @anthropic-ai/claude-code
+RUN curl -fsSL https://claude.ai/install.sh | bash
+
+ENV PATH="/home/node/.local/bin:${PATH}"
+
 # Set up workspace
 WORKDIR /workspace
 
@@ -81,6 +87,7 @@ RUN git config --global pull.rebase true \
     && git config --global alias.st status \
     && git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit" \
     && git config --global init.defaultBranch main 
+
 
 # Expose port for MCP server (using 8765 instead of 3001)
 EXPOSE 8765
