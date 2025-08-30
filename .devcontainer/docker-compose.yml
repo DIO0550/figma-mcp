@@ -11,7 +11,7 @@ services:
       - ..:/workspace:cached
       - cargo_cache:/home/node/.cargo
     ports:
-      - "8765:8765"
+      - '8765:8765'
     environment:
       - NODE_ENV=development
       - GITHUB_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}

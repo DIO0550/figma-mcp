@@ -39,4 +39,5 @@
       "version": "latest",
     },
   },
+  "mounts": ["source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,readonly"],
 }

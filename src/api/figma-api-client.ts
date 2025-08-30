@@ -2,7 +2,7 @@ import { createApiConfig } from './config.js';
 import { createHttpClient, type HttpClient } from './client.js';
 import { getFileApi } from './endpoints/file/index.js';
 import { getFileNodesApi } from './endpoints/file-nodes/index.js';
-import { createNodesApi } from './endpoints/nodes/index.js';
+import { getNodesApi } from './endpoints/nodes/index.js';
 import { fileComponentsApi, fileComponentSetsApi } from './endpoints/components/index.js';
 import { createStylesApi } from './endpoints/styles/index.js';
 import { imagesApi } from './endpoints/images/index.js';
@@ -21,7 +21,13 @@ import type { ImageApiResponse } from '../types/api/responses/image-responses.js
 import type { GetFileCommentsApiResponse } from '../types/api/responses/comment-responses.js';
 import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
 import type { ImageApiOptions } from '../types/api/options/image-options.js';
-import type { FigmaFile, GetFileOptions, GetFileNodesResponse } from '../types/index.js';
+import type {
+  FigmaFile,
+  GetFileOptions,
+  GetFileNodesResponse,
+  GetNodesResponse,
+  GetNodesOptions,
+} from '../types/index.js';
 
 /**
  * FigmaApiClientのデータ構造
@@ -32,8 +38,6 @@ export interface FigmaApiClient {
   readonly context: FigmaContext;
   /** HTTP Client */
   readonly httpClient: HttpClient;
-  /** Nodes API endpoint */
-  readonly nodes: ReturnType<typeof createNodesApi>;
   /** Styles API endpoint */
   readonly styles: ReturnType<typeof createStylesApi>;
   /** Versions API endpoint */
@@ -62,7 +66,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
       versions: createVersionsApi(httpClient),
       teams: createTeamsApi(httpClient),
@@ -79,7 +82,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      nodes: createNodesApi(httpClient),
       styles: createStylesApi(httpClient),
       versions: createVersionsApi(httpClient),
       teams: createTeamsApi(httpClient),
@@ -196,6 +198,19 @@ export namespace FigmaApiClient {
   ): Promise<GetFileNodesResponse> {
     const response = await getFileNodesApi(client.httpClient, fileKey, ids, options);
     return convertKeysToCamelCase(response) as GetFileNodesResponse;
+  }
+
+  /**
+   * ノード情報を取得（キャメルケース変換付き）
+   */
+  export async function getNodes(
+    client: FigmaApiClient,
+    fileKey: string,
+    options: GetNodesOptions
+  ): Promise<GetNodesResponse> {
+    const snakeOptions = convertKeysToSnakeCase(options);
+    const response = await getNodesApi(client.httpClient, fileKey, snakeOptions);
+    return convertKeysToCamelCase(response) as GetNodesResponse;
   }
 }
 
