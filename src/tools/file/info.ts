@@ -52,7 +52,7 @@ export const GetFileTool = {
     const file = await FigmaApiClient.getFile(tool.apiClient, args.file_key, options);
     const documentChildren = file.document.children || [];
     const pagesCount = documentChildren.filter(
-      (child: any) => 'type' in child && child.type === 'CANVAS'
+      (child) => 'type' in child && child.type === 'CANVAS'
     ).length;
 
     return {
