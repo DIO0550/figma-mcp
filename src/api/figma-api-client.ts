@@ -7,7 +7,7 @@ import { fileComponentsApi, fileComponentSetsApi } from './endpoints/components/
 import { getStylesApi } from './endpoints/styles/index.js';
 import { imagesApi } from './endpoints/images/index.js';
 import { getFileCommentsApi } from './endpoints/comments/index.js';
-import { createVersionsApi } from './endpoints/versions/index.js';
+import { getFileVersionsApi } from './endpoints/versions/index.js';
 import { getTeamProjectsApi } from './endpoints/team/index.js';
 import { getProjectFilesApi } from './endpoints/project/index.js';
 import { FigmaContext } from './context.js';
@@ -40,8 +40,6 @@ export interface FigmaApiClient {
   readonly context: FigmaContext;
   /** HTTP Client */
   readonly httpClient: HttpClient;
-  /** Versions API endpoint */
-  readonly versions: ReturnType<typeof createVersionsApi>;
 }
 
 /**
@@ -64,7 +62,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      versions: createVersionsApi(httpClient),
     };
   }
 
@@ -78,7 +75,6 @@ export namespace FigmaApiClient {
     return {
       context,
       httpClient,
-      versions: createVersionsApi(httpClient),
     };
   }
 
@@ -165,7 +161,7 @@ export namespace FigmaApiClient {
     client: FigmaApiClient,
     fileKey: string
   ): Promise<GetVersionsResponse> {
-    const response = await client.versions.getVersions(fileKey);
+    const response = await getFileVersionsApi(client.httpClient, fileKey);
     return convertKeysToCamelCase(response);
   }
 
