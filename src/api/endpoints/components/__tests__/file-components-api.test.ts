@@ -1,7 +1,7 @@
 import { test, expect, vi } from 'vitest';
-import { fileComponentsApi } from '../index';
+
 import type { HttpClient } from '../../../client';
-import type { FileComponentsApiResponse } from '../../../../types';
+import { fileComponentsApi, type FileComponentsApiResponse } from '../index';
 import { TestData } from '../../../../constants';
 
 function createMockHttpClient(): HttpClient {

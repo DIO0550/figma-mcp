@@ -1,7 +1,7 @@
 import { test, expect, vi } from 'vitest';
-import { getStylesApi } from '../index';
+
 import type { HttpClient } from '../../../client';
-import type { GetStylesApiResponse } from '../../../../types';
+import { getStylesApi, type GetStylesApiResponse } from '../index';
 import { TestData } from '../../../../constants';
 
 test('getStylesApi - スタイル一覧を取得できる', async () => {

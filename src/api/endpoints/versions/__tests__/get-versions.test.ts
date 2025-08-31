@@ -1,7 +1,7 @@
 import { test, expect, vi } from 'vitest';
 import { getFileVersionsApi } from '../index';
 import type { HttpClient } from '../../../client';
-import type { GetVersionsResponse } from '../../../../types';
+import type { GetVersionsApiResponse } from '../index';
 import { TestData } from '../../../../constants';
 
 function createMockHttpClient(): HttpClient {
@@ -14,7 +14,7 @@ function createMockHttpClient(): HttpClient {
 test('getFileVersionsApi - バージョン一覧を取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
 
-  const mockResponse: GetVersionsResponse = {
+  const mockResponse: GetVersionsApiResponse = {
     versions: [
       {
         id: 'version-1',
@@ -42,7 +42,7 @@ test('getFileVersionsApi - バージョン一覧を取得できる', async () =>
 test('getFileVersionsApi - 空のバージョン一覧を取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
 
-  const mockResponse: GetVersionsResponse = {
+  const mockResponse: GetVersionsApiResponse = {
     versions: [],
   };
 
@@ -56,7 +56,7 @@ test('getFileVersionsApi - 空のバージョン一覧を取得できる', async
 test('getFileVersionsApi - 複数のバージョンを正しく取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
 
-  const mockResponse: GetVersionsResponse = {
+  const mockResponse: GetVersionsApiResponse = {
     versions: [
       {
         id: 'version-3',
@@ -110,7 +110,7 @@ test('getFileVersionsApi - 複数のバージョンを正しく取得できる',
 test('getFileVersionsApi - ラベルと説明が空文字のバージョンも正しく取得できる', async () => {
   const mockHttpClient = createMockHttpClient();
 
-  const mockResponse: GetVersionsResponse = {
+  const mockResponse: GetVersionsApiResponse = {
     versions: [
       {
         id: 'version-1',
@@ -160,7 +160,7 @@ test('getFileVersionsApi - 認証エラーが適切に処理される', async ()
 test('getFileVersionsApi - 特殊文字を含むファイルキーが正しくエンコードされる', async () => {
   const mockHttpClient = createMockHttpClient();
 
-  const mockResponse: GetVersionsResponse = { versions: [] };
+  const mockResponse: GetVersionsApiResponse = { versions: [] };
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
   const specialFileKey = 'file:key/with-special@chars';
@@ -172,7 +172,7 @@ test('getFileVersionsApi - 特殊文字を含むファイルキーが正しく�
 test('getFileVersionsApi - 各バージョンのユーザー情報が正しく含まれる', async () => {
   const mockHttpClient = createMockHttpClient();
 
-  const mockResponse: GetVersionsResponse = {
+  const mockResponse: GetVersionsApiResponse = {
     versions: [
       {
         id: 'version-1',

@@ -1,6 +1,6 @@
 import { test, expect, vi } from 'vitest';
 import type { HttpClient } from '../../../client.js';
-import type { GetTeamProjectsApiResponse } from '../../../../types/index.js';
+import type { GetTeamProjectsApiResponse } from '../index.js';
 import { getTeamProjectsApi } from '../index.js';
 
 test('getTeamProjectsApi: チームのプロジェクト一覧を取得できる', async () => {

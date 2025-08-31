@@ -2,34 +2,31 @@ import { createApiConfig } from './config.js';
 import { createHttpClient, type HttpClient } from './client.js';
 import { getFileApi } from './endpoints/file/index.js';
 import { getFileNodesApi } from './endpoints/file-nodes/index.js';
-import { getNodesApi } from './endpoints/nodes/index.js';
-import { fileComponentsApi, fileComponentSetsApi } from './endpoints/components/index.js';
-import { getStylesApi } from './endpoints/styles/index.js';
+import {
+  getNodesApi,
+  type GetNodesApiResponse,
+  type GetNodesApiOptions,
+} from './endpoints/nodes/index.js';
+import {
+  fileComponentsApi,
+  fileComponentSetsApi,
+  type FileComponentsApiResponse,
+  type FileComponentSetsApiResponse,
+} from './endpoints/components/index.js';
+import { getStylesApi, type GetStylesApiResponse } from './endpoints/styles/index.js';
 import { imagesApi } from './endpoints/images/index.js';
-import { getFileCommentsApi } from './endpoints/comments/index.js';
+import { getFileCommentsApi, type GetFileCommentsApiResponse } from './endpoints/comments/index.js';
 import { getFileVersionsApi } from './endpoints/versions/index.js';
 import { getTeamProjectsApi } from './endpoints/team/index.js';
 import { getProjectFilesApi } from './endpoints/project/index.js';
 import { FigmaContext } from './context.js';
 import { getRuntimeConfig } from '../config/runtime-config/runtime-config.js';
 import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter.js';
-import type {
-  FileComponentsApiResponse,
-  FileComponentSetsApiResponse,
-} from '../types/api/responses/component-responses.js';
-import type { GetStylesApiResponse } from '../types/api/responses/style-responses.js';
-import type { ImageApiResponse } from '../types/api/responses/image-responses.js';
-import type { GetFileCommentsApiResponse } from '../types/api/responses/comment-responses.js';
-import type { GetVersionsResponse } from '../types/api/responses/version-responses.js';
-import type { GetProjectFilesApiOptions } from '../types/api/responses/project-api-responses.js';
-import type { ImageApiOptions } from '../types/api/options/image-options.js';
-import type {
-  FigmaFile,
-  GetFileOptions,
-  GetFileNodesResponse,
-  GetNodesResponse,
-  GetNodesOptions,
-} from '../types/index.js';
+import type { ImageApiResponse, ImageApiOptions } from './endpoints/images/index.js';
+import type { GetVersionsApiResponse } from './endpoints/versions/index.js';
+import type { GetProjectFilesApiOptions } from './endpoints/project/index.js';
+import type { GetFileApiOptions, GetFileApiResponse } from './endpoints/file/index.js';
+import type { GetFileNodesApiResponse } from './endpoints/file-nodes/index.js';
 
 /**
  * FigmaApiClientのデータ構造
@@ -160,7 +157,7 @@ export namespace FigmaApiClient {
   export async function getVersions(
     client: FigmaApiClient,
     fileKey: string
-  ): Promise<GetVersionsResponse> {
+  ): Promise<GetVersionsApiResponse> {
     const response = await getFileVersionsApi(client.httpClient, fileKey);
     return convertKeysToCamelCase(response);
   }
@@ -171,10 +168,10 @@ export namespace FigmaApiClient {
   export async function getFile(
     client: FigmaApiClient,
     fileKey: string,
-    options?: GetFileOptions
-  ): Promise<FigmaFile> {
+    options?: GetFileApiOptions
+  ): Promise<GetFileApiResponse> {
     const response = await getFileApi(client.httpClient, fileKey, options);
-    return convertKeysToCamelCase(response) as FigmaFile;
+    return convertKeysToCamelCase(response) as GetFileApiResponse;
   }
 
   /**
@@ -184,10 +181,10 @@ export namespace FigmaApiClient {
     client: FigmaApiClient,
     fileKey: string,
     ids: string[],
-    options?: GetFileOptions
-  ): Promise<GetFileNodesResponse> {
+    options?: GetFileApiOptions
+  ): Promise<GetFileNodesApiResponse> {
     const response = await getFileNodesApi(client.httpClient, fileKey, ids, options);
-    return convertKeysToCamelCase(response) as GetFileNodesResponse;
+    return convertKeysToCamelCase(response) as GetFileNodesApiResponse;
   }
 
   /**
@@ -196,11 +193,11 @@ export namespace FigmaApiClient {
   export async function getNodes(
     client: FigmaApiClient,
     fileKey: string,
-    options: GetNodesOptions
-  ): Promise<GetNodesResponse> {
+    options: GetNodesApiOptions
+  ): Promise<GetNodesApiResponse> {
     const snakeOptions = convertKeysToSnakeCase(options);
     const response = await getNodesApi(client.httpClient, fileKey, snakeOptions);
-    return convertKeysToCamelCase(response) as GetNodesResponse;
+    return convertKeysToCamelCase(response) as GetNodesApiResponse;
   }
 
   /**

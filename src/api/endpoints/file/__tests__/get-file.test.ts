@@ -1,8 +1,7 @@
 import { test, expect, vi } from 'vitest';
 import { getFileApi } from '../index.js';
 import type { HttpClient } from '../../../client.js';
-import type { GetFileOptions } from '../../../../types/index.js';
-import type { GetFileApiResponse } from '../../../../types/api/responses/file-responses.js';
+import type { GetFileApiOptions, GetFileApiResponse } from '../index.js';
 import { TestData } from '../../../../constants/index.js';
 
 function createMockHttpClient(): HttpClient {
@@ -93,7 +92,7 @@ test.each([
 
 test('getFileApiで複数のオプションを組み合わせて使用できる', async () => {
   const mockHttpClient = createMockHttpClient();
-  const options: GetFileOptions = {
+  const options: GetFileApiOptions = {
     version: '123',
     ids: ['1:1', '2:2'],
     depth: 2,

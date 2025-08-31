@@ -1,5 +1,5 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetStylesApiResponse } from '../../types/api/responses/style-responses.js';
+import type { GetStylesApiResponse } from '../../api/endpoints/styles/index.js';
 import { GetStylesArgsSchema, type GetStylesArgs } from './get-styles-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
 import { Style } from '../../models/style/style.js';

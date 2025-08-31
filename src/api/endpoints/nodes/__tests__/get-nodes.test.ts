@@ -1,9 +1,7 @@
 import { test, expect, vi } from 'vitest';
-import { getNodesApi } from '../index';
+import { getNodesApi, type GetNodesApiResponse, type GetNodesApiOptions } from '../index';
 import type { HttpClient } from '../../../client';
-import type { GetNodesResponse } from '../../../../types';
 import type { DeepSnakeCase } from '../../../../utils/type-transformers';
-import type { GetNodesOptions } from '../../../../types/api/options/node-options';
 import { TestData } from '../../../../constants';
 
 test('getNodesApi - ノード情報を取得できる', async () => {
@@ -12,7 +10,7 @@ test('getNodesApi - ノード情報を取得できる', async () => {
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse: GetNodesResponse = {
+  const mockResponse: GetNodesApiResponse = {
     nodes: {
       '1:1': {
         document: {
@@ -29,7 +27,7 @@ test('getNodesApi - ノード情報を取得できる', async () => {
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1'],
   };
 
@@ -51,7 +49,7 @@ test('getNodesApi - 複数のノードを取得できる', async () => {
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse: GetNodesResponse = {
+  const mockResponse: GetNodesApiResponse = {
     nodes: {
       '1:1': {
         document: {
@@ -77,7 +75,7 @@ test('getNodesApi - 複数のノードを取得できる', async () => {
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1', '2:2'],
   };
 
@@ -94,10 +92,10 @@ test('getNodesApi - バージョンオプションを指定して取得できる
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse = { nodes: {} } as GetNodesResponse;
+  const mockResponse = { nodes: {} } as GetNodesApiResponse;
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1'],
     version: '789',
   };
@@ -114,10 +112,10 @@ test('getNodesApi - depthオプションを指定して取得できる', async (
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse = { nodes: {} } as GetNodesResponse;
+  const mockResponse = { nodes: {} } as GetNodesApiResponse;
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1'],
     depth: 3,
   };
@@ -134,10 +132,10 @@ test('getNodesApi - geometryオプションを指定して取得できる', asyn
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse = { nodes: {} } as GetNodesResponse;
+  const mockResponse = { nodes: {} } as GetNodesApiResponse;
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1'],
     geometry: 'paths',
   };
@@ -154,10 +152,10 @@ test('getNodesApi - plugin_dataオプションを指定して取得できる', a
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse = { nodes: {} } as GetNodesResponse;
+  const mockResponse = { nodes: {} } as GetNodesApiResponse;
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1'],
     plugin_data: 'my-plugin',
   };
@@ -174,10 +172,10 @@ test('getNodesApi - すべてのオプションを組み合わせて取得でき
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse = { nodes: {} } as GetNodesResponse;
+  const mockResponse = { nodes: {} } as GetNodesApiResponse;
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1', '2:2', '3:3'],
     version: '456',
     depth: 2,
@@ -203,10 +201,10 @@ test('getNodesApi - depthが0の場合も正しくパラメータ化される', 
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse = { nodes: {} } as GetNodesResponse;
+  const mockResponse = { nodes: {} } as GetNodesApiResponse;
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1'],
     depth: 0,
   };
@@ -223,10 +221,10 @@ test('getNodesApi - 空のidsでも処理される', async () => {
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse = { nodes: {} } as GetNodesResponse;
+  const mockResponse = { nodes: {} } as GetNodesApiResponse;
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: [],
   };
 
@@ -242,10 +240,10 @@ test('getNodesApi - 特殊文字を含むnode IDが適切にエンコードさ�
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
 
-  const mockResponse = { nodes: {} } as GetNodesResponse;
+  const mockResponse = { nodes: {} } as GetNodesApiResponse;
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['I:123', 'S;456', '7:8'],
   };
 
@@ -264,7 +262,7 @@ test('getNodesApi - HTTPクライアントがエラーをスローした場合�
   const expectedError = new Error('Network error');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(expectedError);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1'],
   };
 
@@ -282,7 +280,7 @@ test('getNodesApi - タイムアウトエラーが適切に処理される', asy
   const timeoutError = new Error('Request timeout');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(timeoutError);
 
-  const options: DeepSnakeCase<GetNodesOptions> = {
+  const options: DeepSnakeCase<GetNodesApiOptions> = {
     ids: ['1:1'],
   };
 

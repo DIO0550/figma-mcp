@@ -1,8 +1,5 @@
 import type { Component as FigmaComponent } from '../../types/figma-types.js';
-import type {
-  ComponentAnalysis,
-  VariantSet,
-} from '../../types/api/responses/component-responses.js';
+import type { ComponentApiAnalysis, VariantApiSet } from '../../api/endpoints/components/index.js';
 
 /**
  * Componentモデルのコンパニオンオブジェクト
@@ -11,7 +8,7 @@ export const Component = {
   /**
    * コンポーネントのメタデータを解析する
    */
-  analyze(components: FigmaComponent[]): ComponentAnalysis {
+  analyze(components: FigmaComponent[]): ComponentApiAnalysis {
     const categories: Record<string, number> = {};
     const namingPatterns: Record<string, number> = {};
     const pagesDistribution: Record<string, number> = {};
@@ -60,8 +57,8 @@ export const Component = {
   /**
    * バリアント情報を整理する
    */
-  organizeVariants(components: FigmaComponent[]): Record<string, VariantSet> {
-    const variantSets: Record<string, VariantSet> = {};
+  organizeVariants(components: FigmaComponent[]): Record<string, VariantApiSet> {
+    const variantSets: Record<string, VariantApiSet> = {};
 
     // コンポーネントセットごとにグループ化
     components.forEach((component) => {

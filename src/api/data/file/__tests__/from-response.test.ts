@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { FileData } from '../file.js';
-import type { FigmaFile } from '../../../../types/api/responses/file-responses.js';
+import type { GetFileApiResponse } from '../../../endpoints/file/index.js';
 
 describe('FileData.fromResponse', () => {
   it('Figma APIレスポンスからFileDataを作成できる', () => {
-    const response: FigmaFile = {
+    const response: GetFileApiResponse = {
       name: 'Design System',
       lastModified: '2024-01-01T00:00:00Z',
       thumbnailUrl: 'https://figma.com/thumb.png',
@@ -29,7 +29,7 @@ describe('FileData.fromResponse', () => {
   });
 
   it('オプショナルなフィールドがない場合でも処理できる', () => {
-    const minimalResponse: FigmaFile = {
+    const minimalResponse: GetFileApiResponse = {
       name: 'Minimal File',
       lastModified: '2024-01-01T00:00:00Z',
       thumbnailUrl: '',

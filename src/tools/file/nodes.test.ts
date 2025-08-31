@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { GetFileNodesTool } from './nodes.js';
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetFileNodesResponse } from '../../types/api/responses/index.js';
+import type { GetFileNodesApiResponse } from '../../api/endpoints/file-nodes/index.js';
 import { GetFileNodesArgsSchema } from './get-file-nodes-args.js';
 
 describe('nodes tool', () => {
@@ -14,7 +14,7 @@ describe('nodes tool', () => {
   });
 
   test('指定したノードの情報を取得できる', async () => {
-    const mockResponse: GetFileNodesResponse = {
+    const mockResponse: GetFileNodesApiResponse = {
       name: 'Test File',
       lastModified: '2024-01-01T00:00:00Z',
       version: '123456789',
@@ -62,7 +62,7 @@ describe('nodes tool', () => {
   });
 
   test('複数のノードを取得できる', async () => {
-    const mockResponse: GetFileNodesResponse = {
+    const mockResponse: GetFileNodesApiResponse = {
       name: 'Test File',
       lastModified: '2024-01-01T00:00:00Z',
       version: '123456789',
@@ -113,7 +113,7 @@ describe('nodes tool', () => {
   });
 
   test('depthオプションが正しく渡される', async () => {
-    const mockResponse: GetFileNodesResponse = {
+    const mockResponse: GetFileNodesApiResponse = {
       name: 'Test File',
       lastModified: '2024-01-01T00:00:00Z',
       version: '123456789',
@@ -144,7 +144,7 @@ describe('nodes tool', () => {
   });
 
   test('geometryオプションでpathsを指定できる', async () => {
-    const mockResponse: GetFileNodesResponse = {
+    const mockResponse: GetFileNodesApiResponse = {
       name: 'Test File',
       lastModified: '2024-01-01T00:00:00Z',
       version: '123456789',
@@ -165,7 +165,7 @@ describe('nodes tool', () => {
   });
 
   test('geometryオプションでpointsを指定できる', async () => {
-    const mockResponse: GetFileNodesResponse = {
+    const mockResponse: GetFileNodesApiResponse = {
       name: 'Test File',
       lastModified: '2024-01-01T00:00:00Z',
       version: '123456789',
@@ -186,7 +186,7 @@ describe('nodes tool', () => {
   });
 
   test('geometryとdepthオプションを同時に指定できる', async () => {
-    const mockResponse: GetFileNodesResponse = {
+    const mockResponse: GetFileNodesApiResponse = {
       name: 'Test File',
       lastModified: '2024-01-01T00:00:00Z',
       version: '123456789',

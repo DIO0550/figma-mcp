@@ -1,5 +1,5 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetFileCommentsApiResponse } from '../../types/api/responses/comment-responses.js';
+import type { GetFileCommentsApiResponse } from '../../api/endpoints/comments/index.js';
 import { Comment } from '../../models/comment/index.js';
 import { GetCommentsArgsSchema, type GetCommentsArgs } from './get-comments-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';

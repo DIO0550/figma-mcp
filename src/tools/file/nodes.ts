@@ -1,4 +1,4 @@
-import type { GetFileOptions } from '../../types/index.js';
+import type { GetFileApiOptions } from '../../api/endpoints/file/index.js';
 import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { NodeEntry, FileNodesResponse } from './types.js';
 import type { McpToolDefinition } from '../types.js';
@@ -36,7 +36,7 @@ export const GetFileNodesTool = {
    * ノード情報取得を実行
    */
   async execute(tool: GetFileNodesTool, args: GetFileNodesArgs): Promise<FileNodesResponse> {
-    const options: GetFileOptions = {
+    const options: GetFileApiOptions = {
       depth: args.depth,
       geometry: args.geometry,
       branchData: args.branch_data,
@@ -46,8 +46,8 @@ export const GetFileNodesTool = {
 
     // Remove undefined values
     Object.keys(options).forEach((key) => {
-      if (options[key as keyof GetFileOptions] === undefined) {
-        delete options[key as keyof GetFileOptions];
+      if (options[key as keyof GetFileApiOptions] === undefined) {
+        delete options[key as keyof GetFileApiOptions];
       }
     });
 

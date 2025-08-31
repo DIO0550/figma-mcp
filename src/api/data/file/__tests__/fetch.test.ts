@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { FileData } from '../file.js';
 import type { FigmaContext } from '../../../context.js';
-import type { FigmaFile } from '../../../../types/api/responses/file-responses.js';
+import type { GetFileApiResponse } from '../../../endpoints/file/index.js';
 
 describe('FileData.fetch', () => {
   const mockContext: FigmaContext = {
@@ -17,7 +17,7 @@ describe('FileData.fetch', () => {
   });
 
   it('指定されたファイルキーでファイル情報を取得できる', async () => {
-    const mockResponse: FigmaFile = {
+    const mockResponse: GetFileApiResponse = {
       name: 'Fetched File',
       lastModified: '2024-01-01T00:00:00Z',
       thumbnailUrl: 'https://figma.com/fetched.png',
@@ -53,7 +53,7 @@ describe('FileData.fetch', () => {
   });
 
   it('versionパラメータを指定できる', async () => {
-    const mockResponse: FigmaFile = {
+    const mockResponse: GetFileApiResponse = {
       name: 'Versioned File',
       lastModified: '2024-01-01T00:00:00Z',
       thumbnailUrl: '',
@@ -82,7 +82,7 @@ describe('FileData.fetch', () => {
   });
 
   it('geometryパラメータを指定できる', async () => {
-    const mockResponse: FigmaFile = {
+    const mockResponse: GetFileApiResponse = {
       name: 'File with Geometry',
       lastModified: '2024-01-01T00:00:00Z',
       thumbnailUrl: '',
@@ -117,8 +117,8 @@ describe('FileData.fetch', () => {
       statusText: 'Not Found',
     } as Response);
 
-    await expect(
-      FileData.fetch(mockContext, 'non-existent-file')
-    ).rejects.toThrow('Failed to fetch file: 404 Not Found');
+    await expect(FileData.fetch(mockContext, 'non-existent-file')).rejects.toThrow(
+      'Failed to fetch file: 404 Not Found'
+    );
   });
 });

@@ -1,5 +1,5 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { ImageApiResponse } from '../../types/api/responses/image-responses.js';
+import type { ImageApiResponse } from '../../api/endpoints/images/index.js';
 import { ExportImagesArgsSchema, type ExportImagesArgs } from './export-images-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
 

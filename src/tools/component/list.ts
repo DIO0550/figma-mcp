@@ -1,5 +1,5 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { FileComponentsApiResponse } from '../../types/api/responses/component-responses.js';
+import type { FileComponentsApiResponse } from '../../api/endpoints/components/index.js';
 import { Component } from '../../models/component/index.js';
 import { GetComponentsArgsSchema, type GetComponentsArgs } from './get-components-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
