@@ -5,12 +5,15 @@ import type { Comment } from '../../../models/comment/index.js';
 import { buildUrlParams, buildRequestBody } from '../utils/params-builder.js';
 
 // API Options
-export interface GetFileCommentsApiOptions {
-  // 将来的にFigma APIがサポートするパラメータ用
-  // 例: as_md?: boolean; // コメントをMarkdown形式で取得
-  // 現時点では明示的なパラメータはないが、
-  // 型安全性のためにインターフェースを定義
-}
+/**
+ * Figmaファイルのコメント取得オプション
+ *
+ * @remarks
+ * 現時点では明示的なパラメータはありませんが、
+ * 将来的なFigma APIの拡張に備えて型定義を用意しています。
+ * 例: as_md?: boolean; (コメントをMarkdown形式で取得)
+ */
+export interface GetFileCommentsApiOptions {}
 
 export interface PostFileCommentApiOptions {
   message: string;
