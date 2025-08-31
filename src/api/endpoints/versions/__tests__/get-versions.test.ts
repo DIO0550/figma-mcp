@@ -1,14 +1,18 @@
 import { test, expect, vi } from 'vitest';
-import { createVersionsApi } from '../index';
+import { getFileVersionsApi } from '../index';
 import type { HttpClient } from '../../../client';
 import type { GetVersionsResponse } from '../../../../types';
 import { TestData } from '../../../../constants';
 
-test('createVersionsApi.getVersions - バージョン一覧を取得できる', async () => {
-  const mockHttpClient: HttpClient = {
+function createMockHttpClient(): HttpClient {
+  return {
     get: vi.fn().mockImplementation(() => Promise.resolve()),
     post: vi.fn().mockImplementation(() => Promise.resolve()),
   };
+}
+
+test('getFileVersionsApi - バージョン一覧を取得できる', async () => {
+  const mockHttpClient = createMockHttpClient();
 
   const mockResponse: GetVersionsResponse = {
     versions: [
@@ -29,20 +33,14 @@ test('createVersionsApi.getVersions - バージョン一覧を取得できる', 
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const versionsApi = createVersionsApi(mockHttpClient);
-  const result = await versionsApi.getVersions(TestData.FILE_KEY);
+  const result = await getFileVersionsApi(mockHttpClient, TestData.FILE_KEY);
 
-  expect(mockHttpClient.get).toHaveBeenCalledWith(
-    '/v1/files/test-file-key/versions'
-  );
+  expect(mockHttpClient.get).toHaveBeenCalledWith('/v1/files/test-file-key/versions');
   expect(result).toEqual(mockResponse);
 });
 
-test('createVersionsApi.getVersions - 空のバージョン一覧を取得できる', async () => {
-  const mockHttpClient: HttpClient = {
-    get: vi.fn().mockImplementation(() => Promise.resolve()),
-    post: vi.fn().mockImplementation(() => Promise.resolve()),
-  };
+test('getFileVersionsApi - 空のバージョン一覧を取得できる', async () => {
+  const mockHttpClient = createMockHttpClient();
 
   const mockResponse: GetVersionsResponse = {
     versions: [],
@@ -50,17 +48,13 @@ test('createVersionsApi.getVersions - 空のバージョン一覧を取得でき
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const versionsApi = createVersionsApi(mockHttpClient);
-  const result = await versionsApi.getVersions(TestData.FILE_KEY);
+  const result = await getFileVersionsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.versions).toHaveLength(0);
 });
 
-test('createVersionsApi.getVersions - 複数のバージョンを正しく取得できる', async () => {
-  const mockHttpClient: HttpClient = {
-    get: vi.fn().mockImplementation(() => Promise.resolve()),
-    post: vi.fn().mockImplementation(() => Promise.resolve()),
-  };
+test('getFileVersionsApi - 複数のバージョンを正しく取得できる', async () => {
+  const mockHttpClient = createMockHttpClient();
 
   const mockResponse: GetVersionsResponse = {
     versions: [
@@ -105,8 +99,7 @@ test('createVersionsApi.getVersions - 複数のバージョンを正しく取得
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const versionsApi = createVersionsApi(mockHttpClient);
-  const result = await versionsApi.getVersions(TestData.FILE_KEY);
+  const result = await getFileVersionsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.versions).toHaveLength(3);
   expect(result.versions[0].id).toBe('version-3');
@@ -114,11 +107,8 @@ test('createVersionsApi.getVersions - 複数のバージョンを正しく取得
   expect(result.versions[2].id).toBe('version-1');
 });
 
-test('createVersionsApi.getVersions - ラベルと説明が空文字のバージョンも正しく取得できる', async () => {
-  const mockHttpClient: HttpClient = {
-    get: vi.fn().mockImplementation(() => Promise.resolve()),
-    post: vi.fn().mockImplementation(() => Promise.resolve()),
-  };
+test('getFileVersionsApi - ラベルと説明が空文字のバージョンも正しく取得できる', async () => {
+  const mockHttpClient = createMockHttpClient();
 
   const mockResponse: GetVersionsResponse = {
     versions: [
@@ -139,64 +129,48 @@ test('createVersionsApi.getVersions - ラベルと説明が空文字のバージ
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const versionsApi = createVersionsApi(mockHttpClient);
-  const result = await versionsApi.getVersions(TestData.FILE_KEY);
+  const result = await getFileVersionsApi(mockHttpClient, TestData.FILE_KEY);
 
   expect(result.versions[0].label).toBe('');
   expect(result.versions[0].description).toBe('');
 });
 
-test('createVersionsApi.getVersions - HTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
-  const mockHttpClient: HttpClient = {
-    get: vi.fn().mockImplementation(() => Promise.resolve()),
-    post: vi.fn().mockImplementation(() => Promise.resolve()),
-  };
+test('getFileVersionsApi - HTTPクライアントがエラーをスローした場合、エラーが伝播される', async () => {
+  const mockHttpClient = createMockHttpClient();
 
   const expectedError = new Error('Network error');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(expectedError);
 
-  const versionsApi = createVersionsApi(mockHttpClient);
-
-  await expect(versionsApi.getVersions(TestData.FILE_KEY)).rejects.toThrow('Network error');
+  await expect(getFileVersionsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow(
+    'Network error'
+  );
 });
 
-test('createVersionsApi.getVersions - 認証エラーが適切に処理される', async () => {
-  const mockHttpClient: HttpClient = {
-    get: vi.fn().mockImplementation(() => Promise.resolve()),
-    post: vi.fn().mockImplementation(() => Promise.resolve()),
-  };
+test('getFileVersionsApi - 認証エラーが適切に処理される', async () => {
+  const mockHttpClient = createMockHttpClient();
 
   const authError = new Error('Unauthorized');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(authError);
 
-  const versionsApi = createVersionsApi(mockHttpClient);
-
-  await expect(versionsApi.getVersions(TestData.FILE_KEY)).rejects.toThrow('Unauthorized');
+  await expect(getFileVersionsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow(
+    'Unauthorized'
+  );
 });
 
-test('createVersionsApi.getVersions - 特殊文字を含むファイルキーが正しくエンコードされる', async () => {
-  const mockHttpClient: HttpClient = {
-    get: vi.fn().mockImplementation(() => Promise.resolve()),
-    post: vi.fn().mockImplementation(() => Promise.resolve()),
-  };
+test('getFileVersionsApi - 特殊文字を含むファイルキーが正しくエンコードされる', async () => {
+  const mockHttpClient = createMockHttpClient();
 
   const mockResponse: GetVersionsResponse = { versions: [] };
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const versionsApi = createVersionsApi(mockHttpClient);
   const specialFileKey = 'file:key/with-special@chars';
-  await versionsApi.getVersions(specialFileKey);
+  await getFileVersionsApi(mockHttpClient, specialFileKey);
 
-  expect(mockHttpClient.get).toHaveBeenCalledWith(
-    '/v1/files/file:key/with-special@chars/versions'
-  );
+  expect(mockHttpClient.get).toHaveBeenCalledWith('/v1/files/file:key/with-special@chars/versions');
 });
 
-test('createVersionsApi.getVersions - 各バージョンのユーザー情報が正しく含まれる', async () => {
-  const mockHttpClient: HttpClient = {
-    get: vi.fn().mockImplementation(() => Promise.resolve()),
-    post: vi.fn().mockImplementation(() => Promise.resolve()),
-  };
+test('getFileVersionsApi - 各バージョンのユーザー情報が正しく含まれる', async () => {
+  const mockHttpClient = createMockHttpClient();
 
   const mockResponse: GetVersionsResponse = {
     versions: [
@@ -217,8 +191,7 @@ test('createVersionsApi.getVersions - 各バージョンのユーザー情報が
 
   vi.mocked(mockHttpClient.get).mockResolvedValueOnce(mockResponse);
 
-  const versionsApi = createVersionsApi(mockHttpClient);
-  const result = await versionsApi.getVersions(TestData.FILE_KEY);
+  const result = await getFileVersionsApi(mockHttpClient, TestData.FILE_KEY);
 
   const user = result.versions[0].user;
   expect(user.id).toBe('user-123');
@@ -227,16 +200,13 @@ test('createVersionsApi.getVersions - 各バージョンのユーザー情報が
   expect(user.email).toBe('test@example.com');
 });
 
-test('createVersionsApi.getVersions - タイムアウトエラーが適切に処理される', async () => {
-  const mockHttpClient: HttpClient = {
-    get: vi.fn().mockImplementation(() => Promise.resolve()),
-    post: vi.fn().mockImplementation(() => Promise.resolve()),
-  };
+test('getFileVersionsApi - タイムアウトエラーが適切に処理される', async () => {
+  const mockHttpClient = createMockHttpClient();
 
   const timeoutError = new Error('Request timeout');
   vi.mocked(mockHttpClient.get).mockRejectedValueOnce(timeoutError);
 
-  const versionsApi = createVersionsApi(mockHttpClient);
-
-  await expect(versionsApi.getVersions(TestData.FILE_KEY)).rejects.toThrow('Request timeout');
+  await expect(getFileVersionsApi(mockHttpClient, TestData.FILE_KEY)).rejects.toThrow(
+    'Request timeout'
+  );
 });
