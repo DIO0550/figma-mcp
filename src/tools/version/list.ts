@@ -1,5 +1,5 @@
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { GetVersionsResponse } from '../../types/api/responses/version-responses.js';
+import type { GetVersionsApiResponse } from '../../api/endpoints/versions/index.js';
 import { GetVersionsArgsSchema, type GetVersionsArgs } from './get-versions-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
 
@@ -38,8 +38,7 @@ export const GetVersionsTool = {
    * @param args - バージョン取得の引数（fileKeyを含む）
    * @returns バージョン一覧のレスポンス
    */
-  async execute(tool: GetVersionsTool, args: GetVersionsArgs): Promise<GetVersionsResponse> {
+  async execute(tool: GetVersionsTool, args: GetVersionsArgs): Promise<GetVersionsApiResponse> {
     return FigmaApiClient.getVersions(tool.apiClient, args.fileKey);
   },
 };
-

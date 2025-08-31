@@ -1,9 +1,35 @@
 // ファイル関連のAPI呼び出し関数
 
 import type { HttpClient } from '../../client.js';
-import type { GetFileOptions } from '../../../types/index.js';
-import type { GetFileApiResponse } from '../../../types/api/responses/file-responses.js';
 import { buildUrlParams } from '../utils/params-builder.js';
+import type { Document, Component, ComponentSet } from '../../../types/figma-types.js';
+import type { Style } from '../../../models/style/style.js';
+
+// API Options
+export interface GetFileApiOptions {
+  version?: string;
+  ids?: string[];
+  depth?: number;
+  geometry?: 'paths' | 'points';
+  pluginData?: string;
+  branchData?: boolean;
+}
+
+// API Response
+export interface GetFileApiResponse {
+  document: Document;
+  components: Record<string, Component>;
+  componentSets: Record<string, ComponentSet>;
+  schemaVersion: number;
+  styles: Record<string, Style>;
+  name: string;
+  lastModified: string;
+  thumbnailUrl: string;
+  version: string;
+  role: string;
+  editorType: string;
+  linkAccess: string;
+}
 
 /**
  * ファイル情報を取得
@@ -11,7 +37,7 @@ import { buildUrlParams } from '../utils/params-builder.js';
 export async function getFileApi(
   client: HttpClient,
   fileKey: string,
-  options?: GetFileOptions
+  options?: GetFileApiOptions
 ): Promise<GetFileApiResponse> {
   const params = buildUrlParams(options);
   return client.get<GetFileApiResponse>(`/v1/files/${fileKey}`, params);

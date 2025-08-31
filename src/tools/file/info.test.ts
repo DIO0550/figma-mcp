@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { GetFileTool } from './info.js';
 import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { FigmaFile } from '../../types/api/responses/index.js';
+import type { GetFileApiResponse } from '../../api/endpoints/file/index.js';
 
 describe('info tool', () => {
   let apiClient: FigmaApiClient;
@@ -13,7 +13,7 @@ describe('info tool', () => {
   });
 
   test('ファイル基本情報を取得できる', async () => {
-    const mockFile: FigmaFile = {
+    const mockFile: GetFileApiResponse = {
       name: 'Test File',
       lastModified: '2024-01-01T00:00:00Z',
       editorType: 'figma',
@@ -55,7 +55,7 @@ describe('info tool', () => {
   });
 
   test('オプションパラメータを渡せる', async () => {
-    const mockFile: FigmaFile = {
+    const mockFile: GetFileApiResponse = {
       name: 'Test File',
       lastModified: '2024-01-01T00:00:00Z',
       editorType: 'figma',
@@ -90,7 +90,7 @@ describe('info tool', () => {
   });
 
   test('ページ数を正しくカウントできる', async () => {
-    const mockFile: FigmaFile = {
+    const mockFile: GetFileApiResponse = {
       name: 'Test File',
       lastModified: '2024-01-01T00:00:00Z',
       editorType: 'figma',

@@ -1,6 +1,6 @@
 import { test, expect, vi } from 'vitest';
 import type { HttpClient } from '../../../client.js';
-import type { GetProjectFilesApiResponse } from '../../../../types/index.js';
+import type { GetProjectFilesApiResponse } from '../index.js';
 import { getProjectFilesApi } from '../index.js';
 
 test('getProjectFilesApi: プロジェクトのファイル一覧を取得できる', async () => {

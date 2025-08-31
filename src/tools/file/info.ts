@@ -1,4 +1,4 @@
-import type { GetFileOptions } from '../../types/index.js';
+import type { GetFileApiOptions } from '../../api/endpoints/file/index.js';
 import { FigmaApiClient } from '../../api/figma-api-client.js';
 import type { FileResponse } from './types.js';
 import type { McpToolDefinition } from '../types.js';
@@ -36,7 +36,7 @@ export const GetFileTool = {
    * ファイル情報取得を実行
    */
   async execute(tool: GetFileTool, args: GetFileArgs): Promise<FileResponse> {
-    const options: GetFileOptions = {
+    const options: GetFileApiOptions = {
       branchData: args.branch_data,
       version: args.version,
       pluginData: args.plugin_data,
@@ -44,15 +44,15 @@ export const GetFileTool = {
 
     // Remove undefined values
     Object.keys(options).forEach((key) => {
-      if (options[key as keyof GetFileOptions] === undefined) {
-        delete options[key as keyof GetFileOptions];
+      if (options[key as keyof GetFileApiOptions] === undefined) {
+        delete options[key as keyof GetFileApiOptions];
       }
     });
 
     const file = await FigmaApiClient.getFile(tool.apiClient, args.file_key, options);
     const documentChildren = file.document.children || [];
     const pagesCount = documentChildren.filter(
-      (child) => 'type' in child && child.type === 'CANVAS'
+      (child: any) => 'type' in child && child.type === 'CANVAS'
     ).length;
 
     return {

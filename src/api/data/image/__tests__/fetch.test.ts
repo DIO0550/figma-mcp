@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ImageExport } from '../image.js';
 import type { FigmaContext } from '../../../context.js';
-import type { ImageApiResponse } from '../../../../types/api/responses/image-responses.js';
+import type { ImageApiResponse } from '../../../endpoints/images/index.js';
 
 describe('ImageExport.fetch', () => {
   const mockContext: FigmaContext = {

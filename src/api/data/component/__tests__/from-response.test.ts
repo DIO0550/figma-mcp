@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ComponentData } from '../component.js';
-import type { FileComponentsApiResponse } from '../../../../types/api/responses/component-responses.js';
+import type { FileComponentsApiResponse } from '../../../../api/endpoints/components/index.js';
 import type { Component } from '../../../../types/figma-types.js';
 
 describe('ComponentData.fromResponse', () => {

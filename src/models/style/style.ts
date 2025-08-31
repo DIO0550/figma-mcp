@@ -1,4 +1,4 @@
-import type { StyleStatistics } from '../../types/api/responses/style-responses.js';
+import type { StyleApiStatistics } from '../../api/endpoints/styles/index.js';
 
 /**
  * Figmaのスタイル型定義
@@ -19,7 +19,7 @@ export interface Style {
  */
 export interface CategorizedStyles {
   categorized: Record<string, Record<string, string[]>>;
-  statistics: StyleStatistics;
+  statistics: StyleApiStatistics;
 }
 
 /**
@@ -67,7 +67,7 @@ export namespace Style {
       }
     });
 
-    const statistics: StyleStatistics = {
+    const statistics: StyleApiStatistics = {
       total: styles.length,
       byType,
       namingConsistency: styles.length > 0 ? hierarchicalCount / styles.length : 0,
@@ -100,7 +100,7 @@ export namespace Style {
   /**
    * スタイルの統計情報を計算
    */
-  export function calculateStatistics(styles: Style[]): StyleStatistics {
+  export function calculateStatistics(styles: Style[]): StyleApiStatistics {
     const byType: Record<string, number> = {};
     let hierarchicalCount = 0;
 

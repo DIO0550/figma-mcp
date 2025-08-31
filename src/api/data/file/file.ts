@@ -1,5 +1,5 @@
 import type { FigmaContext } from '../../context.js';
-import type { FigmaFile } from '../../../types/api/responses/file-responses.js';
+import type { GetFileApiResponse } from '../../endpoints/file/index.js';
 import type { Document, Node, Component } from '../../../types/figma-types.js';
 import type { Style } from '../../../models/style/style.js';
 
@@ -43,7 +43,7 @@ export namespace FileData {
   /**
    * Figma APIレスポンスからFileDataを作成
    */
-  export function fromResponse(key: string, response: FigmaFile): FileData {
+  export function fromResponse(key: string, response: GetFileApiResponse): FileData {
     return {
       key,
       name: response.name,
@@ -80,7 +80,7 @@ export namespace FileData {
     }
 
     const url = `${context.baseUrl}/v1/files/${fileKey}${params.toString() ? '?' + params.toString() : ''}`;
-    
+
     const response = await globalThis.fetch(url, {
       method: 'GET',
       headers: context.headers,
@@ -90,7 +90,7 @@ export namespace FileData {
       throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json() as FigmaFile;
+    const data = (await response.json()) as GetFileApiResponse;
     return fromResponse(fileKey, data);
   }
 
@@ -107,12 +107,15 @@ export namespace FileData {
     }
   ): Promise<{
     name: string;
-    nodes: Record<string, {
-      document: Node;
-      components: Record<string, Component>;
-      schemaVersion: number;
-      styles: Record<string, Style>;
-    }>;
+    nodes: Record<
+      string,
+      {
+        document: Node;
+        components: Record<string, Component>;
+        schemaVersion: number;
+        styles: Record<string, Style>;
+      }
+    >;
   }> {
     const params = new URLSearchParams();
     params.append('ids', nodeIds.join(','));
@@ -124,7 +127,7 @@ export namespace FileData {
     }
 
     const url = `${context.baseUrl}/v1/files/${fileKey}/nodes?${params.toString()}`;
-    
+
     const response = await globalThis.fetch(url, {
       method: 'GET',
       headers: context.headers,
@@ -134,14 +137,17 @@ export namespace FileData {
       throw new Error(`Failed to fetch nodes: ${response.status} ${response.statusText}`);
     }
 
-    return await response.json() as {
+    return (await response.json()) as {
       name: string;
-      nodes: Record<string, {
-        document: Node;
-        components: Record<string, Component>;
-        schemaVersion: number;
-        styles: Record<string, Style>;
-      }>;
+      nodes: Record<
+        string,
+        {
+          document: Node;
+          components: Record<string, Component>;
+          schemaVersion: number;
+          styles: Record<string, Style>;
+        }
+      >;
     };
   }
 

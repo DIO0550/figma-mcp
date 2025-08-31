@@ -1,7 +1,11 @@
 import { test, expect, vi } from 'vitest';
-import { postFileCommentApi } from '../index';
+import {
+  postFileCommentApi,
+  type PostFileCommentApiResponse,
+  type PostFileCommentApiOptions,
+} from '../index';
 import type { HttpClient } from '../../../client';
-import type { PostFileCommentApiResponse, PostCommentOptions } from '../../../../types';
+
 import { TestData } from '../../../../constants';
 
 function createMockHttpClient(): HttpClient {
@@ -32,7 +36,7 @@ test('postFileCommentApiで新しいコメントを投稿できる', async () =>
 
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const options: PostCommentOptions = {
+  const options: PostFileCommentApiOptions = {
     message: 'New comment',
     clientMeta: {
       x: 100,
@@ -70,7 +74,7 @@ test('postFileCommentApiで既存のコメントへの返信を投稿できる',
 
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const options: PostCommentOptions = {
+  const options: PostFileCommentApiOptions = {
     message: 'Reply comment',
     clientMeta: {
       x: 100,
@@ -94,7 +98,7 @@ test('postFileCommentApiでcomment_idが未定義の場合はbodyに含まれな
   const mockComment = {} as PostFileCommentApiResponse;
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const options: PostCommentOptions = {
+  const options: PostFileCommentApiOptions = {
     message: 'Test',
     clientMeta: { x: 0, y: 0 },
   };
@@ -110,7 +114,7 @@ test('postFileCommentApiで異なる座標位置でコメントを投稿でき�
   const mockComment = {} as PostFileCommentApiResponse;
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const options: PostCommentOptions = {
+  const options: PostFileCommentApiOptions = {
     message: 'Test at different position',
     clientMeta: {
       x: 500,
@@ -131,7 +135,7 @@ test('postFileCommentApiで空のメッセージでもコメントを投稿で�
   const mockComment = {} as PostFileCommentApiResponse;
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const options: PostCommentOptions = {
+  const options: PostFileCommentApiOptions = {
     message: '',
     clientMeta: { x: 0, y: 0 },
   };
@@ -148,7 +152,7 @@ test('postFileCommentApiで長いメッセージを含むコメントを投稿�
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
   const longMessage = 'A'.repeat(1000);
-  const options: PostCommentOptions = {
+  const options: PostFileCommentApiOptions = {
     message: longMessage,
     clientMeta: { x: 0, y: 0 },
   };
@@ -164,7 +168,7 @@ test('postFileCommentApiでHTTPクライアントがエラーをスローした�
   const expectedError = new Error('Network error');
   vi.mocked(mockHttpClient.post).mockRejectedValueOnce(expectedError);
 
-  const options: PostCommentOptions = {
+  const options: PostFileCommentApiOptions = {
     message: 'Test',
     clientMeta: { x: 0, y: 0 },
   };
@@ -179,7 +183,7 @@ test('postFileCommentApiで権限エラーが適切に処理される', async ()
   const permissionError = new Error('Forbidden');
   vi.mocked(mockHttpClient.post).mockRejectedValueOnce(permissionError);
 
-  const options: PostCommentOptions = {
+  const options: PostFileCommentApiOptions = {
     message: 'Test',
     clientMeta: { x: 0, y: 0 },
   };
@@ -194,7 +198,7 @@ test('postFileCommentApiで特殊文字を含むメッセージを正しく送�
   const mockComment = {} as PostFileCommentApiResponse;
   vi.mocked(mockHttpClient.post).mockResolvedValueOnce(mockComment);
 
-  const options: PostCommentOptions = {
+  const options: PostFileCommentApiOptions = {
     message: 'Message with "quotes" and 日本語',
     clientMeta: { x: 0, y: 0 },
   };
