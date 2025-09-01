@@ -76,9 +76,9 @@ const parseFigmaUrlTool = ParseFigmaUrlTool.create();
 
 /**
  * 指定されたツール名と引数に基づいてツールを実行します
- * @param name ツール名
- * @param args ツールの引数
- * @returns ツールの実行結果
+ * @param name - 実行するツールの名前（ToolDefinition.nameの値）
+ * @param args - ツール固有の引数オブジェクト（各ツールのArgsSchemaで検証される）
+ * @returns ツールの実行結果（各ツール固有のレスポンス形式）
  * @throws 不明なツール名の場合はErrorをスロー
  */
 async function executeTool(name: string, args: unknown): Promise<unknown> {
@@ -113,7 +113,7 @@ async function executeTool(name: string, args: unknown): Promise<unknown> {
     }
     case ParseFigmaUrlToolDefinition.name: {
       const validatedArgs: ParseFigmaUrlArgs = ParseFigmaUrlArgsSchema.parse(args);
-      // ParseFigmaUrlToolは同期関数だが、一貫性のためPromiseでラップ
+      // 他のツールとの一貫性を保つため、同期関数の結果をPromiseでラップして統一的なインターフェースを提供
       return Promise.resolve(ParseFigmaUrlTool.execute(parseFigmaUrlTool, validatedArgs));
     }
     default:
