@@ -74,7 +74,13 @@ const commentTool = GetCommentsTool.from(apiClient);
 const getVersionsTool = GetVersionsTool.from(apiClient);
 const parseFigmaUrlTool = ParseFigmaUrlTool.create();
 
-// ツール実行のヘルパー関数
+/**
+ * 指定されたツール名と引数に基づいてツールを実行します
+ * @param name ツール名
+ * @param args ツールの引数
+ * @returns ツールの実行結果
+ * @throws 不明なツール名の場合はErrorをスロー
+ */
 async function executeTool(name: string, args: unknown): Promise<unknown> {
   switch (name) {
     case GetFileToolDefinition.name: {
@@ -107,7 +113,8 @@ async function executeTool(name: string, args: unknown): Promise<unknown> {
     }
     case ParseFigmaUrlToolDefinition.name: {
       const validatedArgs: ParseFigmaUrlArgs = ParseFigmaUrlArgsSchema.parse(args);
-      return ParseFigmaUrlTool.execute(parseFigmaUrlTool, validatedArgs);
+      // ParseFigmaUrlToolは同期関数だが、一貫性のためPromiseでラップ
+      return Promise.resolve(ParseFigmaUrlTool.execute(parseFigmaUrlTool, validatedArgs));
     }
     default:
       throw new Error(`Unknown tool: ${name}`);
