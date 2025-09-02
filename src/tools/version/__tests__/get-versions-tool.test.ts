@@ -1,8 +1,8 @@
 import { test, expect, beforeAll, afterAll } from 'vitest';
-import { MockFigmaServer } from '../../__tests__/mocks/server.js';
-import { createFigmaApiClient } from '../../api/figma-api-client.js';
-import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import { TestPorts } from '../../constants/index.js';
+import { MockFigmaServer } from '../../../__tests__/mocks/server.js';
+import { createFigmaApiClient } from '../../../api/figma-api-client.js';
+import type { FigmaApiClient } from '../../../api/figma-api-client.js';
+import { TestPorts } from '../../../constants/index.js';
 
 let mockServer: MockFigmaServer;
 let apiClient: FigmaApiClient;
@@ -20,7 +20,7 @@ afterAll(async () => {
 test('GetVersionsTool: バージョン履歴を取得できる', async () => {
   const fileKey = 'test-file-key';
 
-  const { GetVersionsTool } = await import('./list.js');
+  const { GetVersionsTool } = await import('../list.js');
   const tool = GetVersionsTool.from(apiClient);
   const result = await GetVersionsTool.execute(tool, { fileKey });
 
@@ -34,10 +34,13 @@ test('GetVersionsTool: バージョン履歴を取得できる', async () => {
 });
 
 test('GetVersionsTool: APIエラーを適切に処理する', async () => {
-  const errorClient = createFigmaApiClient('invalid-token', `http://localhost:${TestPorts.VERSION_TEST}`);
+  const errorClient = createFigmaApiClient(
+    'invalid-token',
+    `http://localhost:${TestPorts.VERSION_TEST}`
+  );
   const fileKey = 'test-file-key';
 
-  const { GetVersionsTool } = await import('./list.js');
+  const { GetVersionsTool } = await import('../list.js');
   const tool = GetVersionsTool.from(errorClient);
 
   await expect(GetVersionsTool.execute(tool, { fileKey })).rejects.toThrow();
@@ -50,7 +53,7 @@ test.skip('GetVersionsTool: 空のバージョンリストを処理できる', a
 test('GetVersionsTool: バージョンが時系列順（新しい順）でソートされている', async () => {
   const fileKey = 'test-file-key';
 
-  const { GetVersionsTool } = await import('./list.js');
+  const { GetVersionsTool } = await import('../list.js');
   const tool = GetVersionsTool.from(apiClient);
   const result = await GetVersionsTool.execute(tool, { fileKey });
 
@@ -59,12 +62,10 @@ test('GetVersionsTool: バージョンが時系列順（新しい順）でソー
   expect(result.versions[1].id).toBe('version2');
 });
 
-
-
 test('GetVersionsTool: バージョンのラベルと説明を取得できる', async () => {
   const fileKey = 'test-file-key';
 
-  const { GetVersionsTool } = await import('./list.js');
+  const { GetVersionsTool } = await import('../list.js');
   const tool = GetVersionsTool.from(apiClient);
   const result = await GetVersionsTool.execute(tool, { fileKey });
 
