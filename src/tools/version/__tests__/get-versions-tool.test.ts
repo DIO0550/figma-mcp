@@ -17,7 +17,7 @@ afterAll(async () => {
   await mockServer.stop();
 });
 
-test('GetVersionsTool: バージョン履歴を取得できる', async () => {
+test('バージョン履歴を取得できる', async () => {
   const fileKey = 'test-file-key';
 
   const { GetVersionsTool } = await import('../list.js');
@@ -33,7 +33,7 @@ test('GetVersionsTool: バージョン履歴を取得できる', async () => {
   });
 });
 
-test('GetVersionsTool: APIエラーを適切に処理する', async () => {
+test('APIエラーを適切に処理する', async () => {
   const errorClient = createFigmaApiClient(
     'invalid-token',
     `http://localhost:${TestPorts.VERSION_TEST}`
@@ -46,11 +46,11 @@ test('GetVersionsTool: APIエラーを適切に処理する', async () => {
   await expect(GetVersionsTool.execute(tool, { fileKey })).rejects.toThrow();
 });
 
-test.skip('GetVersionsTool: 空のバージョンリストを処理できる', async () => {
+test.skip('空のバージョンリストを処理できる', async () => {
   // TODO: MockFigmaServerに空のレスポンスを返すオプションを追加してテストを実装
 });
 
-test('GetVersionsTool: バージョンが時系列順（新しい順）でソートされている', async () => {
+test('バージョンが時系列順（新しい順）でソートされている', async () => {
   const fileKey = 'test-file-key';
 
   const { GetVersionsTool } = await import('../list.js');
@@ -62,7 +62,7 @@ test('GetVersionsTool: バージョンが時系列順（新しい順）でソー
   expect(result.versions[1].id).toBe('version2');
 });
 
-test('GetVersionsTool: バージョンのラベルと説明を取得できる', async () => {
+test('バージョンのラベルと説明を取得できる', async () => {
   const fileKey = 'test-file-key';
 
   const { GetVersionsTool } = await import('../list.js');
