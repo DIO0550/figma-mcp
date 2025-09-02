@@ -18,14 +18,20 @@ import { GetVersionsTool, GetVersionsToolDefinition } from './tools/version/inde
 import { ParseFigmaUrlTool, ParseFigmaUrlToolDefinition } from './tools/parse-figma-url/index.js';
 import { Logger, LogLevel } from './utils/logger/index.js';
 
-import { GetFileArgsSchema } from './tools/file/get-file-args.js';
-import { GetFileNodesArgsSchema } from './tools/file/get-file-nodes-args.js';
-import { GetComponentsArgsSchema } from './tools/component/get-components-args.js';
-import { GetStylesArgsSchema } from './tools/style/get-styles-args.js';
-import { ExportImagesArgsSchema } from './tools/image/export-images-args.js';
-import { GetCommentsArgsSchema } from './tools/comment/get-comments-args.js';
-import { GetVersionsArgsSchema } from './tools/version/get-versions-args.js';
-import { ParseFigmaUrlArgsSchema } from './tools/parse-figma-url/parse-figma-url-args.js';
+import { GetFileArgsSchema, type GetFileArgs } from './tools/file/get-file-args.js';
+import { GetFileNodesArgsSchema, type GetFileNodesArgs } from './tools/file/get-file-nodes-args.js';
+import {
+  GetComponentsArgsSchema,
+  type GetComponentsArgs,
+} from './tools/component/get-components-args.js';
+import { GetStylesArgsSchema, type GetStylesArgs } from './tools/style/get-styles-args.js';
+import { ExportImagesArgsSchema, type ExportImagesArgs } from './tools/image/export-images-args.js';
+import { GetCommentsArgsSchema, type GetCommentsArgs } from './tools/comment/get-comments-args.js';
+import { GetVersionsArgsSchema, type GetVersionsArgs } from './tools/version/get-versions-args.js';
+import {
+  ParseFigmaUrlArgsSchema,
+  type ParseFigmaUrlArgs,
+} from './tools/parse-figma-url/parse-figma-url-args.js';
 
 dotenv.config();
 
@@ -67,6 +73,53 @@ const exportImagesTool = ExportImagesTool.from(apiClient);
 const commentTool = GetCommentsTool.from(apiClient);
 const getVersionsTool = GetVersionsTool.from(apiClient);
 const parseFigmaUrlTool = ParseFigmaUrlTool.create();
+
+/**
+ * 指定されたツール名と引数に基づいてツールを実行します
+ * @param name - 実行するツールの名前（ToolDefinition.nameの値）
+ * @param args - ツール固有の引数オブジェクト（各ツールのArgsSchemaで検証される）
+ * @returns ツールの実行結果（各ツール固有のレスポンス形式）
+ * @throws 不明なツール名の場合はErrorをスロー
+ */
+async function executeTool(name: string, args: unknown): Promise<unknown> {
+  switch (name) {
+    case GetFileToolDefinition.name: {
+      const validatedArgs: GetFileArgs = GetFileArgsSchema.parse(args);
+      return GetFileTool.execute(getFileTool, validatedArgs);
+    }
+    case GetFileNodesToolDefinition.name: {
+      const validatedArgs: GetFileNodesArgs = GetFileNodesArgsSchema.parse(args);
+      return GetFileNodesTool.execute(getFileNodesTool, validatedArgs);
+    }
+    case GetComponentsToolDefinition.name: {
+      const validatedArgs: GetComponentsArgs = GetComponentsArgsSchema.parse(args);
+      return GetComponentsTool.execute(componentTool, validatedArgs);
+    }
+    case GetStylesToolDefinition.name: {
+      const validatedArgs: GetStylesArgs = GetStylesArgsSchema.parse(args);
+      return GetStylesTool.execute(getStylesTool, validatedArgs);
+    }
+    case ExportImagesToolDefinition.name: {
+      const validatedArgs: ExportImagesArgs = ExportImagesArgsSchema.parse(args);
+      return ExportImagesTool.execute(exportImagesTool, validatedArgs);
+    }
+    case GetCommentsToolDefinition.name: {
+      const validatedArgs: GetCommentsArgs = GetCommentsArgsSchema.parse(args);
+      return GetCommentsTool.execute(commentTool, validatedArgs);
+    }
+    case GetVersionsToolDefinition.name: {
+      const validatedArgs: GetVersionsArgs = GetVersionsArgsSchema.parse(args);
+      return GetVersionsTool.execute(getVersionsTool, validatedArgs);
+    }
+    case ParseFigmaUrlToolDefinition.name: {
+      const validatedArgs: ParseFigmaUrlArgs = ParseFigmaUrlArgsSchema.parse(args);
+      // 他のツールとの一貫性を保つため、同期関数の結果をPromiseでラップして統一的なインターフェースを提供
+      return Promise.resolve(ParseFigmaUrlTool.execute(parseFigmaUrlTool, validatedArgs));
+    }
+    default:
+      throw new Error(`Unknown tool: ${name}`);
+  }
+}
 
 server.setRequestHandler(ListToolsRequestSchema, () => {
   return {
@@ -119,114 +172,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   try {
-    switch (name) {
-      case 'get_file': {
-        const validatedArgs = GetFileArgsSchema.parse(args);
-        const result = await GetFileTool.execute(getFileTool, validatedArgs);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
+    const result = await executeTool(name, args);
 
-      case 'get_file_nodes': {
-        const validatedArgs = GetFileNodesArgsSchema.parse(args);
-        const result = await GetFileNodesTool.execute(getFileNodesTool, validatedArgs);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'get_components': {
-        const validatedArgs = GetComponentsArgsSchema.parse(args);
-        const result = await GetComponentsTool.execute(componentTool, validatedArgs);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'get_styles': {
-        const validatedArgs = GetStylesArgsSchema.parse(args);
-        const result = await GetStylesTool.execute(getStylesTool, validatedArgs);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'export_images': {
-        const validatedArgs = ExportImagesArgsSchema.parse(args);
-        const result = await ExportImagesTool.execute(exportImagesTool, validatedArgs);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'get_comments': {
-        const validatedArgs = GetCommentsArgsSchema.parse(args);
-        const result = await GetCommentsTool.execute(commentTool, validatedArgs);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'get_versions': {
-        const validatedArgs = GetVersionsArgsSchema.parse(args);
-        const result = await GetVersionsTool.execute(getVersionsTool, validatedArgs);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case 'parse_figma_url': {
-        const validatedArgs = ParseFigmaUrlArgsSchema.parse(args);
-        const result = ParseFigmaUrlTool.execute(parseFigmaUrlTool, validatedArgs);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      default:
-        throw new Error(`Unknown tool: ${name}`);
-    }
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(result, null, 2),
+        },
+      ],
+    };
   } catch (error) {
     return {
       content: [
