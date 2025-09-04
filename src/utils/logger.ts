@@ -33,12 +33,12 @@ export function createLogger(options: LoggerOptions): Logger {
   return logger;
 }
 
-// グローバルシングルトンの初期化用（後方互換性）
-export function initializeLogger(server: Server, level: LogLevel = LogLevel.INFO): void {
+// MCPサーバー用のグローバルシングルトンの初期化
+export function initMcpLogger(server: Server, level: LogLevel = LogLevel.INFO): void {
   LoggerImpl.init({ type: 'mcp', server, level });
 }
 
-// テスト用: ConsoleLoggerの簡易作成
+// ConsoleLoggerの簡易作成（テストおよび開発用）
 export function createConsoleLogger(level: LogLevel = LogLevel.INFO): Logger {
   return createLogger({ type: 'console', level });
 }
