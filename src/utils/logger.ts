@@ -34,7 +34,7 @@ export function createLogger(options: LoggerOptions): Logger {
 }
 
 // MCPサーバー用のグローバルシングルトンの初期化
-export function initMcpLogger(server: Server, level: LogLevel = LogLevel.INFO): void {
+export function initializeMcpLogger(server: Server, level: LogLevel = LogLevel.INFO): void {
   LoggerImpl.init({ type: 'mcp', server, level });
 }
 
