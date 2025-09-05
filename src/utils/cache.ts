@@ -42,8 +42,8 @@ interface CacheItem<T> {
 interface LRUNode<T> {
   /** キャッシュのキー */
   key: string;
-  /** キャッシュアイテム */
-  item: CacheItem<T>;
+  /** キャッシュアイテム（センチネルノードの場合はundefined） */
+  item?: CacheItem<T>;
   /** 前のノードへの参照 */
   prev: LRUNode<T> | null;
   /** 次のノードへの参照 */
@@ -82,13 +82,13 @@ export const Cache = {
     // これにより境界条件の処理が簡略化される
     const head: LRUNode<T> = {
       key: '',
-      item: { value: undefined as unknown as T },
+      item: undefined,
       prev: null,
       next: null,
     };
     const tail: LRUNode<T> = {
       key: '',
-      item: { value: undefined as unknown as T },
+      item: undefined,
       prev: null,
       next: null,
     };
