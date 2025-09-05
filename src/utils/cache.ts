@@ -314,6 +314,22 @@ function isExpired<T>(item: CacheItem<T>): boolean {
 /**
  * レガシーインターフェース（後方互換性のため）
  * 将来的にはCache.create()とCacheコンパニオンオブジェクトの使用を推奨
+ *
+ * @deprecated v2.0.0で廃止予定（2025年6月）
+ * 代わりにCache.create()とCacheコンパニオンオブジェクトを使用してください
+ *
+ * 移行ガイド:
+ * ```typescript
+ * // 旧: レガシーインターフェース
+ * const cache = createCache<string>();
+ * cache.set('key', 'value');
+ * const value = cache.get('key');
+ *
+ * // 新: コンパニオンオブジェクトパターン
+ * const cache = Cache.create<string>();
+ * Cache.set(cache, 'key', 'value');
+ * const value = Cache.get(cache, 'key');
+ * ```
  */
 interface LegacyCache<T = unknown> {
   get(key: string): T | undefined;
@@ -328,6 +344,9 @@ interface LegacyCache<T = unknown> {
  * レガシーファクトリ関数（後方互換性のため）
  * 既存のコードとの互換性を保つためのラッパー
  * 新規コードではCache.create()の使用を推奨
+ *
+ * @deprecated v2.0.0で廃止予定（2025年6月）
+ * 代わりにCache.create()とCacheコンパニオンオブジェクトを使用してください
  * @param options キャッシュオプション
  * @returns レガシーキャッシュインターフェース
  */
