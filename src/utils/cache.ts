@@ -114,7 +114,7 @@ export const Cache = {
    */
   get<T>(cache: Cache<T>, key: string): T | undefined {
     const node = cache.store.get(key);
-    if (!node) return undefined;
+    if (!node || !node.item) return undefined;
 
     if (isExpired(node.item)) {
       removeNode(node);
@@ -174,7 +174,7 @@ export const Cache = {
    */
   has<T>(cache: Cache<T>, key: string): boolean {
     const node = cache.store.get(key);
-    if (!node) return false;
+    if (!node || !node.item) return false;
 
     if (isExpired(node.item)) {
       removeNode(node);
@@ -222,7 +222,7 @@ export const Cache = {
     const keysToDelete: string[] = [];
 
     for (const [key, node] of cache.store.entries()) {
-      if (isExpired(node.item)) {
+      if (node.item && isExpired(node.item)) {
         keysToDelete.push(key);
       }
     }
@@ -250,7 +250,9 @@ export const Cache = {
 function addToFront<T>(cache: Cache<T>, node: LRUNode<T>): void {
   node.prev = cache.head;
   node.next = cache.head.next;
-  cache.head.next!.prev = node;
+  if (cache.head.next) {
+    cache.head.next.prev = node;
+  }
   cache.head.next = node;
 }
 
@@ -260,10 +262,14 @@ function addToFront<T>(cache: Cache<T>, node: LRUNode<T>): void {
  * @param node 削除するノード
  */
 function removeNode<T>(node: LRUNode<T>): void {
-  const prevNode = node.prev!;
-  const nextNode = node.next!;
-  prevNode.next = nextNode;
-  nextNode.prev = prevNode;
+  const prevNode = node.prev;
+  const nextNode = node.next;
+  if (prevNode) {
+    prevNode.next = nextNode;
+  }
+  if (nextNode) {
+    nextNode.prev = prevNode;
+  }
 }
 
 /**
@@ -287,7 +293,10 @@ function removeLRU<T>(cache: Cache<T>): string | null {
   if (cache.tail.prev === cache.head) {
     return null;
   }
-  const lruNode = cache.tail.prev!;
+  const lruNode = cache.tail.prev;
+  if (!lruNode) {
+    return null;
+  }
   removeNode(lruNode);
   return lruNode.key;
 }
