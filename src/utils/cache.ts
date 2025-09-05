@@ -37,6 +37,12 @@ interface CacheItem<T> {
 }
 
 /**
+ * センチネルノード識別用の定数
+ */
+const SENTINEL_HEAD_KEY = '__SENTINEL_HEAD__' as const;
+const SENTINEL_TAIL_KEY = '__SENTINEL_TAIL__' as const;
+
+/**
  * LRU用の双方向連結リストノード
  */
 interface LRUNode<T> {
@@ -81,13 +87,13 @@ export const Cache = {
     // センチネルノード（ダミーのヘッドとテール）
     // これにより境界条件の処理が簡略化される
     const head: LRUNode<T> = {
-      key: '',
+      key: SENTINEL_HEAD_KEY,
       item: undefined,
       prev: null,
       next: null,
     };
     const tail: LRUNode<T> = {
-      key: '',
+      key: SENTINEL_TAIL_KEY,
       item: undefined,
       prev: null,
       next: null,
@@ -211,10 +217,21 @@ export const Cache = {
 
   /**
    * キャッシュの現在のサイズを取得
-   * 注意: この操作は期限切れアイテムのクリーンアップを伴うため、
-   * 副作用があり、O(n)時間がかかる可能性がある
+   *
+   * **パフォーマンス特性: O(n)**
+   *
+   * この操作がO(n)になる理由:
+   * - 期限切れアイテムの遅延削除戦略を採用しているため
+   * - TTLチェックをget/has時にのみ行い、size時に全アイテムをスキャン
+   * - これにより通常の操作（get/set）はO(1)を維持できる
+   *
+   * 設計上のトレードオフ:
+   * - メリット: get/set/deleteの高速化（O(1)を保証）
+   * - デメリット: sizeメソッドがO(n)になる
+   * - 推奨: 頻繁なsize()呼び出しは避け、キャッシュの動作確認時のみ使用
+   *
    * @param cache キャッシュインスタンス
-   * @returns 有効なアイテムの数
+   * @returns 有効なアイテムの数（期限切れアイテムを除く）
    */
   size<T>(cache: Cache<T>): number {
     // 期限切れアイテムの遅延削除を実行
@@ -315,7 +332,7 @@ function isExpired<T>(item: CacheItem<T>): boolean {
  * レガシーインターフェース（後方互換性のため）
  * 将来的にはCache.create()とCacheコンパニオンオブジェクトの使用を推奨
  *
- * @deprecated v2.0.0で廃止予定（2025年6月）
+ * @deprecated v2.0.0で廃止予定（2026年4月）
  * 代わりにCache.create()とCacheコンパニオンオブジェクトを使用してください
  *
  * 移行ガイド:
@@ -345,7 +362,7 @@ interface LegacyCache<T = unknown> {
  * 既存のコードとの互換性を保つためのラッパー
  * 新規コードではCache.create()の使用を推奨
  *
- * @deprecated v2.0.0で廃止予定（2025年6月）
+ * @deprecated v2.0.0で廃止予定（2026年4月）
  * 代わりにCache.create()とCacheコンパニオンオブジェクトを使用してください
  * @param options キャッシュオプション
  * @returns レガシーキャッシュインターフェース
