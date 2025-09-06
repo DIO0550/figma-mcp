@@ -120,8 +120,11 @@ export const Cache = {
    */
   get<T>(cache: Cache<T>, key: string): T | undefined {
     const node = cache.store.get(key);
-    if (!node || !node.item) return undefined;
 
+    // Guard clause: ノードが存在しない場合の早期リターン
+    if (!node?.item) return undefined;
+
+    // Guard clause: 期限切れアイテムの処理と早期リターン
     if (isExpired(node.item)) {
       removeNode(node);
       cache.store.delete(key);
@@ -141,8 +144,10 @@ export const Cache = {
    * @param ttl TTL（ミリ秒）、指定しない場合はデフォルトTTLを使用
    */
   set<T>(cache: Cache<T>, key: string, value: T, ttl?: number): void {
+    // TTL計算を明確化（Explaining Variables）
     const effectiveTtl = ttl ?? cache.defaultTtl;
-    const expiresAt = effectiveTtl ? Date.now() + effectiveTtl : undefined;
+    const currentTime = Date.now();
+    const expiresAt = effectiveTtl ? currentTime + effectiveTtl : undefined;
 
     const existingNode = cache.store.get(key);
 
@@ -180,8 +185,11 @@ export const Cache = {
    */
   has<T>(cache: Cache<T>, key: string): boolean {
     const node = cache.store.get(key);
-    if (!node || !node.item) return false;
 
+    // Guard clause: ノードが存在しない場合の早期リターン
+    if (!node?.item) return false;
+
+    // Guard clause: 期限切れアイテムの処理と早期リターン
     if (isExpired(node.item)) {
       removeNode(node);
       cache.store.delete(key);
@@ -307,13 +315,14 @@ function moveToFront<T>(cache: Cache<T>, node: LRUNode<T>): void {
  * @returns 削除されたノードのキー、リストが空の場合はnull
  */
 function removeLRU<T>(cache: Cache<T>): string | null {
-  if (cache.tail.prev === cache.head) {
-    return null;
-  }
+  // Guard clause: リストが空の場合の早期リターン
+  if (cache.tail.prev === cache.head) return null;
+
   const lruNode = cache.tail.prev;
-  if (!lruNode) {
-    return null;
-  }
+
+  // Guard clause: ノードが存在しない場合の早期リターン（型安全性）
+  if (!lruNode) return null;
+
   removeNode(lruNode);
   return lruNode.key;
 }
@@ -324,8 +333,11 @@ function removeLRU<T>(cache: Cache<T>): string | null {
  * @returns 期限切れの場合はtrue
  */
 function isExpired<T>(item: CacheItem<T>): boolean {
+  // Guard clause: 有効期限が設定されていない場合は期限切れではない
   if (!item.expiresAt) return false;
-  return Date.now() > item.expiresAt;
+
+  const currentTime = Date.now();
+  return currentTime > item.expiresAt;
 }
 
 /**
