@@ -1,4 +1,4 @@
-import { parseFigmaUrl as parseUrl } from '../../utils/figma-url-parser.js';
+import { ParsedFigmaUrl } from '../../utils/figma-url-parser/index.js';
 import { setRuntimeConfig } from '../../config/runtime-config/runtime-config.js';
 import { ParseFigmaUrlArgsSchema, type ParseFigmaUrlArgs } from './parse-figma-url-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
@@ -48,7 +48,7 @@ export const ParseFigmaUrlTool = {
     const { url } = args;
 
     // URLをパース
-    const figmaInfo = parseUrl(url);
+    const figmaInfo = ParsedFigmaUrl.parse(url);
 
     // runtime-configに保存
     setRuntimeConfig({ figmaInfo });
