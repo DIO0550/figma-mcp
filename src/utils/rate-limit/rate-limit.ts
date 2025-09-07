@@ -1,11 +1,15 @@
 // レート制限処理ユーティリティ
 
-import type { RateLimitInfo } from '../types/index.js';
-import { HttpStatus, Limits, Headers } from '../constants/index.js';
+import { HttpStatus, Limits, Headers as HeaderConstants } from '../../constants/index.js';
 
-export function parseRateLimitHeaders(headers: Headers): RateLimitInfo | undefined {
-  const remaining = headers.get(Headers.RATE_LIMIT_REMAINING);
-  const reset = headers.get(Headers.RATE_LIMIT_RESET);
+export interface RateLimitInfo {
+  remaining: number;
+  reset: Date;
+}
+
+function parseHeaders(headers: Headers): RateLimitInfo | undefined {
+  const remaining = headers.get(HeaderConstants.RATE_LIMIT_REMAINING);
+  const reset = headers.get(HeaderConstants.RATE_LIMIT_RESET);
 
   if (remaining && reset) {
     return {
@@ -17,16 +21,25 @@ export function parseRateLimitHeaders(headers: Headers): RateLimitInfo | undefin
   return undefined;
 }
 
+export const RateLimitInfo = {
+  parseHeaders,
+} as const;
+
+// 後方互換性のための別名エクスポート
+export const parseRateLimitHeaders = RateLimitInfo.parseHeaders;
+
 export function getRetryAfter(headers: Headers): number | undefined {
-  const retryAfter = headers.get(Headers.RETRY_AFTER);
+  const retryAfter = headers.get(HeaderConstants.RETRY_AFTER);
   return retryAfter ? parseInt(retryAfter, 10) : undefined;
 }
 
 export function shouldRetry(error: unknown): boolean {
   if (error instanceof Error && 'status' in error) {
     const status = (error as { status: number }).status;
-    return status === HttpStatus.TOO_MANY_REQUESTS || 
-           (status >= HttpStatus.INTERNAL_SERVER_ERROR && status < 600);
+    return (
+      status === HttpStatus.TOO_MANY_REQUESTS ||
+      (status >= HttpStatus.INTERNAL_SERVER_ERROR && status < 600)
+    );
   }
   return false;
 }
