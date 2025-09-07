@@ -5,7 +5,6 @@ import { ErrorMessages } from '../../constants/error-messages.js';
  * サポートされているFigma URLタイプ
  */
 const SUPPORTED_URL_TYPES = ['file', 'design'] as const;
-type UrlType = (typeof SUPPORTED_URL_TYPES)[number];
 
 /**
  * Figmaドメイン
@@ -22,14 +21,18 @@ export interface ParsedFigmaUrl {
 }
 
 /**
- * ファイルIDのバリデート（内部使用）
+ * ファイルIDの正規表現パターン
  * Figma file IDは英数字とハイフン、アンダースコアで構成される
+ */
+const FILE_ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
+
+/**
+ * ファイルIDのバリデート（内部使用）
  * 参考: Figma APIドキュメントでは、file keyは22文字の英数字+記号の組み合わせ
  * https://www.figma.com/developers/api#files
  */
 const isValidFileId = (fileId: string): boolean => {
-  // Figma file IDは英数字とハイフン、アンダースコアで構成される
-  return /^[a-zA-Z0-9_-]+$/.test(fileId);
+  return FILE_ID_PATTERN.test(fileId);
 };
 
 /**
@@ -68,7 +71,7 @@ export const ParsedFigmaUrl = {
     const [type, fileId, ...rest] = pathSegments;
 
     // サポートされているタイプかチェック
-    if (!SUPPORTED_URL_TYPES.includes(type as UrlType)) {
+    if (!SUPPORTED_URL_TYPES.includes(type as (typeof SUPPORTED_URL_TYPES)[number])) {
       throw new Error(ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN);
     }
 
