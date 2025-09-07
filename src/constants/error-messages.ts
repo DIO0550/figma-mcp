@@ -14,7 +14,12 @@ export const ErrorMessages = {
   INVALID_URL: 'Invalid URL',
   REQUEST_TIMEOUT: 'Request timeout',
   INVALID_JSON: 'Invalid JSON',
-  
+
+  /** Figma URL parser errors */
+  NOT_FIGMA_URL: 'Not a Figma URL',
+  UNSUPPORTED_FIGMA_URL_PATTERN: 'Unsupported Figma URL pattern',
+  INVALID_FIGMA_FILE_ID: 'Invalid file ID',
+
   /** Error names */
   FIGMA_ERROR: 'FigmaError',
 } as const;
