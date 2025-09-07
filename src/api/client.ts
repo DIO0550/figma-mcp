@@ -1,7 +1,6 @@
 import type { ApiConfig } from './config.js';
-import type { RateLimitInfo } from '../types/index.js';
+import { RateLimitInfo, getRetryAfter } from '../utils/rate-limit/index.js';
 import { createHeaders } from './config.js';
-import { parseRateLimitHeaders, getRetryAfter } from '../utils/rate-limit.js';
 import { createFigmaError, parseFigmaErrorResponse } from '../utils/errors.js';
 import { Logger } from '../utils/logger/index.js';
 import { HttpStatus, Limits } from '../constants/index.js';
@@ -26,7 +25,7 @@ export interface HttpClientOptions {
 }
 
 async function handleResponse<T>(response: Response, context: RequestContext): Promise<T> {
-  context.rateLimitInfo = parseRateLimitHeaders(response.headers);
+  context.rateLimitInfo = RateLimitInfo.parseHeaders(response.headers);
 
   if (!response.ok) {
     const errorMessage = await parseFigmaErrorResponse(response);

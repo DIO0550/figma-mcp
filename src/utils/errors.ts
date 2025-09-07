@@ -1,6 +1,7 @@
 // エラーハンドリングユーティリティ
 
-import type { FigmaApiError, FigmaError, RateLimitInfo } from '../types/index.js';
+import type { FigmaApiError, FigmaError } from '../types/index.js';
+import type { RateLimitInfo } from './rate-limit/index.js';
 import { HttpStatus, ErrorMessages } from '../constants/index.js';
 
 export function createFigmaError(
@@ -25,5 +26,9 @@ export async function parseFigmaErrorResponse(response: Response): Promise<strin
 }
 
 export function isRateLimitError(error: unknown): boolean {
-  return error instanceof Error && 'status' in error && (error as FigmaError).status === HttpStatus.TOO_MANY_REQUESTS;
+  return (
+    error instanceof Error &&
+    'status' in error &&
+    (error as FigmaError).status === HttpStatus.TOO_MANY_REQUESTS
+  );
 }

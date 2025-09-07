@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { createFigmaError, parseFigmaErrorResponse, isRateLimitError } from './errors';
-import type { RateLimitInfo } from '../types';
+import type { RateLimitInfo } from './rate-limit/index';
 import { HttpStatus, ErrorMessages } from '../constants';
 
 describe('createFigmaError', () => {
@@ -19,7 +19,11 @@ describe('createFigmaError', () => {
       remaining: 10,
       reset: new Date('2024-01-01T00:00:00Z'),
     };
-    const error = createFigmaError('Rate limit exceeded', HttpStatus.TOO_MANY_REQUESTS, rateLimitInfo);
+    const error = createFigmaError(
+      'Rate limit exceeded',
+      HttpStatus.TOO_MANY_REQUESTS,
+      rateLimitInfo
+    );
 
     expect(error.status).toBe(HttpStatus.TOO_MANY_REQUESTS);
     expect(error.rateLimitInfo).toEqual(rateLimitInfo);
@@ -46,7 +50,9 @@ describe('parseFigmaErrorResponse', () => {
     } as Response;
 
     const message = await parseFigmaErrorResponse(mockResponse);
-    expect(message).toBe(`HTTP ${HttpStatus.INTERNAL_SERVER_ERROR}: ${ErrorMessages.INTERNAL_SERVER_ERROR}`);
+    expect(message).toBe(
+      `HTTP ${HttpStatus.INTERNAL_SERVER_ERROR}: ${ErrorMessages.INTERNAL_SERVER_ERROR}`
+    );
   });
 
   test('JSON解析に失敗した場合はHTTPステータスを返す', async () => {
