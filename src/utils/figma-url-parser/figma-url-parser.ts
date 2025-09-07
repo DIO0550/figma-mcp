@@ -13,15 +13,6 @@ type UrlType = (typeof SUPPORTED_URL_TYPES)[number];
 const FIGMA_DOMAIN = 'figma.com';
 
 /**
- * エラーメッセージ
- */
-const FigmaUrlError = {
-  NOT_FIGMA_URL: 'Not a Figma URL',
-  UNSUPPORTED_PATTERN: 'Unsupported Figma URL pattern',
-  INVALID_FILE_ID: 'Invalid file ID',
-} as const;
-
-/**
  * パースされたFigma URLの情報
  */
 export interface ParsedFigmaUrl {
@@ -32,6 +23,9 @@ export interface ParsedFigmaUrl {
 
 /**
  * ファイルIDのバリデート（内部使用）
+ * Figma file IDは英数字とハイフン、アンダースコアで構成される
+ * 参考: Figma APIドキュメントでは、file keyは22文字の英数字+記号の組み合わせ
+ * https://www.figma.com/developers/api#files
  */
 const isValidFileId = (fileId: string): boolean => {
   // Figma file IDは英数字とハイフン、アンダースコアで構成される
@@ -58,29 +52,29 @@ export const ParsedFigmaUrl = {
       throw new Error(ErrorMessages.INVALID_URL);
     }
 
-    // Figmaドメインのチェック
+    // Figmaドメインのチェック（厳密なドメイン検証）
     const hostname = parsedUrl.hostname.toLowerCase();
-    if (!hostname.includes(FIGMA_DOMAIN)) {
-      throw new Error(FigmaUrlError.NOT_FIGMA_URL);
+    if (hostname !== FIGMA_DOMAIN && hostname !== `www.${FIGMA_DOMAIN}`) {
+      throw new Error(ErrorMessages.NOT_FIGMA_URL);
     }
 
     // パスの解析
     const pathSegments = parsedUrl.pathname.split('/').filter((segment) => segment);
 
     if (pathSegments.length < 2) {
-      throw new Error(FigmaUrlError.UNSUPPORTED_PATTERN);
+      throw new Error(ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN);
     }
 
     const [type, fileId, ...rest] = pathSegments;
 
     // サポートされているタイプかチェック
     if (!SUPPORTED_URL_TYPES.includes(type as UrlType)) {
-      throw new Error(FigmaUrlError.UNSUPPORTED_PATTERN);
+      throw new Error(ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN);
     }
 
     // ファイルIDのバリデート
     if (!isValidFileId(fileId)) {
-      throw new Error(FigmaUrlError.INVALID_FILE_ID);
+      throw new Error(ErrorMessages.INVALID_FIGMA_FILE_ID);
     }
 
     // ファイル名の取得（オプション）

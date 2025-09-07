@@ -7,47 +7,50 @@ import { ErrorMessages } from '../../../constants/error-messages.js';
  * エラーケースを網羅的にテスト
  */
 
-// エラーメッセージ定数（実装と同期）
-const FigmaUrlError = {
-  NOT_FIGMA_URL: 'Not a Figma URL',
-  UNSUPPORTED_PATTERN: 'Unsupported Figma URL pattern',
-  INVALID_FILE_ID: 'Invalid file ID',
-} as const;
+// エラーメッセージは統一されたErrorMessagesから取得
 
 // エラーケースのテストデータ
 const errorCases: Array<[string, string, string]> = [
   // [URL, 期待されるエラーメッセージ, テスト説明]
   ['not-a-url', ErrorMessages.INVALID_URL, '無効なURL形式'],
-  ['https://example.com/file/ABC123xyz', FigmaUrlError.NOT_FIGMA_URL, 'Figma以外のドメイン'],
-  ['https://www.design.com/file/ABC123xyz', FigmaUrlError.NOT_FIGMA_URL, 'figmaを含まないドメイン'],
+  ['https://example.com/file/ABC123xyz', ErrorMessages.NOT_FIGMA_URL, 'Figma以外のドメイン'],
+  ['https://www.design.com/file/ABC123xyz', ErrorMessages.NOT_FIGMA_URL, 'figmaを含まないドメイン'],
   [
     'https://www.figma.com/proto/ABC123xyz/Prototype',
-    FigmaUrlError.UNSUPPORTED_PATTERN,
+    ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN,
     'protoタイプ（非対応）',
   ],
-  ['https://www.figma.com/', FigmaUrlError.UNSUPPORTED_PATTERN, '空のパス'],
-  ['https://www.figma.com/file', FigmaUrlError.UNSUPPORTED_PATTERN, 'fileIDなし'],
+  ['https://www.figma.com/', ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN, '空のパス'],
+  ['https://www.figma.com/file', ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN, 'fileIDなし'],
   [
     'https://www.figma.com/board/ABC123xyz/My-Board',
-    FigmaUrlError.UNSUPPORTED_PATTERN,
+    ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN,
     'boardタイプ（非対応）',
   ],
-  ['https://www.figma.com/file/@@@/Invalid', FigmaUrlError.INVALID_FILE_ID, '特殊文字のみのfileID'],
+  [
+    'https://www.figma.com/file/@@@/Invalid',
+    ErrorMessages.INVALID_FIGMA_FILE_ID,
+    '特殊文字のみのfileID',
+  ],
   [
     'https://www.figma.com/file/ABC@123!xyz/Design',
-    FigmaUrlError.INVALID_FILE_ID,
+    ErrorMessages.INVALID_FIGMA_FILE_ID,
     '不正な文字を含むfileID',
   ],
   [
     'https://www.figma.com/files/ABC123xyz/Design',
-    FigmaUrlError.UNSUPPORTED_PATTERN,
+    ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN,
     'filesタイプ（誤り）',
   ],
   ['//www.figma.com/file/ABC123xyz', ErrorMessages.INVALID_URL, 'プロトコルなし'],
-  ['https://www.figma.com/file/日本語/Design', FigmaUrlError.INVALID_FILE_ID, '日本語のfileID'],
+  [
+    'https://www.figma.com/file/日本語/Design',
+    ErrorMessages.INVALID_FIGMA_FILE_ID,
+    '日本語のfileID',
+  ],
   [
     'https://www.figma.com/file/ABC 123/Design',
-    FigmaUrlError.INVALID_FILE_ID,
+    ErrorMessages.INVALID_FIGMA_FILE_ID,
     'スペースを含むfileID',
   ],
 ];
@@ -99,7 +102,7 @@ test('ParsedFigmaUrl.parse - サブドメインがfigmaでない場合はNOT_FIG
   const url = 'https://design.company.com/file/ABC123xyz/Design';
 
   // Act & Assert
-  expect(() => ParsedFigmaUrl.parse(url)).toThrow(FigmaUrlError.NOT_FIGMA_URL);
+  expect(() => ParsedFigmaUrl.parse(url)).toThrow(ErrorMessages.NOT_FIGMA_URL);
 });
 
 test('ParsedFigmaUrl.parse - localhostの場合はNOT_FIGMA_URLエラーが発生する', () => {
@@ -107,7 +110,7 @@ test('ParsedFigmaUrl.parse - localhostの場合はNOT_FIGMA_URLエラーが発�
   const url = 'http://localhost:3000/file/ABC123xyz/Design';
 
   // Act & Assert
-  expect(() => ParsedFigmaUrl.parse(url)).toThrow(FigmaUrlError.NOT_FIGMA_URL);
+  expect(() => ParsedFigmaUrl.parse(url)).toThrow(ErrorMessages.NOT_FIGMA_URL);
 });
 
 test('ParsedFigmaUrl.parse - ドットで始まるfileIDの場合はINVALID_FILE_IDエラーが発生する', () => {
@@ -115,7 +118,7 @@ test('ParsedFigmaUrl.parse - ドットで始まるfileIDの場合はINVALID_FILE
   const url = 'https://www.figma.com/file/.ABC123xyz/Design';
 
   // Act & Assert
-  expect(() => ParsedFigmaUrl.parse(url)).toThrow(FigmaUrlError.INVALID_FILE_ID);
+  expect(() => ParsedFigmaUrl.parse(url)).toThrow(ErrorMessages.INVALID_FIGMA_FILE_ID);
 });
 
 // 注意: 以下のケースは実装の仕様により、期待と異なる動作をする可能性があります
@@ -131,16 +134,12 @@ test('ParsedFigmaUrl.parse - 空のfileIDパス（//）の場合、filterで除�
   expect(result.fileName).toBeUndefined();
 });
 
-test('ParsedFigmaUrl.parse - figmaを含む別ドメイン（not-figma.com）も受け入れられる', () => {
+test('ParsedFigmaUrl.parse - figmaを含む別ドメイン（not-figma.com）はNOT_FIGMA_URLエラーが発生する', () => {
   // Arrange
   const url = 'https://not-figma.com/file/ABC123xyz/Design';
 
-  // Act
-  const result = ParsedFigmaUrl.parse(url);
-
-  // Assert - 'figma'という文字列が含まれるため受け入れられる
-  expect(result.fileId).toBe('ABC123xyz');
-  expect(result.fileName).toBe('Design');
+  // Act & Assert
+  expect(() => ParsedFigmaUrl.parse(url)).toThrow(ErrorMessages.NOT_FIGMA_URL);
 });
 
 test('ParsedFigmaUrl.parse - FTPプロトコルでもfigmaドメインなら受け入れられる', () => {
