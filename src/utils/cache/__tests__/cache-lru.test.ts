@@ -77,15 +77,16 @@ test('maxSizeが1の場合でも正しく動作する', () => {
 });
 
 test('デフォルトのmaxSizeはInfinityで無制限', () => {
+  const LARGE_ITEM_COUNT = 1000;
   const cache = createCache(); // maxSizeを指定しない
 
   // 大量のアイテムを追加
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < LARGE_ITEM_COUNT; i++) {
     cache.set(`key${i}`, `value${i}`);
   }
 
   // 全てのアイテムが保持される
   expect(cache.get('key0')).toBe('value0');
   expect(cache.get('key999')).toBe('value999');
-  expect(cache.size()).toBe(1000);
+  expect(cache.size()).toBe(LARGE_ITEM_COUNT);
 });
