@@ -56,7 +56,7 @@ test('期限切れアイテムはsizeメソッドでカウントされない', (
   const DEFAULT_TTL = 1000;
   const SHORT_TTL = 500;
   const AFTER_SHORT_TTL = 600;
-  const AFTER_DEFAULT_TTL = 500; // 追加で500ms（合計1100ms）
+  const ADDITIONAL_WAIT_TIME = 500; // 追加で500ms（合計1100ms）
 
   const cache = createCache({ defaultTtl: DEFAULT_TTL });
 
@@ -69,6 +69,6 @@ test('期限切れアイテムはsizeメソッドでカウントされない', (
   vi.advanceTimersByTime(AFTER_SHORT_TTL); // key2が期限切れ
   expect(cache.size()).toBe(2);
 
-  vi.advanceTimersByTime(AFTER_DEFAULT_TTL); // key1とkey3も期限切れ
+  vi.advanceTimersByTime(ADDITIONAL_WAIT_TIME); // key1とkey3も期限切れ
   expect(cache.size()).toBe(0);
 });
