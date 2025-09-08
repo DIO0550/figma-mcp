@@ -41,27 +41,34 @@ test('TTLが設定されていない場合は期限切れにならない', () =>
 });
 
 test('期限切れアイテムはhasでfalseを返す', () => {
-  const cache = createCache({ defaultTtl: 1000 });
+  const TTL = 1000;
+  const AFTER_EXPIRY = TTL + 1;
+  const cache = createCache({ defaultTtl: TTL });
 
   cache.set('key1', 'value1');
   expect(cache.has('key1')).toBe(true);
 
-  vi.advanceTimersByTime(1001);
+  vi.advanceTimersByTime(AFTER_EXPIRY);
   expect(cache.has('key1')).toBe(false);
 });
 
 test('期限切れアイテムはsizeメソッドでカウントされない', () => {
-  const cache = createCache({ defaultTtl: 1000 });
+  const DEFAULT_TTL = 1000;
+  const SHORT_TTL = 500;
+  const AFTER_SHORT_TTL = 600;
+  const AFTER_DEFAULT_TTL = 500; // 追加で500ms（合計1100ms）
+
+  const cache = createCache({ defaultTtl: DEFAULT_TTL });
 
   cache.set('key1', 'value1');
-  cache.set('key2', 'value2', 500); // 500ms TTL
-  cache.set('key3', 'value3'); // デフォルトTTL
+  cache.set('key2', 'value2', SHORT_TTL);
+  cache.set('key3', 'value3'); // デフォルトTTL使用
 
   expect(cache.size()).toBe(3);
 
-  vi.advanceTimersByTime(600); // key2が期限切れ
+  vi.advanceTimersByTime(AFTER_SHORT_TTL); // key2が期限切れ
   expect(cache.size()).toBe(2);
 
-  vi.advanceTimersByTime(500); // key1とkey3も期限切れ
+  vi.advanceTimersByTime(AFTER_DEFAULT_TTL); // key1とkey3も期限切れ
   expect(cache.size()).toBe(0);
 });
