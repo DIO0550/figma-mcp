@@ -68,7 +68,7 @@ test('sizeで現在のアイテム数を取得できる', () => {
   expect(cache.size()).toBe(1);
 });
 
-test('ジェネリクスで型を指定できる', () => {
+test('異なる型のオブジェクトを正しく保存・取得できる', () => {
   interface User {
     id: number;
     name: string;
