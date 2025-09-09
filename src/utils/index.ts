@@ -1,4 +1,4 @@
-export * from './cache.js';
+export * from './cache/index.js';
 export * from './case-converter.js';
 export * from './errors.js';
 export * from './logger.js';

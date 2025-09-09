@@ -2,7 +2,7 @@ import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createHttpClient } from './client';
 import { createApiConfig } from './config';
 import type { ApiConfig } from './config';
-import { createCache } from '../utils/cache';
+import { createCache } from '../utils/cache/index.js';
 import { HttpStatus, Limits, Headers as HeaderNames, ContentType } from '../constants';
 
 // fetchのモック
@@ -134,7 +134,9 @@ describe('createHttpClient', () => {
 
       const client = createHttpClient(config);
 
-      await expect(client.get('/v1/files/test')).rejects.toThrow(`HTTP ${HttpStatus.INTERNAL_SERVER_ERROR}: Internal Server Error`);
+      await expect(client.get('/v1/files/test')).rejects.toThrow(
+        `HTTP ${HttpStatus.INTERNAL_SERVER_ERROR}: Internal Server Error`
+      );
     });
   });
 
