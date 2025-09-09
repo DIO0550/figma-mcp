@@ -7,6 +7,3 @@
 
 // メインのエクスポート
 export { Cache, createCache } from './cache.js';
-
-// 型のエクスポート
-export type { Cache as CacheType } from './cache.js';
