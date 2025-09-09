@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest';
 import { createCache } from '../cache.js';
 
-test('値を保存して取得できる', () => {
+test('キャッシュに値を保存すると、その値が取得できる', () => {
   const cache = createCache();
 
   cache.set('key1', 'value1');
@@ -9,13 +9,13 @@ test('値を保存して取得できる', () => {
   expect(cache.get('key1')).toBe('value1');
 });
 
-test('存在しないキーはundefinedを返す', () => {
+test('存在しないキーを取得しようとすると、何も返されない', () => {
   const cache = createCache();
 
   expect(cache.get('nonexistent')).toBeUndefined();
 });
 
-test('値を上書きできる', () => {
+test('同じキーで新しい値を保存すると、古い値が上書きされる', () => {
   const cache = createCache();
 
   cache.set('key1', 'value1');
@@ -24,7 +24,7 @@ test('値を上書きできる', () => {
   expect(cache.get('key1')).toBe('value2');
 });
 
-test('clearで全てのアイテムを削除できる', () => {
+test('キャッシュをクリアすると、全ての保存された値が削除される', () => {
   const cache = createCache();
 
   cache.set('key1', 'value1');
@@ -35,7 +35,7 @@ test('clearで全てのアイテムを削除できる', () => {
   expect(cache.get('key2')).toBeUndefined();
 });
 
-test('hasでキーの存在を確認できる', () => {
+test('キーが存在するかどうかを確認できる', () => {
   const cache = createCache();
 
   cache.set('key1', 'value1');
@@ -44,7 +44,7 @@ test('hasでキーの存在を確認できる', () => {
   expect(cache.has('key2')).toBe(false);
 });
 
-test('deleteで特定のキーを削除できる', () => {
+test('特定のキーの値だけを削除できる', () => {
   const cache = createCache();
 
   cache.set('key1', 'value1');
@@ -55,7 +55,7 @@ test('deleteで特定のキーを削除できる', () => {
   expect(cache.get('key2')).toBe('value2');
 });
 
-test('sizeで現在のアイテム数を取得できる', () => {
+test('キャッシュに保存されている値の数を確認できる', () => {
   const cache = createCache();
 
   expect(cache.size()).toBe(0);
@@ -68,7 +68,7 @@ test('sizeで現在のアイテム数を取得できる', () => {
   expect(cache.size()).toBe(1);
 });
 
-test('オブジェクト型の値を保存して取得できる', () => {
+test('ユーザー情報のような複雑なデータも保存して取得できる', () => {
   interface User {
     id: number;
     name: string;

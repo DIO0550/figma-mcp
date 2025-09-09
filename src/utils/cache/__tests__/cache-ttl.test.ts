@@ -10,7 +10,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-test('TTL経過後に値が削除される', () => {
+test('保存期限を過ぎるとデータが自動的に削除される', () => {
   const cache = createCache({ defaultTtl: Limits.DEFAULT_CACHE_TTL });
 
   cache.set('key1', 'value1');
@@ -20,7 +20,7 @@ test('TTL経過後に値が削除される', () => {
   expect(cache.get('key1')).toBeUndefined();
 });
 
-test('個別のTTLを設定できる', () => {
+test('データごとに異なる保存期限を設定できる', () => {
   const cache = createCache({ defaultTtl: Limits.DEFAULT_CACHE_TTL });
 
   cache.set('key1', 'value1', 500);
@@ -31,7 +31,7 @@ test('個別のTTLを設定できる', () => {
   expect(cache.get('key2')).toBe('value2');
 });
 
-test('TTLが設定されていない場合は期限切れにならない', () => {
+test('保存期限を設定しない場合、データは永続的に保存される', () => {
   const cache = createCache(); // defaultTtlなし
 
   cache.set('key1', 'value1');
@@ -40,7 +40,7 @@ test('TTLが設定されていない場合は期限切れにならない', () =>
   expect(cache.get('key1')).toBe('value1');
 });
 
-test('期限切れアイテムはhasでfalseを返す', () => {
+test('期限切れデータは存在しないものとして扱われる', () => {
   const TTL = 1000;
   const AFTER_EXPIRY = TTL + 1;
   const cache = createCache({ defaultTtl: TTL });
@@ -52,7 +52,7 @@ test('期限切れアイテムはhasでfalseを返す', () => {
   expect(cache.has('key1')).toBe(false);
 });
 
-test('期限切れアイテムはsizeメソッドでカウントされない', () => {
+test('期限切れデータは保存数に含まれない', () => {
   const DEFAULT_TTL = 1000;
   const SHORT_TTL = 500;
   const AFTER_SHORT_TTL = 600;
