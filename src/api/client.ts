@@ -1,5 +1,6 @@
 import type { ApiConfig } from './config.js';
-import { RateLimitInfo, getRetryAfter } from '../utils/rate-limit/index.js';
+import { RateLimitInfo } from '../utils/rate-limit/index.js';
+import { getRetryAfter } from '../utils/rate-limit/retry.js';
 import { createHeaders } from './config.js';
 import { createFigmaError, parseFigmaErrorResponse } from '../utils/errors.js';
 import { Logger } from '../utils/logger/index.js';
