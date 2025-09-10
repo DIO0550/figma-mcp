@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { getRetryAfter } from '../rate-limit.js';
+import { getRetryAfter } from '../retry.js';
 import { Headers as HeaderNames, Limits } from '../../../constants/index.js';
 
 describe('getRetryAfter', () => {
