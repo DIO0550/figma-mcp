@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from 'vitest';
-import { withRetry } from '../rate-limit.js';
+import { withRetry } from '../retry.js';
 import { HttpStatus } from '../../../constants/index.js';
 
 describe('withRetry', () => {
