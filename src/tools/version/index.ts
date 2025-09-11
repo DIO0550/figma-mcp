@@ -1,5 +1,5 @@
 import type { FigmaApiClient } from '../../api/figma-api-client.js';
-import { GetVersionsTool, GetVersionsToolDefinition } from './list.js';
+import { GetVersionsTool, GetVersionsToolDefinition } from './get-versions.js';
 import type { GetVersionsArgs } from './get-versions-args.js';
 import type { GetVersionsApiResponse } from '../../api/endpoints/versions/index.js';
 
@@ -23,6 +23,6 @@ export const createVersionTools = (apiClient: FigmaApiClient): VersionTools => {
 };
 
 // 再エクスポート
-export { GetVersionsToolDefinition, GetVersionsTool } from './list.js';
+export { GetVersionsToolDefinition, GetVersionsTool } from './get-versions.js';
 export * from './types.js';
 export * from './get-versions-args.js';

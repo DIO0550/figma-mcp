@@ -1,7 +1,7 @@
 import { test, expect, beforeAll, afterAll } from 'vitest';
 import { FigmaApiClient } from '../../../api/figma-api-client.js';
 import { MockFigmaServer } from '../../../__tests__/mocks/server.js';
-import { GetComponentsTool } from '../list.js';
+import { GetComponentsTool } from '../get-components.js';
 
 let mockServer: MockFigmaServer;
 let apiClient: FigmaApiClient;
