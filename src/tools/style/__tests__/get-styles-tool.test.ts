@@ -25,7 +25,7 @@ test('スタイル一覧を取得できる', async () => {
   const fileKey = 'test-file-key';
 
   // Act
-  const { GetStylesTool } = await import('../list.js');
+  const { GetStylesTool } = await import('../get-styles.js');
   const tool = GetStylesTool.from(apiClient);
   const result = await GetStylesTool.execute(tool, { fileKey });
 
@@ -46,7 +46,7 @@ test('APIエラーを適切に処理する', async () => {
   const fileKey = 'test-file-key';
 
   // Act & Assert
-  const { GetStylesTool } = await import('../list.js');
+  const { GetStylesTool } = await import('../get-styles.js');
   const tool = GetStylesTool.from(errorClient);
 
   await expect(GetStylesTool.execute(tool, { fileKey })).rejects.toThrow();
@@ -63,14 +63,14 @@ test('categorizeオプションでスタイルを分類できる', async () => {
   const fileKey = 'test-file-key';
 
   // Act
-  const { GetStylesTool } = await import('../list.js');
+  const { GetStylesTool } = await import('../get-styles.js');
   const tool = GetStylesTool.from(apiClient);
   const result = await GetStylesTool.execute(tool, {
     fileKey,
     categorize: true,
   });
 
-  // Assert - categorizeオプションの処理はlist.ts内で実装されている
+  // Assert - categorizeオプションの処理はget-styles.ts内で実装されている
   if (result.categorized) {
     expect(result.categorized).toBeDefined();
     expect(result.statistics?.total).toBe(4);
@@ -82,7 +82,7 @@ test('スタイルタイプごとにフィルタリングできる', async () =>
   const fileKey = 'test-file-key';
 
   // Act
-  const { GetStylesTool } = await import('../list.js');
+  const { GetStylesTool } = await import('../get-styles.js');
   const tool = GetStylesTool.from(apiClient);
   const result = await GetStylesTool.execute(tool, { fileKey });
 

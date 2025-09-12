@@ -20,7 +20,7 @@ afterAll(async () => {
 test('バージョン履歴を取得できる', async () => {
   const fileKey = 'test-file-key';
 
-  const { GetVersionsTool } = await import('../list.js');
+  const { GetVersionsTool } = await import('../get-versions.js');
   const tool = GetVersionsTool.from(apiClient);
   const result = await GetVersionsTool.execute(tool, { fileKey });
 
@@ -40,7 +40,7 @@ test('APIエラーを適切に処理する', async () => {
   );
   const fileKey = 'test-file-key';
 
-  const { GetVersionsTool } = await import('../list.js');
+  const { GetVersionsTool } = await import('../get-versions.js');
   const tool = GetVersionsTool.from(errorClient);
 
   await expect(GetVersionsTool.execute(tool, { fileKey })).rejects.toThrow();
@@ -53,7 +53,7 @@ test.skip('空のバージョンリストを処理できる', async () => {
 test('バージョンが時系列順（新しい順）でソートされている', async () => {
   const fileKey = 'test-file-key';
 
-  const { GetVersionsTool } = await import('../list.js');
+  const { GetVersionsTool } = await import('../get-versions.js');
   const tool = GetVersionsTool.from(apiClient);
   const result = await GetVersionsTool.execute(tool, { fileKey });
 
@@ -65,7 +65,7 @@ test('バージョンが時系列順（新しい順）でソートされてい�
 test('バージョンのラベルと説明を取得できる', async () => {
   const fileKey = 'test-file-key';
 
-  const { GetVersionsTool } = await import('../list.js');
+  const { GetVersionsTool } = await import('../get-versions.js');
   const tool = GetVersionsTool.from(apiClient);
   const result = await GetVersionsTool.execute(tool, { fileKey });
 
