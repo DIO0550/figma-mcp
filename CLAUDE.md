@@ -4,6 +4,8 @@
 
 必ず最初に、`prompt-mcp-server`を利用して、実装のルールを確認して下さい
 
+ESLintの無効化コメントの使用は禁止です。
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Development Commands
