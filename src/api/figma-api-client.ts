@@ -21,7 +21,7 @@ import { getTeamProjectsApi } from './endpoints/team/index.js';
 import { getProjectFilesApi } from './endpoints/project/index.js';
 import { FigmaContext } from './context.js';
 import { getRuntimeConfig } from '../config/runtime-config/runtime-config.js';
-import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter.js';
+import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter/index.js';
 import type { ImageApiResponse, ImageApiOptions } from './endpoints/images/index.js';
 import type { GetVersionsApiResponse } from './endpoints/versions/index.js';
 import type { GetProjectFilesApiOptions } from './endpoints/project/index.js';

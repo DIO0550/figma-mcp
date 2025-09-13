@@ -1,7 +1,7 @@
 import { test, expect, vi } from 'vitest';
 import { getNodesApi, type GetNodesApiResponse, type GetNodesApiOptions } from '../index';
 import type { HttpClient } from '../../../client';
-import type { DeepSnakeCase } from '../../../../utils/type-transformers';
+import type { DeepSnakeCase } from '../../../../utils/case-converter/index.js';
 import { TestData } from '../../../../constants';
 
 test('getNodesApi - ノード情報を取得できる', async () => {

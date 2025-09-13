@@ -1,5 +1,5 @@
-import { camelToSnakeCase } from '../../../utils/case-converter.js';
-import type { DeepSnakeCase } from '../../../utils/type-transformers.js';
+import { camelToSnakeCase } from '../../../utils/case-converter/index.js';
+import type { DeepSnakeCase } from '../../../utils/case-converter/index.js';
 
 /**
  * 任意の値をFigma APIのクエリパラメータ値として使用可能な文字列に変換する
