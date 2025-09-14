@@ -51,87 +51,75 @@ export interface ComponentData {
 }
 
 /**
- * ComponentDataのコンパニオンオブジェクト
- * コンポーネントデータの取得と操作のための純粋関数を提供
+ * ComponentDataの操作関数群
  */
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace ComponentData {
-  /**
-   * Figma APIレスポンスからComponentDataの配列を作成
-   */
-  export function fromResponse(response: FileComponentsApiResponse): ComponentData[] {
-    if (!response.meta?.components) {
-      return [];
-    }
-
-    // componentsはComponent[]型として定義されているが、実際はApiComponent[]
-    const apiComponents = response.meta.components as unknown as ApiComponent[];
-    return apiComponents.map((comp) => ({
-      key: comp.key,
-      fileKey: comp.file_key,
-      nodeId: comp.node_id,
-      name: comp.name,
-      description: comp.description || '',
-      containingFrame: {
-        nodeId: comp.containing_frame.nodeId,
-        name: comp.containing_frame.name,
-        backgroundColor: comp.containing_frame.backgroundColor || '',
-        pageName: comp.containing_frame.pageName,
-      },
-    }));
+function fromResponse(response: FileComponentsApiResponse): ComponentData[] {
+  if (!response.meta?.components) {
+    return [];
   }
 
-  /**
-   * ファイルのコンポーネント一覧を取得
-   */
-  export async function fetchAll(
-    context: FigmaContext,
-    fileKey: string
-  ): Promise<ComponentData[]> {
-    const url = `${context.baseUrl}/v1/files/${fileKey}/components`;
-    
-    const response = await globalThis.fetch(url, {
-      method: 'GET',
-      headers: context.headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch components: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json() as FileComponentsApiResponse;
-    return fromResponse(data);
-  }
-
-  /**
-   * コンポーネントをページごとにグループ化
-   */
-  export function groupByPage(
-    components: ComponentData[]
-  ): Record<string, ComponentData[]> {
-    const grouped: Record<string, ComponentData[]> = {};
-
-    for (const component of components) {
-      const pageName = component.containingFrame.pageName;
-      if (!grouped[pageName]) {
-        grouped[pageName] = [];
-      }
-      grouped[pageName].push(component);
-    }
-
-    return grouped;
-  }
-
-  /**
-   * 名前でコンポーネントをフィルタリング
-   */
-  export function filterByName(
-    components: ComponentData[],
-    searchTerm: string
-  ): ComponentData[] {
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    return components.filter(comp => 
-      comp.name.toLowerCase().includes(lowerSearchTerm)
-    );
-  }
+  // componentsはComponent[]型として定義されているが、実際はApiComponent[]
+  const apiComponents = response.meta.components as unknown as ApiComponent[];
+  return apiComponents.map((comp) => ({
+    key: comp.key,
+    fileKey: comp.file_key,
+    nodeId: comp.node_id,
+    name: comp.name,
+    description: comp.description || '',
+    containingFrame: {
+      nodeId: comp.containing_frame.nodeId,
+      name: comp.containing_frame.name,
+      backgroundColor: comp.containing_frame.backgroundColor || '',
+      pageName: comp.containing_frame.pageName,
+    },
+  }));
 }
+
+async function fetchAll(context: FigmaContext, fileKey: string): Promise<ComponentData[]> {
+  const url = `${context.baseUrl}/v1/files/${fileKey}/components`;
+  
+  const response = await globalThis.fetch(url, {
+    method: 'GET',
+    headers: context.headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch components: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json() as FileComponentsApiResponse;
+  return fromResponse(data);
+}
+
+function groupByPage(
+  components: ComponentData[]
+): Record<string, ComponentData[]> {
+  const grouped: Record<string, ComponentData[]> = {};
+
+  for (const component of components) {
+    const pageName = component.containingFrame.pageName;
+    if (!grouped[pageName]) {
+      grouped[pageName] = [];
+    }
+    grouped[pageName].push(component);
+  }
+
+  return grouped;
+}
+
+function filterByName(
+  components: ComponentData[],
+  searchTerm: string
+): ComponentData[] {
+  const lowerSearchTerm = searchTerm.toLowerCase();
+  return components.filter(comp => 
+    comp.name.toLowerCase().includes(lowerSearchTerm)
+  );
+}
+
+export const ComponentData = {
+  fromResponse,
+  fetchAll,
+  groupByPage,
+  filterByName,
+} as const;

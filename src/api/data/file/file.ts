@@ -35,77 +35,99 @@ export interface FileData {
 }
 
 /**
- * FileDataのコンパニオンオブジェクト
+/**
+ * FileDataの操作関数群
  * ファイルデータの取得と操作のための純粋関数を提供
  */
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace FileData {
-  /**
-   * Figma APIレスポンスからFileDataを作成
-   */
-  export function fromResponse(key: string, response: GetFileApiResponse): FileData {
-    return {
-      key,
-      name: response.name,
-      lastModified: response.lastModified,
-      thumbnailUrl: response.thumbnailUrl,
-      version: response.version,
-      document: response.document,
-      components: response.components,
-      schemaVersion: response.schemaVersion,
-      styles: response.styles,
-      role: response.role,
-      editorType: response.editorType,
-      linkAccess: response.linkAccess,
-    };
+function fromResponse(key: string, response: GetFileApiResponse): FileData {
+  return {
+    key,
+    name: response.name,
+    lastModified: response.lastModified,
+    thumbnailUrl: response.thumbnailUrl,
+    version: response.version,
+    document: response.document,
+    components: response.components,
+    schemaVersion: response.schemaVersion,
+    styles: response.styles,
+    role: response.role,
+    editorType: response.editorType,
+    linkAccess: response.linkAccess,
+  };
+}
+
+async function fetch(
+  context: FigmaContext,
+  fileKey: string,
+  options?: {
+    version?: string;
+    geometry?: 'paths';
+  }
+): Promise<FileData> {
+  const params = new URLSearchParams();
+  if (options?.version) {
+    params.append('version', options.version);
+  }
+  if (options?.geometry) {
+    params.append('geometry', options.geometry);
   }
 
-  /**
-   * ファイル情報を取得
-   */
-  export async function fetch(
-    context: FigmaContext,
-    fileKey: string,
-    options?: {
-      version?: string;
-      geometry?: 'paths';
-    }
-  ): Promise<FileData> {
-    const params = new URLSearchParams();
-    if (options?.version) {
-      params.append('version', options.version);
-    }
-    if (options?.geometry) {
-      params.append('geometry', options.geometry);
-    }
+  const url = `${context.baseUrl}/v1/files/${fileKey}${params.toString() ? '?' + params.toString() : ''}`;
 
-    const url = `${context.baseUrl}/v1/files/${fileKey}${params.toString() ? '?' + params.toString() : ''}`;
+  const response = await globalThis.fetch(url, {
+    method: 'GET',
+    headers: context.headers,
+  });
 
-    const response = await globalThis.fetch(url, {
-      method: 'GET',
-      headers: context.headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
-    }
-
-    const data = (await response.json()) as GetFileApiResponse;
-    return fromResponse(fileKey, data);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
   }
 
-  /**
-   * 特定ノードの詳細情報を取得
-   */
-  export async function fetchNodes(
-    context: FigmaContext,
-    fileKey: string,
-    nodeIds: string[],
-    options?: {
-      depth?: number;
-      geometry?: 'paths';
+  const data = (await response.json()) as GetFileApiResponse;
+  return fromResponse(fileKey, data);
+}
+
+async function fetchNodes(
+  context: FigmaContext,
+  fileKey: string,
+  nodeIds: string[],
+  options?: {
+    depth?: number;
+    geometry?: 'paths';
+  }
+): Promise<{
+  name: string;
+  nodes: Record<
+    string,
+    {
+      document: Node;
+      components: Record<string, Component>;
+      schemaVersion: number;
+      styles: Record<string, Style>;
     }
-  ): Promise<{
+  >;
+}> {
+  const params = new URLSearchParams();
+  params.append('ids', nodeIds.join(','));
+  if (options?.depth) {
+    params.append('depth', options.depth.toString());
+  }
+  if (options?.geometry) {
+    params.append('geometry', options.geometry);
+  }
+
+  const url = `${context.baseUrl}/v1/files/${fileKey}/nodes?${params.toString()}`;
+
+  const response = await globalThis.fetch(url, {
+    method: 'GET',
+    headers: context.headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch nodes: ${response.status} ${response.statusText}`);
+  }
+
+  return (await response.json()) as {
     name: string;
     nodes: Record<
       string,
@@ -116,75 +138,44 @@ export namespace FileData {
         styles: Record<string, Style>;
       }
     >;
-  }> {
-    const params = new URLSearchParams();
-    params.append('ids', nodeIds.join(','));
-    if (options?.depth) {
-      params.append('depth', options.depth.toString());
-    }
-    if (options?.geometry) {
-      params.append('geometry', options.geometry);
-    }
-
-    const url = `${context.baseUrl}/v1/files/${fileKey}/nodes?${params.toString()}`;
-
-    const response = await globalThis.fetch(url, {
-      method: 'GET',
-      headers: context.headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch nodes: ${response.status} ${response.statusText}`);
-    }
-
-    return (await response.json()) as {
-      name: string;
-      nodes: Record<
-        string,
-        {
-          document: Node;
-          components: Record<string, Component>;
-          schemaVersion: number;
-          styles: Record<string, Style>;
-        }
-      >;
-    };
-  }
-
-  /**
-   * ファイル内のページ名を取得
-   */
-  export function getPageNames(fileData: FileData): string[] {
-    if (!fileData.document || !fileData.document.children) {
-      return [];
-    }
-
-    return fileData.document.children
-      .filter((node) => node.type === 'CANVAS')
-      .map((node) => node.name);
-  }
-
-  /**
-   * 指定されたIDのノードを検索
-   */
-  export function findNodeById(fileData: FileData, nodeId: string): Node | undefined {
-    function searchNode(node: Node): Node | undefined {
-      if (node.id === nodeId) {
-        return node;
-      }
-
-      if (node.children) {
-        for (const child of node.children) {
-          const found = searchNode(child);
-          if (found) {
-            return found;
-          }
-        }
-      }
-
-      return undefined;
-    }
-
-    return searchNode(fileData.document);
-  }
+  };
 }
+
+function getPageNames(fileData: FileData): string[] {
+  if (!fileData.document || !fileData.document.children) {
+    return [];
+  }
+
+  return fileData.document.children
+    .filter((node) => node.type === 'CANVAS')
+    .map((node) => node.name);
+}
+
+function findNodeById(fileData: FileData, nodeId: string): Node | undefined {
+  function searchNode(node: Node): Node | undefined {
+    if (node.id === nodeId) {
+      return node;
+    }
+
+    if (node.children) {
+      for (const child of node.children) {
+        const found = searchNode(child);
+        if (found) {
+          return found;
+        }
+      }
+    }
+
+    return undefined;
+  }
+
+  return searchNode(fileData.document);
+}
+
+export const FileData = {
+  fromResponse,
+  fetch,
+  fetchNodes,
+  getPageNames,
+  findNodeById,
+} as const;

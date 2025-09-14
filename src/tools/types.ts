@@ -28,10 +28,10 @@ export const JsonSchema = {
 
     let result: unknown = jsonSchema;
 
-    // $schemaプロパティを除去
+    // $schemaプロパティを除去（未使用変数を回避）
     if (typeof jsonSchema === 'object' && jsonSchema !== null && '$schema' in jsonSchema) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { $schema, ...rest } = jsonSchema;
+      const rest = { ...(jsonSchema as Record<string, unknown>) };
+      delete (rest as { $schema?: unknown }).$schema;
       result = rest;
     }
 
