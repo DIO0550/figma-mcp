@@ -12,7 +12,7 @@ beforeEach(() => {
   tool = GetFileNodesTool.from(apiClient);
 });
 
-test('指定したノードの情報を取得できる', async () => {
+test('指定したノードIDでファイルノード情報を取得するとノード情報配列が返される', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -55,7 +55,7 @@ test('指定したノードの情報を取得できる', async () => {
   expect(FigmaApiClient.getFileNodes).toHaveBeenCalledWith(apiClient, 'test-file-key', ['1:2'], {});
 });
 
-test('複数のノードを取得できる', async () => {
+test('複数のノードIDを指定するとすべてのノード情報が配列で返される', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -106,7 +106,7 @@ test('複数のノードを取得できる', async () => {
   });
 });
 
-test('depthオプションが正しく渡される', async () => {
+test('depthオプションを指定するとAPIリクエストに正しく渡される', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -127,7 +127,7 @@ test('depthオプションが正しく渡される', async () => {
   });
 });
 
-test('ノードIDが空の場合はエラーになる', () => {
+test('ノードID配列が空の場合はバリデーションエラーがスローされる', () => {
   // バリデーション関数を直接テスト
   expect(() => {
     GetFileNodesArgsSchema.parse({
@@ -137,7 +137,7 @@ test('ノードIDが空の場合はエラーになる', () => {
   }).toThrow();
 });
 
-test('geometryオプションでpathsを指定できる', async () => {
+test('geometryオプションにpathsを指定するとAPIリクエストに正しく渡される', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -158,7 +158,7 @@ test('geometryオプションでpathsを指定できる', async () => {
   });
 });
 
-test('geometryオプションでpointsを指定できる', async () => {
+test('geometryオプションにpointsを指定するとAPIリクエストに正しく渡される', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -179,7 +179,7 @@ test('geometryオプションでpointsを指定できる', async () => {
   });
 });
 
-test('geometryとdepthオプションを同時に指定できる', async () => {
+test('geometryとdepthオプションを同時に指定すると両方がAPIリクエストに含まれる', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',

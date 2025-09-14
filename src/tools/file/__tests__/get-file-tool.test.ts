@@ -11,7 +11,7 @@ beforeEach(() => {
   tool = GetFileTool.from(apiClient);
 });
 
-test('ファイル基本情報を取得できる', async () => {
+test('有効なファイルキーでファイル情報を取得すると基本情報と統計が返される', async () => {
   const mockFile: GetFileApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -53,7 +53,7 @@ test('ファイル基本情報を取得できる', async () => {
   expect(FigmaApiClient.getFile).toHaveBeenCalledWith(apiClient, 'test-file-key', {});
 });
 
-test('オプションパラメータを渡せる', async () => {
+test('versionとplugin_dataオプションを指定するとAPIリクエストに正しく渡される', async () => {
   const mockFile: GetFileApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -88,7 +88,7 @@ test('オプションパラメータを渡せる', async () => {
   });
 });
 
-test('ページ数を正しくカウントできる', async () => {
+test('ファイル内のCANVASタイプのノードがページ数として正しくカウントされる', async () => {
   const mockFile: GetFileApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',

@@ -13,7 +13,7 @@ beforeEach(() => {
   tool = ParseFigmaUrlTool.create();
 });
 
-test('有効なファイルURLをパースして保存できる', () => {
+test('FigmaのファイルURLをパースするとファイルID、ファイル名、ノードIDが抽出され保存される', () => {
   const url = 'https://www.figma.com/file/ABC123xyz/My-Design-File?node-id=1234-5678';
 
   const result = ParseFigmaUrlTool.execute(tool, { url });
@@ -38,7 +38,7 @@ test('有効なファイルURLをパースして保存できる', () => {
   });
 });
 
-test('有効なデザインURLをパースして保存できる', () => {
+test('FigmaのデザインURLをパースするとファイルIDとファイル名が抽出され保存される', () => {
   const url = 'https://www.figma.com/design/XYZ789abc/Another-Design';
 
   const result = ParseFigmaUrlTool.execute(tool, { url });
@@ -53,7 +53,7 @@ test('有効なデザインURLをパースして保存できる', () => {
   });
 });
 
-test('ファイル名なしのURLも処理できる', () => {
+test('ファイル名がないURLをパースするとファイルIDのみが抽出される', () => {
   const url = 'https://www.figma.com/file/ABC123xyz';
 
   const result = ParseFigmaUrlTool.execute(tool, { url });
@@ -68,19 +68,19 @@ test('ファイル名なしのURLも処理できる', () => {
   });
 });
 
-test('無効なURLの場合はエラーを返す', () => {
+test('無効なURL形式を指定するとInvalid URLエラーがスローされる', () => {
   const url = 'not-a-url';
 
   expect(() => ParseFigmaUrlTool.execute(tool, { url })).toThrow('Invalid URL');
 });
 
-test('Figma以外のURLの場合はエラーを返す', () => {
+test('Figma以外のドメインのURLを指定するとNot a Figma URLエラーがスローされる', () => {
   const url = 'https://example.com/file/ABC123xyz';
 
   expect(() => ParseFigmaUrlTool.execute(tool, { url })).toThrow('Not a Figma URL');
 });
 
-test('サポートされていないFigmaのURLパターンの場合はエラーを返す', () => {
+test('サポートされていないFigmaのURLパターンを指定するとUnsupported Figma URL patternエラーがスローされる', () => {
   const url = 'https://www.figma.com/proto/ABC123xyz/Prototype';
 
   expect(() => ParseFigmaUrlTool.execute(tool, { url })).toThrow('Unsupported Figma URL pattern');
