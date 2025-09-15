@@ -28,7 +28,8 @@ export const JsonSchema = {
 
     let result: unknown = jsonSchema;
 
-    // $schemaプロパティを除去（未使用変数を回避）
+    // 生成されたJSON Schemaからメタデータである$schemaプロパティを除去し
+    // ツール入出力のためのクリーンなオブジェクトに整形する
     if (typeof jsonSchema === 'object' && jsonSchema !== null && '$schema' in jsonSchema) {
       const rest = { ...(jsonSchema as Record<string, unknown>) };
       delete (rest as { $schema?: unknown }).$schema;

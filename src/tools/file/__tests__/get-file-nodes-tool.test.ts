@@ -12,7 +12,7 @@ beforeEach(() => {
   tool = GetFileNodesTool.from(apiClient);
 });
 
-test('指定したノードIDでファイルノード情報を取得するとノード情報配列が返される', async () => {
+test('指定したファイルキーとノードIDでノード情報を取得すると配列で返される', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -55,7 +55,7 @@ test('指定したノードIDでファイルノード情報を取得するとノ
   expect(FigmaApiClient.getFileNodes).toHaveBeenCalledWith(apiClient, 'test-file-key', ['1:2'], {});
 });
 
-test('複数のノードIDを指定するとすべてのノード情報が配列で返される', async () => {
+test('指定したファイルキーで複数ノードIDを指定すると全ノード情報が配列で返る', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -106,7 +106,7 @@ test('複数のノードIDを指定するとすべてのノード情報が配列
   });
 });
 
-test('depthオプションを指定するとAPIリクエストに正しく渡される', async () => {
+test('指定したファイルキーとノードIDでdepthを指定するとAPIに正しく渡される', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -127,7 +127,7 @@ test('depthオプションを指定するとAPIリクエストに正しく渡さ
   });
 });
 
-test('ノードID配列が空の場合はバリデーションエラーがスローされる', () => {
+test('ファイルキーは指定しノードID配列が空だとバリデーションエラーになる', () => {
   // バリデーション関数を直接テスト
   expect(() => {
     GetFileNodesArgsSchema.parse({
@@ -137,7 +137,7 @@ test('ノードID配列が空の場合はバリデーションエラーがスロ
   }).toThrow();
 });
 
-test('geometryオプションにpathsを指定するとAPIリクエストに正しく渡される', async () => {
+test('指定したファイルキーとノードIDでgeometry=pathsを指定するとAPIに正しく渡される', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -158,7 +158,7 @@ test('geometryオプションにpathsを指定するとAPIリクエストに正�
   });
 });
 
-test('geometryオプションにpointsを指定するとAPIリクエストに正しく渡される', async () => {
+test('指定したファイルキーとノードIDでgeometry=pointsを指定するとAPIに正しく渡される', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',
@@ -179,7 +179,7 @@ test('geometryオプションにpointsを指定するとAPIリクエストに正
   });
 });
 
-test('geometryとdepthオプションを同時に指定すると両方がAPIリクエストに含まれる', async () => {
+test('指定したファイルキーとノードIDでgeometryとdepthを同時指定すると両方がAPIに含まれる', async () => {
   const mockResponse: GetFileNodesApiResponse = {
     name: 'Test File',
     lastModified: '2024-01-01T00:00:00Z',

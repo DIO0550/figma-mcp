@@ -76,9 +76,8 @@ function validate(context: FigmaContext): boolean {
 
   // ベースURLの検証
   try {
-    const parsed = new URL(context.baseUrl);
-    // 参照して未使用扱いを回避
-    if (!parsed.href) return false;
+    // new URL() が例外を投げないことをもって妥当性を検証
+    new URL(context.baseUrl);
   } catch {
     return false;
   }

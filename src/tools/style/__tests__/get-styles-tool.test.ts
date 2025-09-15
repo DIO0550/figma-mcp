@@ -52,7 +52,7 @@ test('無効なトークンでAPIリクエストを送信するとエラーが�
   await expect(GetStylesTool.execute(tool, { fileKey })).rejects.toThrow();
 });
 
-test('空のスタイルリストの場合も正常に処理される', async () => {
+test('スタイルが存在しないファイルキーで一覧取得すると空配列を返す', async () => {
   // Note: MockFigmaServerは常にデータを返すため、このテストケースは
   // 実際のAPIの振る舞いをシミュレートしていません。
   // このテストはスキップします。

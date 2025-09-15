@@ -46,7 +46,7 @@ test('無効なトークンでAPIリクエストを送信するとエラーが�
   await expect(GetVersionsTool.execute(tool, { fileKey })).rejects.toThrow();
 });
 
-test.skip('空のバージョンリストの場合も正常に処理される', async () => {
+test.skip('バージョンが存在しないファイルキーで履歴を取得すると空配列を返す', async () => {
   // TODO: MockFigmaServerに空のレスポンスを返すオプションを追加してテストを実装
 });
 
