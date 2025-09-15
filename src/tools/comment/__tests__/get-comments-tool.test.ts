@@ -20,7 +20,7 @@ afterAll(async () => {
   await mockServer.stop();
 });
 
-test('コメント一覧を取得できる', async () => {
+test('有効なファイルキーでコメント一覧を取得すると配列形式でコメントが返される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -39,7 +39,7 @@ test('コメント一覧を取得できる', async () => {
   expect(firstComment.user).toBeDefined();
 });
 
-test('空のコメントリストを処理できる', async () => {
+test('コメントが存在しないファイルのコメントを取得すると空配列が返される', async () => {
   // Arrange
   const fileKey = 'empty-file-key';
 
@@ -53,7 +53,7 @@ test('空のコメントリストを処理できる', async () => {
   expect(result.comments).toHaveLength(0);
 });
 
-test('スレッド形式のコメントを処理できる', async () => {
+test('organizeThreadsオプションを有効にしてコメントを取得するとスレッド形式で整理される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -86,7 +86,7 @@ test('スレッド形式のコメントを処理できる', async () => {
   }
 });
 
-test('解決済みコメントをフィルタリングできる', async () => {
+test('showResolvedをfalseに設定すると解決済みコメントが除外される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -107,7 +107,7 @@ test('解決済みコメントをフィルタリングできる', async () => {
   expect(resolvedComments).toHaveLength(0);
 });
 
-test('showResolvedオプションでフィルタリングできる', async () => {
+test('showResolvedオプションの値に応じて解決済みコメントの表示・非表示が制御される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -137,7 +137,7 @@ test('showResolvedオプションでフィルタリングできる', async () =>
   expect(result2.comments.length).toBeGreaterThanOrEqual(result1.comments.length);
 });
 
-test('ユーザーIDでフィルタリングできる', async () => {
+test('特定のユーザーIDを指定するとそのユーザーのコメントのみが返される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
   const userId = 'user-1';
@@ -164,7 +164,7 @@ test('ユーザーIDでフィルタリングできる', async () => {
   }
 });
 
-test('ノードIDでフィルタリングできる', async () => {
+test('特定のノードIDを指定するとそのノードに関連するコメントのみが返される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
   const nodeId = '1:2';
@@ -186,7 +186,7 @@ test('ノードIDでフィルタリングできる', async () => {
   });
 });
 
-test('複数のフィルターを組み合わせて使用できる', async () => {
+test('複数のフィルター条件を同時に指定するとすべての条件を満たすコメントのみが返される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
   const userId = 'user-1';

@@ -23,7 +23,7 @@ afterAll(async () => {
   await mockServer.stop();
 });
 
-test('コンポーネント一覧を取得できる', async () => {
+test('有効なファイルキーでコンポーネント一覧を取得するとメタ情報とコンポーネント配列が返される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -43,7 +43,7 @@ test('コンポーネント一覧を取得できる', async () => {
   expect(firstComponent.fileKey).toBe(fileKey);
 });
 
-test('空のコンポーネントリストを処理できる', async () => {
+test('コンポーネントが存在しないファイルのコンポーネントを取得すると空配列が返される', async () => {
   // Arrange
   const fileKey = 'empty-file-key';
 
@@ -58,7 +58,7 @@ test('空のコンポーネントリストを処理できる', async () => {
   expect(result.meta.components).toHaveLength(0);
 });
 
-test('analyzeMetadataオプションでメタデータ分析を含む', async () => {
+test('analyzeMetadataオプションをtrueに設定するとコンポーネントの分析情報が含まれる', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -80,7 +80,7 @@ test('analyzeMetadataオプションでメタデータ分析を含む', async ()
   expect(result.analysis?.descriptionCoverage).toBeLessThanOrEqual(1);
 });
 
-test('organizeVariantsオプションでバリアント情報を整理する', async () => {
+test('organizeVariantsオプションをtrueに設定するとバリアント情報が整理された形式で返される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -106,7 +106,7 @@ test('organizeVariantsオプションでバリアント情報を整理する', a
   }
 });
 
-test('複数のオプションを同時に使用できる', async () => {
+test('analyzeMetadataとorganizeVariantsを同時に指定すると両方の情報が含まれた結果が返される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -125,7 +125,7 @@ test('複数のオプションを同時に使用できる', async () => {
   expect(result.meta.components).toBeDefined();
 });
 
-test('存在しないファイルでエラーが返される', async () => {
+test('存在しないファイルキーを指定するとエラーがスローされる', async () => {
   // Arrange
   const fileKey = 'non-existent-file';
 

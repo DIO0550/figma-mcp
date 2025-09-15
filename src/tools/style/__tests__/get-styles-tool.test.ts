@@ -20,7 +20,7 @@ afterAll(async () => {
   await mockServer.stop();
 });
 
-test('スタイル一覧を取得できる', async () => {
+test('有効なファイルキーでスタイル一覧を取得すると4つの異なるタイプのスタイルが返される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -37,7 +37,7 @@ test('スタイル一覧を取得できる', async () => {
   expect(result.meta.styles[3].styleType).toBe('GRID');
 });
 
-test('APIエラーを適切に処理する', async () => {
+test('無効なトークンでAPIリクエストを送信するとエラーがスローされる', async () => {
   // Arrange - 無効なトークンでクライアントを作成
   const errorClient = createFigmaApiClient(
     'invalid-token',
@@ -52,13 +52,13 @@ test('APIエラーを適切に処理する', async () => {
   await expect(GetStylesTool.execute(tool, { fileKey })).rejects.toThrow();
 });
 
-test('空のスタイルリストを処理できる', async () => {
+test('スタイルが存在しないファイルキーで一覧取得すると空配列を返す', async () => {
   // Note: MockFigmaServerは常にデータを返すため、このテストケースは
   // 実際のAPIの振る舞いをシミュレートしていません。
   // このテストはスキップします。
 });
 
-test('categorizeオプションでスタイルを分類できる', async () => {
+test('categorizeオプションをtrueに設定するとスタイルがタイプ別に分類されて返される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
@@ -77,7 +77,7 @@ test('categorizeオプションでスタイルを分類できる', async () => {
   }
 });
 
-test('スタイルタイプごとにフィルタリングできる', async () => {
+test('スタイル一覧から特定のスタイルタイプでフィルタリングすると各タイプ1つずつが取得される', async () => {
   // Arrange
   const fileKey = 'test-file-key';
 
