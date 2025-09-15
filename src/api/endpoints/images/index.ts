@@ -3,6 +3,7 @@
 import type { HttpClient } from '../../client.js';
 import type { DeepSnakeCase } from '../../../utils/case-converter/index.js';
 import { buildUrlParams } from '../utils/params-builder.js';
+import { ApiPath } from '../../paths.js';
 
 // API Options
 export interface ImageApiOptions {
@@ -30,5 +31,5 @@ export async function imagesApi(
   const { ids, ...restOptions } = options;
   const params = buildUrlParams(restOptions, { ids });
 
-  return client.get<ImageApiResponse>(`/v1/images/${fileKey}`, params);
+  return client.get<ImageApiResponse>(ApiPath.images(fileKey), params);
 }

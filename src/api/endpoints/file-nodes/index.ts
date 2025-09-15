@@ -1,6 +1,7 @@
 // ファイルノード関連のAPI呼び出し関数
 
 import type { HttpClient } from '../../client.js';
+import { ApiPath } from '../../paths.js';
 import type { GetFileApiOptions } from '../file/index.js';
 import type { Node, Component } from '../../../types/figma-types.js';
 import type { Style } from '../../../models/style/style.js';
@@ -32,5 +33,5 @@ export async function getFileNodesApi(
   options?: GetFileApiOptions
 ): Promise<GetFileNodesApiResponse> {
   const params = buildUrlParams(options, { ids });
-  return client.get<GetFileNodesApiResponse>(`/v1/files/${fileKey}/nodes`, params);
+  return client.get<GetFileNodesApiResponse>(ApiPath.fileNodes(fileKey), params);
 }

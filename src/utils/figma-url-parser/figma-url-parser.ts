@@ -1,5 +1,5 @@
 import { QueryParams } from '../../constants/query-params.js';
-import { ErrorMessages } from '../../constants/error-messages.js';
+import { ErrorMessages, FigmaErrorMessages } from '../../constants/index.js';
 
 /**
  * サポートされているFigma URLタイプ
@@ -58,26 +58,26 @@ export const ParsedFigmaUrl = {
     // Figmaドメインのチェック（厳密なドメイン検証）
     const hostname = parsedUrl.hostname.toLowerCase();
     if (hostname !== FIGMA_DOMAIN && hostname !== `www.${FIGMA_DOMAIN}`) {
-      throw new Error(ErrorMessages.NOT_FIGMA_URL);
+      throw new Error(FigmaErrorMessages.NOT_FIGMA_URL);
     }
 
     // パスの解析
     const pathSegments = parsedUrl.pathname.split('/').filter((segment) => segment);
 
     if (pathSegments.length < 2) {
-      throw new Error(ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN);
+      throw new Error(FigmaErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN);
     }
 
     const [type, fileId, ...rest] = pathSegments;
 
     // サポートされているタイプかチェック
     if (!SUPPORTED_URL_TYPES.includes(type as (typeof SUPPORTED_URL_TYPES)[number])) {
-      throw new Error(ErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN);
+      throw new Error(FigmaErrorMessages.UNSUPPORTED_FIGMA_URL_PATTERN);
     }
 
     // ファイルIDのバリデート
     if (!isValidFileId(fileId)) {
-      throw new Error(ErrorMessages.INVALID_FIGMA_FILE_ID);
+      throw new Error(FigmaErrorMessages.INVALID_FIGMA_FILE_ID);
     }
 
     // ファイル名の取得（オプション）

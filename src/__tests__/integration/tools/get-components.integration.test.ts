@@ -5,7 +5,7 @@ import {
   type TestContext,
 } from '../../helpers/setup.js';
 import type { MCPTestClient } from '../../helpers/mcp-client.js';
-import { TestData } from '../../../constants/index.js';
+import { TestData } from '../../../constants/__test__/index.js';
 
 describe('get_components Tool Integration', () => {
   let context: TestContext;

@@ -1,14 +1,14 @@
 import { describe, test, expect } from 'vitest';
 import { createFigmaError, parseFigmaErrorResponse, isRateLimitError } from './errors';
 import type { RateLimitInfo } from './rate-limit/index';
-import { HttpStatus, ErrorMessages } from '../constants';
+import { HttpStatus, FigmaErrorNames, ErrorMessages } from '../constants';
 
 describe('createFigmaError', () => {
   test('エラーメッセージとステータスコードを持つFigmaErrorを作成できる', () => {
     const error = createFigmaError('API Error', HttpStatus.BAD_REQUEST);
 
     expect(error).toBeInstanceOf(Error);
-    expect(error.name).toBe(ErrorMessages.FIGMA_ERROR);
+    expect(error.name).toBe(FigmaErrorNames.FIGMA_ERROR);
     expect(error.message).toBe('API Error');
     expect(error.status).toBe(HttpStatus.BAD_REQUEST);
     expect(error.rateLimitInfo).toBeUndefined();

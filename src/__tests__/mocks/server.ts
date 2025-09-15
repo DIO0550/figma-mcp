@@ -8,7 +8,8 @@ import { styleHandlers } from './handlers/styles.js';
 import { imageHandlers } from './handlers/images.js';
 import { commentHandlers } from './handlers/comments.js';
 import { versionHandlers } from './handlers/versions.js';
-import { HttpStatus, TestPorts, ErrorMessages, Headers as HeaderNames } from '../../constants/index.js';
+import { HttpStatus, ErrorMessages, Headers as HeaderNames } from '../../constants/index.js';
+import { TestPorts } from '../../constants/__test__/index.js';
 
 export class MockFigmaServer {
   private app: Express;

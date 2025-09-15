@@ -3,7 +3,7 @@
  */
 
 import { QueryParams } from '../../constants/query-params.js';
-import { ErrorMessages } from '../../constants/error-messages.js';
+import { ErrorMessages } from '../../constants/errors/index.js';
 
 /**
  * サポートされているFigma URLのタイプ
@@ -102,7 +102,11 @@ export const FigmaInfo = {
    * @param obj Figma情報を含むオブジェクト
    * @returns FigmaInfoオブジェクト、fileIdがない場合はundefined
    */
-  fromObject: (obj: { fileId?: string; fileName?: string; nodeId?: string }): FigmaInfo | undefined => {
+  fromObject: (obj: {
+    fileId?: string;
+    fileName?: string;
+    nodeId?: string;
+  }): FigmaInfo | undefined => {
     if (!obj.fileId) {
       return undefined;
     }

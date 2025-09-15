@@ -1,4 +1,4 @@
-import { TestData } from '../../../constants/index.js';
+import { TestData } from '../../../constants/__test__/index.js';
 
 export interface MockFileResponse {
   name: string;

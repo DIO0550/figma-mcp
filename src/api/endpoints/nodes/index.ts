@@ -1,6 +1,7 @@
 // ノード関連のAPI呼び出し関数
 
 import type { HttpClient } from '../../client.js';
+import { ApiPath } from '../../paths.js';
 import type { DeepSnakeCase } from '../../../utils/case-converter/index.js';
 import type { Node, Component } from '../../../types/figma-types.js';
 import { buildUrlParams } from '../utils/params-builder.js';
@@ -34,5 +35,5 @@ export async function getNodesApi(
   const { ids, ...restOptions } = options;
   const params = buildUrlParams(restOptions, { ids });
 
-  return client.get<GetNodesApiResponse>(`/v1/files/${fileKey}/nodes`, params);
+  return client.get<GetNodesApiResponse>(ApiPath.fileNodes(fileKey), params);
 }
