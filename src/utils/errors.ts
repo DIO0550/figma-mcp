@@ -2,7 +2,8 @@
 
 import type { FigmaApiError, FigmaError } from '../types/index.js';
 import type { RateLimitInfo } from './rate-limit/index.js';
-import { HttpStatus, ErrorMessages } from '../constants/index.js';
+import { HttpStatus } from '../constants/index.js';
+import { FigmaErrorNames } from '../constants/errors/figma-errors.js';
 
 export function createFigmaError(
   message: string,
@@ -10,7 +11,7 @@ export function createFigmaError(
   rateLimitInfo?: RateLimitInfo
 ): FigmaError {
   const error = new Error(message) as FigmaError;
-  error.name = ErrorMessages.FIGMA_ERROR;
+  error.name = FigmaErrorNames.FIGMA_ERROR;
   error.status = status;
   error.rateLimitInfo = rateLimitInfo;
   return error;

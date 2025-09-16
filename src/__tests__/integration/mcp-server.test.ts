@@ -6,7 +6,7 @@ import {
 } from '../helpers/setup.js';
 import { MCPTestClient } from '../helpers/mcp-client.js';
 import { join } from 'path';
-import { TestPorts } from '../../constants/index.js';
+import { TestPorts } from '../../constants/__test__/index.js';
 
 describe('MCP Server Integration', () => {
   let context: TestContext;

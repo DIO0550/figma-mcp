@@ -2,6 +2,7 @@
 
 import type { HttpClient } from '../../client.js';
 import { buildUrlParams } from '../utils/params-builder.js';
+import { ApiPath } from '../../paths.js';
 import type { Document, Component, ComponentSet } from '../../../types/figma-types.js';
 import type { Style } from '../../../models/style/style.js';
 
@@ -40,5 +41,5 @@ export async function getFileApi(
   options?: GetFileApiOptions
 ): Promise<GetFileApiResponse> {
   const params = buildUrlParams(options);
-  return client.get<GetFileApiResponse>(`/v1/files/${fileKey}`, params);
+  return client.get<GetFileApiResponse>(ApiPath.file(fileKey), params);
 }

@@ -6,7 +6,7 @@ import {
 } from '../index';
 import type { HttpClient } from '../../../client';
 
-import { TestData } from '../../../../constants';
+import { TestData } from '../../../../constants/__test__/index.js';
 
 function createMockHttpClient(): HttpClient {
   return {

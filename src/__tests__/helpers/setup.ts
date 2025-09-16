@@ -1,7 +1,7 @@
 import { MockFigmaServer } from '../mocks/server.js';
 import { MCPTestClient } from './mcp-client.js';
 import { join } from 'path';
-import { TestPorts } from '../../constants/index.js';
+import { TestPorts } from '../../constants/__test__/index.js';
 
 export interface TestContext {
   mockServer: MockFigmaServer;

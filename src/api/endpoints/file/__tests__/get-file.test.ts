@@ -2,7 +2,7 @@ import { test, expect, vi } from 'vitest';
 import { getFileApi } from '../index.js';
 import type { HttpClient } from '../../../client.js';
 import type { GetFileApiOptions, GetFileApiResponse } from '../index.js';
-import { TestData } from '../../../../constants/index.js';
+import { TestData } from '../../../../constants/__test__/index.js';
 
 function createMockHttpClient(): HttpClient {
   return {

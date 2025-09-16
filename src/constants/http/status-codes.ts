@@ -1,5 +1,5 @@
 /**
- * HTTP status codes used throughout the application
+ * HTTP status codes
  */
 export const HttpStatus = {
   OK: 200,
@@ -13,4 +13,4 @@ export const HttpStatus = {
   SERVICE_UNAVAILABLE: 503,
 } as const;
 
-export type HttpStatusCode = typeof HttpStatus[keyof typeof HttpStatus];
+export type HttpStatusCode = (typeof HttpStatus)[keyof typeof HttpStatus];

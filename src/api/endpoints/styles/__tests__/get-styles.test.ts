@@ -2,7 +2,7 @@ import { test, expect, vi } from 'vitest';
 
 import type { HttpClient } from '../../../client';
 import { getStylesApi, type GetStylesApiResponse } from '../index';
-import { TestData } from '../../../../constants';
+import { TestData } from '../../../../constants/__test__/index.js';
 
 test('getStylesApi - スタイル一覧を取得できる', async () => {
   const mockHttpClient: HttpClient = {

@@ -2,7 +2,7 @@ import { test, expect, vi } from 'vitest';
 
 import type { HttpClient } from '../../../client';
 import { fileComponentSetsApi, type FileComponentSetsApiResponse } from '../index';
-import { TestData } from '../../../../constants';
+import { TestData } from '../../../../constants/__test__/index.js';
 
 function createMockHttpClient(): HttpClient {
   return {
