@@ -1,7 +1,9 @@
 /**
  * Various limits and timeouts used in the application
  */
-export const Limits = {
+
+// Define the base limits first
+const BASE_LIMITS = {
   /** Default cache TTL: 1 second */
   DEFAULT_CACHE_TTL_MS: 1_000,
 
@@ -25,20 +27,40 @@ export const Limits = {
 
   /** Milliseconds to seconds conversion factor */
   MS_TO_SECONDS: 1_000,
+} as const;
 
-  /** Default request timeout: 5 seconds (can be overridden by REQUEST_TIMEOUT_MS env) */
-  DEFAULT_REQUEST_TIMEOUT_MS: parseInt(process.env.REQUEST_TIMEOUT_MS || '5000', 10),
+export const Limits = {
+  ...BASE_LIMITS,
+
+  /**
+   * Default request timeout: 5 seconds
+   * Can be overridden by REQUEST_TIMEOUT_MS environment variable
+   * Evaluated dynamically at runtime
+   */
+  get DEFAULT_REQUEST_TIMEOUT_MS(): number {
+    return parseInt(process.env.REQUEST_TIMEOUT_MS || '5000', 10);
+  },
 
   /** @deprecated Use DEFAULT_CACHE_TTL_MS */
-  DEFAULT_CACHE_TTL: 1_000,
+  get DEFAULT_CACHE_TTL(): number {
+    return BASE_LIMITS.DEFAULT_CACHE_TTL_MS;
+  },
   /** @deprecated Use DEFAULT_COMMAND_TIMEOUT_MS */
-  DEFAULT_COMMAND_TIMEOUT: 120_000,
+  get DEFAULT_COMMAND_TIMEOUT(): number {
+    return BASE_LIMITS.DEFAULT_COMMAND_TIMEOUT_MS;
+  },
   /** @deprecated Use MAX_COMMAND_TIMEOUT_MS */
-  MAX_COMMAND_TIMEOUT: 600_000,
+  get MAX_COMMAND_TIMEOUT(): number {
+    return BASE_LIMITS.MAX_COMMAND_TIMEOUT_MS;
+  },
   /** @deprecated Use RATE_LIMIT_RETRY_DELAY_MS */
-  RATE_LIMIT_RETRY_DELAY: 1_000,
+  get RATE_LIMIT_RETRY_DELAY(): number {
+    return BASE_LIMITS.RATE_LIMIT_RETRY_DELAY_MS;
+  },
   /** @deprecated Use DEFAULT_REQUEST_TIMEOUT_MS */
-  DEFAULT_REQUEST_TIMEOUT: 5_000,
+  get DEFAULT_REQUEST_TIMEOUT(): number {
+    return this.DEFAULT_REQUEST_TIMEOUT_MS;
+  },
 } as const;
 
 export type LimitKey = keyof typeof Limits;
