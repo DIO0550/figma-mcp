@@ -14,5 +14,5 @@ export async function getTeamProjectsApi(
   client: HttpClient,
   teamId: string
 ): Promise<GetTeamProjectsApiResponse> {
-  return await client.get<GetTeamProjectsApiResponse>(`/v1/teams/${teamId}/projects`);
+  return client.get<GetTeamProjectsApiResponse>(`/v1/teams/${teamId}/projects`);
 }

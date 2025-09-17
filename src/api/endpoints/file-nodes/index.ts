@@ -33,5 +33,5 @@ export async function getFileNodesApi(
   options?: GetFileApiOptions
 ): Promise<GetFileNodesApiResponse> {
   const params = buildUrlParams(options, { ids });
-  return await client.get<GetFileNodesApiResponse>(ApiPath.fileNodes(fileKey), params);
+  return client.get<GetFileNodesApiResponse>(ApiPath.fileNodes(fileKey), params);
 }

@@ -25,5 +25,5 @@ export async function getStylesApi(
   client: HttpClient,
   fileKey: string
 ): Promise<GetStylesApiResponse> {
-  return await client.get<GetStylesApiResponse>(ApiPath.fileStyles(fileKey));
+  return client.get<GetStylesApiResponse>(ApiPath.fileStyles(fileKey));
 }

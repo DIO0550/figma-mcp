@@ -43,12 +43,12 @@ export async function fileComponentsApi(
   client: HttpClient,
   fileKey: string
 ): Promise<FileComponentsApiResponse> {
-  return await client.get<FileComponentsApiResponse>(ApiPath.fileComponents(fileKey));
+  return client.get<FileComponentsApiResponse>(ApiPath.fileComponents(fileKey));
 }
 
 export async function fileComponentSetsApi(
   client: HttpClient,
   fileKey: string
 ): Promise<FileComponentSetsApiResponse> {
-  return await client.get<FileComponentSetsApiResponse>(ApiPath.fileComponentSets(fileKey));
+  return client.get<FileComponentSetsApiResponse>(ApiPath.fileComponentSets(fileKey));
 }

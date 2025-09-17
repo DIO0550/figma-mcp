@@ -38,7 +38,7 @@ export async function getFileCommentsApi(
   options?: GetFileCommentsApiOptions
 ): Promise<GetFileCommentsApiResponse> {
   const params = buildUrlParams(options);
-  return await client.get<GetFileCommentsApiResponse>(ApiPath.fileComments(fileKey), params);
+  return client.get<GetFileCommentsApiResponse>(ApiPath.fileComments(fileKey), params);
 }
 
 export async function postFileCommentApi(
@@ -47,5 +47,5 @@ export async function postFileCommentApi(
   options: PostFileCommentApiOptions
 ): Promise<PostFileCommentApiResponse> {
   const body = buildRequestBody(options);
-  return await client.post<PostFileCommentApiResponse>(ApiPath.fileComments(fileKey), body);
+  return client.post<PostFileCommentApiResponse>(ApiPath.fileComments(fileKey), body);
 }

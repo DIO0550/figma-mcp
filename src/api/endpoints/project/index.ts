@@ -32,5 +32,5 @@ export async function getProjectFilesApi(
   options?: GetProjectFilesApiOptions
 ): Promise<GetProjectFilesApiResponse> {
   const params = buildUrlParams(options);
-  return await client.get<GetProjectFilesApiResponse>(`/v1/projects/${projectId}/files`, params);
+  return client.get<GetProjectFilesApiResponse>(`/v1/projects/${projectId}/files`, params);
 }

@@ -14,5 +14,5 @@ export async function getFileVersionsApi(
   client: HttpClient,
   fileKey: string
 ): Promise<GetVersionsApiResponse> {
-  return await client.get<GetVersionsApiResponse>(ApiPath.fileVersions(fileKey));
+  return client.get<GetVersionsApiResponse>(ApiPath.fileVersions(fileKey));
 }

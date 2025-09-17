@@ -31,5 +31,5 @@ export async function imagesApi(
   const { ids, ...restOptions } = options;
   const params = buildUrlParams(restOptions, { ids });
 
-  return await client.get<ImageApiResponse>(ApiPath.images(fileKey), params);
+  return client.get<ImageApiResponse>(ApiPath.images(fileKey), params);
 }

@@ -35,5 +35,5 @@ export async function getNodesApi(
   const { ids, ...restOptions } = options;
   const params = buildUrlParams(restOptions, { ids });
 
-  return await client.get<GetNodesApiResponse>(ApiPath.fileNodes(fileKey), params);
+  return client.get<GetNodesApiResponse>(ApiPath.fileNodes(fileKey), params);
 }

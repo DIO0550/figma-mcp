@@ -41,5 +41,5 @@ export async function getFileApi(
   options?: GetFileApiOptions
 ): Promise<GetFileApiResponse> {
   const params = buildUrlParams(options);
-  return await client.get<GetFileApiResponse>(ApiPath.file(fileKey), params);
+  return client.get<GetFileApiResponse>(ApiPath.file(fileKey), params);
 }
