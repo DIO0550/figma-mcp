@@ -1,5 +1,5 @@
 import { createApiConfig } from './config.js';
-import { createHttpClient, type HttpClient } from './client.js';
+import { createHttpClient, type HttpClient } from './client/client.js';
 import { getFileApi } from './endpoints/file/index.js';
 import { getFileNodesApi } from './endpoints/file-nodes/index.js';
 import {

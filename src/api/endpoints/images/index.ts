@@ -1,6 +1,6 @@
 // 画像エクスポート関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import type { DeepSnakeCase } from '../../../utils/case-converter/index.js';
 import { buildUrlParams } from '../utils/params-builder.js';
 import { ApiPath } from '../../paths.js';

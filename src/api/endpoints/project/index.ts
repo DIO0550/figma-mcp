@@ -1,6 +1,6 @@
 // プロジェクト関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import { buildUrlParams } from '../utils/params-builder.js';
 
 // API Options

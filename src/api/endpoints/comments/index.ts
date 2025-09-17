@@ -1,6 +1,6 @@
 // コメント関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import type { Comment } from '../../../models/comment/index.js';
 import { buildUrlParams, buildRequestBody } from '../utils/params-builder.js';
 import { ApiPath } from '../../paths.js';

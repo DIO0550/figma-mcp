@@ -1,6 +1,6 @@
 import { test, expect, vi } from 'vitest';
 import { getNodesApi, type GetNodesApiResponse, type GetNodesApiOptions } from '../index';
-import type { HttpClient } from '../../../client';
+import type { HttpClient } from '../../../client/client';
 import type { DeepSnakeCase } from '../../../../utils/case-converter/index.js';
 import { TestData } from '../../../../constants/__test__/index.js';
 

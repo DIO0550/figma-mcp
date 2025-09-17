@@ -4,7 +4,7 @@ import {
   type PostFileCommentApiResponse,
   type PostFileCommentApiOptions,
 } from '../index';
-import type { HttpClient } from '../../../client';
+import type { HttpClient } from '../../../client/client';
 
 import { TestData } from '../../../../constants/__test__/index.js';
 

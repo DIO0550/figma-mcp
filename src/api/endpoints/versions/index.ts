@@ -1,6 +1,6 @@
 // バージョン関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import { ApiPath } from '../../paths.js';
 import type { Version, VersionComparison } from '../../../models/version/index.js';
 

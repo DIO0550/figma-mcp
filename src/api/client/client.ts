@@ -1,13 +1,13 @@
-import type { ApiConfig } from './config.js';
-import { RateLimitInfo, getRetryAfter } from '../utils/rate-limit/index.js';
-import { createHeaders } from './config.js';
-import { createFigmaError, parseFigmaErrorResponse } from '../utils/errors.js';
-import { Logger } from '../utils/logger/index.js';
-import { HttpStatus, Limits } from '../constants/index.js';
+import type { ApiConfig } from '../config.js';
+import { RateLimitInfo, getRetryAfter } from '../../utils/rate-limit/index.js';
+import { createHeaders } from '../config.js';
+import { createFigmaError, parseFigmaErrorResponse } from '../../utils/errors.js';
+import { Logger } from '../../utils/logger/index.js';
+import { HttpStatus, Limits } from '../../constants/index.js';
 
 export interface HttpClient {
   get: <T>(endpoint: string, params?: URLSearchParams) => Promise<T>;
-  post: <T>(endpoint: string, body: unknown) => Promise<T>;
+  post: <T>(endpoint: string, body?: unknown) => Promise<T>;
 }
 
 export interface RequestContext {
@@ -120,11 +120,16 @@ export function createHttpClient(
       return request<T>(fullEndpoint);
     },
 
-    post: async <T>(endpoint: string, body: unknown): Promise<T> => {
-      return request<T>(endpoint, {
+    post: async <T>(endpoint: string, body?: unknown): Promise<T> => {
+      const requestInit: RequestInit = {
         method: 'POST',
-        body: JSON.stringify(body),
-      });
+      };
+
+      if (body !== undefined) {
+        requestInit.body = JSON.stringify(body);
+      }
+
+      return request<T>(endpoint, requestInit);
     },
 
     getContext: () => context,

@@ -1,6 +1,6 @@
 // ファイルノード関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import { ApiPath } from '../../paths.js';
 import type { GetFileApiOptions } from '../file/index.js';
 import type { Node, Component } from '../../../types/figma-types.js';

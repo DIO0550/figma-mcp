@@ -1,5 +1,5 @@
 import { test, expect, vi } from 'vitest';
-import type { HttpClient } from '../../../client.js';
+import type { HttpClient } from '../../../client/client.js';
 import type { GetProjectFilesApiResponse } from '../index.js';
 import { getProjectFilesApi } from '../index.js';
 
