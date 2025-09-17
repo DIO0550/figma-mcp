@@ -1,6 +1,6 @@
 import { test, expect, vi } from 'vitest';
 
-import type { HttpClient } from '../../../client';
+import type { HttpClient } from '../../../client/client';
 import { getStylesApi, type GetStylesApiResponse } from '../index';
 import { TestData } from '../../../../constants/__test__/index.js';
 

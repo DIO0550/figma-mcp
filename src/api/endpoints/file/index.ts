@@ -1,6 +1,6 @@
 // ファイル関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import { buildUrlParams } from '../utils/params-builder.js';
 import { ApiPath } from '../../paths.js';
 import type { Document, Component, ComponentSet } from '../../../types/figma-types.js';
@@ -41,5 +41,5 @@ export async function getFileApi(
   options?: GetFileApiOptions
 ): Promise<GetFileApiResponse> {
   const params = buildUrlParams(options);
-  return client.get<GetFileApiResponse>(ApiPath.file(fileKey), params);
+  return await client.get<GetFileApiResponse>(ApiPath.file(fileKey), params);
 }

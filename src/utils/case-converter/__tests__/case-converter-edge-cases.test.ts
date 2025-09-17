@@ -115,7 +115,7 @@ test('edge case - handles very large objects efficiently', () => {
 
 test('edge case - handles objects with prototype chain', () => {
   class Parent {
-    parent_method() {
+    parent_method(): string {
       return 'parent';
     }
   }
@@ -148,7 +148,7 @@ test('edge case - handles frozen and sealed objects', () => {
 test('edge case - handles objects with getters and setters', () => {
   const input = {
     _private_value: 0,
-    get computed_value() {
+    get computed_value(): number {
       return this._private_value * 2;
     },
     set computed_value(val: number) {

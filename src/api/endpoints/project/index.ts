@@ -1,6 +1,6 @@
 // プロジェクト関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import { buildUrlParams } from '../utils/params-builder.js';
 
 // API Options
@@ -32,5 +32,5 @@ export async function getProjectFilesApi(
   options?: GetProjectFilesApiOptions
 ): Promise<GetProjectFilesApiResponse> {
   const params = buildUrlParams(options);
-  return client.get<GetProjectFilesApiResponse>(`/v1/projects/${projectId}/files`, params);
+  return await client.get<GetProjectFilesApiResponse>(`/v1/projects/${projectId}/files`, params);
 }

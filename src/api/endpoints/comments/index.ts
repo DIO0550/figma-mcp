@@ -1,6 +1,6 @@
 // コメント関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import type { Comment } from '../../../models/comment/index.js';
 import { buildUrlParams, buildRequestBody } from '../utils/params-builder.js';
 import { ApiPath } from '../../paths.js';
@@ -38,7 +38,7 @@ export async function getFileCommentsApi(
   options?: GetFileCommentsApiOptions
 ): Promise<GetFileCommentsApiResponse> {
   const params = buildUrlParams(options);
-  return client.get<GetFileCommentsApiResponse>(ApiPath.fileComments(fileKey), params);
+  return await client.get<GetFileCommentsApiResponse>(ApiPath.fileComments(fileKey), params);
 }
 
 export async function postFileCommentApi(
@@ -47,5 +47,5 @@ export async function postFileCommentApi(
   options: PostFileCommentApiOptions
 ): Promise<PostFileCommentApiResponse> {
   const body = buildRequestBody(options);
-  return client.post<PostFileCommentApiResponse>(ApiPath.fileComments(fileKey), body);
+  return await client.post<PostFileCommentApiResponse>(ApiPath.fileComments(fileKey), body);
 }

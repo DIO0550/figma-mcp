@@ -1,6 +1,6 @@
 // コンポーネント関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import { ApiPath } from '../../paths.js';
 import type { Component } from '../../../types/figma-types.js';
 
@@ -43,12 +43,12 @@ export async function fileComponentsApi(
   client: HttpClient,
   fileKey: string
 ): Promise<FileComponentsApiResponse> {
-  return client.get<FileComponentsApiResponse>(ApiPath.fileComponents(fileKey));
+  return await client.get<FileComponentsApiResponse>(ApiPath.fileComponents(fileKey));
 }
 
 export async function fileComponentSetsApi(
   client: HttpClient,
   fileKey: string
 ): Promise<FileComponentSetsApiResponse> {
-  return client.get<FileComponentSetsApiResponse>(ApiPath.fileComponentSets(fileKey));
+  return await client.get<FileComponentSetsApiResponse>(ApiPath.fileComponentSets(fileKey));
 }

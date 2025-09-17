@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { imagesApi, type ImageApiResponse, type ImageApiOptions } from '../index';
-import type { HttpClient } from '../../../client';
+import type { HttpClient } from '../../../client/client';
 import type { DeepSnakeCase } from '../../../../utils/case-converter/index.js';
 import { TestData } from '../../../../constants/__test__/index.js';
 

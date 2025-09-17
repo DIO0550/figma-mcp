@@ -1,6 +1,6 @@
 import { test, expect, vi } from 'vitest';
 import { getFileCommentsApi, type GetFileCommentsApiResponse } from '../index';
-import type { HttpClient } from '../../../client';
+import type { HttpClient } from '../../../client/client';
 import { TestData } from '../../../../constants/__test__/index.js';
 
 function createMockHttpClient(): HttpClient {

@@ -1,6 +1,6 @@
 // スタイル関連のAPI呼び出し関数
 
-import type { HttpClient } from '../../client.js';
+import type { HttpClient } from '../../client/client.js';
 import { ApiPath } from '../../paths.js';
 import type { Style } from '../../../models/style/style.js';
 
@@ -25,5 +25,5 @@ export async function getStylesApi(
   client: HttpClient,
   fileKey: string
 ): Promise<GetStylesApiResponse> {
-  return client.get<GetStylesApiResponse>(ApiPath.fileStyles(fileKey));
+  return await client.get<GetStylesApiResponse>(ApiPath.fileStyles(fileKey));
 }
