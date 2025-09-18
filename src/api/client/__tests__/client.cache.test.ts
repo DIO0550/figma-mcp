@@ -2,6 +2,7 @@ import { test, expect, vi } from 'vitest';
 import { createHttpClient } from '../client';
 import { createApiConfig } from '../../config';
 import { createCache } from '../../../utils/cache/index.js';
+import { TIME_IN_MS } from '../../../constants/time.js';
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -12,7 +13,7 @@ test('GETリクエストの結果をキャッシュする', async () => {
   const config = createApiConfig('test-token');
   mockFetch.mockReset();
   vi.useFakeTimers();
-  const cache = createCache({ defaultTtl: 60000 });
+  const cache = createCache({ defaultTtl: TIME_IN_MS.MINUTE });
   const client = createHttpClient(config, { cache });
 
   const mockResponse = { data: 'test', id: '123' };
