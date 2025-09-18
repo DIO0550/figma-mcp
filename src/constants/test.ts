@@ -1,0 +1,6 @@
+export const TEST_TIMEOUT = {
+  DEFAULT: 5000,
+  UNIT_TEST: 10000,
+  INTEGRATION_TEST: 30000,
+  E2E_TEST: 60000,
+} as const;
