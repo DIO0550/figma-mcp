@@ -1,5 +1,6 @@
 import { test, expect } from 'vitest';
 import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../case-converter.js';
+import { TEST_TIMEOUT } from '../../../constants/test.js';
 
 // ==============================
 // エッジケースのテスト
@@ -97,7 +98,7 @@ test('edge case - handles objects with non-enumerable properties', () => {
 
 test('edge case - handles very large objects efficiently', () => {
   const largeObject: Record<string, number> = {};
-  for (let i = 0; i < 10000; i++) {
+  for (let i = 0; i < TEST_TIMEOUT.UNIT_TEST; i++) {
     largeObject[`key_number_${i}`] = i;
   }
 
@@ -105,12 +106,12 @@ test('edge case - handles very large objects efficiently', () => {
   const result = convertKeysToCamelCase(largeObject) as Record<string, number>;
   const endTime = performance.now();
 
-  expect(Object.keys(result).length).toBe(10000);
+  expect(Object.keys(result).length).toBe(TEST_TIMEOUT.UNIT_TEST);
   expect(result.keyNumber0).toBe(0);
   expect(result.keyNumber9999).toBe(9999);
   // Performance check: should complete in reasonable time (10 seconds)
   // This is a generous threshold to avoid flaky tests in different environments
-  expect(endTime - startTime).toBeLessThan(10000);
+  expect(endTime - startTime).toBeLessThan(TEST_TIMEOUT.UNIT_TEST);
 });
 
 test('edge case - handles objects with prototype chain', () => {
