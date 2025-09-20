@@ -1,6 +1,6 @@
 // API設定
 
-import { Headers, ContentType } from '../constants/index.js';
+import { Headers, ContentType } from '../../constants/index.js';
 
 export interface ApiConfig {
   accessToken: string;
