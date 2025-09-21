@@ -80,10 +80,12 @@ test('createApiConfig - ベースURLに空文字を指定すると、デフォ�
 // Figma APIトークンは通常43文字程度
 // 仕様上の最大長は明記されていないが、現実的な上限として256文字をテスト
 const REALISTIC_MAX_TOKEN_LENGTH = 256;
+const TOKEN_PREFIX = 'fig_';
+const TOKEN_PREFIX_LENGTH = TOKEN_PREFIX.length;
 
 test('createApiConfig - 現実的な最大長（256文字）のアクセストークンを指定しても、正常にApiConfigが作成される', () => {
   // Arrange
-  const longToken = 'fig_' + 'a'.repeat(REALISTIC_MAX_TOKEN_LENGTH - 4);
+  const longToken = TOKEN_PREFIX + 'a'.repeat(REALISTIC_MAX_TOKEN_LENGTH - TOKEN_PREFIX_LENGTH);
 
   // Act
   const config = createApiConfig(longToken);
