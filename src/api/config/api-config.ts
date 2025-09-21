@@ -10,7 +10,7 @@ export interface ApiConfig {
 export const DEFAULT_BASE_URL = 'https://api.figma.com';
 
 export function createApiConfig(accessToken: string, baseUrl?: string): ApiConfig {
-  if (!accessToken) {
+  if (!accessToken || !accessToken.trim()) {
     throw new Error('Figma access token is required');
   }
 
