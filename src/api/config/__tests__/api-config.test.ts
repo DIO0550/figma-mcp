@@ -58,16 +58,12 @@ test('createApiConfig - アクセストークンにnullを指定すると、エ�
 });
 
 // 追加の境界値テスト
-test('createApiConfig - アクセストークンに空白文字のみを指定しても、空白文字がトークンとして扱われる（現在の実装）', () => {
+test('createApiConfig - アクセストークンに空白文字のみを指定すると、エラー「Figma access token is required」が発生する', () => {
   // Arrange
   const whitespaceToken = '   ';
 
-  // Act
-  const config = createApiConfig(whitespaceToken);
-
-  // Assert
-  // 注: 現在の実装では空白文字も有効なトークンとして扱われる
-  expect(config.accessToken).toBe(whitespaceToken);
+  // Act & Assert
+  expect(() => createApiConfig(whitespaceToken)).toThrow('Figma access token is required');
 });
 
 test('createApiConfig - ベースURLに空文字を指定すると、デフォルトベースURLが使用される', () => {
@@ -81,16 +77,20 @@ test('createApiConfig - ベースURLに空文字を指定すると、デフォ�
   expect(config.baseUrl).toBe(DEFAULT_BASE_URL);
 });
 
-test('createApiConfig - 非常に長いアクセストークン（1000文字）を指定しても、正常にApiConfigが作成される', () => {
+// Figma APIトークンは通常43文字程度
+// 仕様上の最大長は明記されていないが、現実的な上限として256文字をテスト
+const REALISTIC_MAX_TOKEN_LENGTH = 256;
+
+test('createApiConfig - 現実的な最大長（256文字）のアクセストークンを指定しても、正常にApiConfigが作成される', () => {
   // Arrange
-  const longToken = 'a'.repeat(1000);
+  const longToken = 'fig_' + 'a'.repeat(REALISTIC_MAX_TOKEN_LENGTH - 4);
 
   // Act
   const config = createApiConfig(longToken);
 
   // Assert
   expect(config.accessToken).toBe(longToken);
-  expect(config.accessToken.length).toBe(1000);
+  expect(config.accessToken.length).toBe(REALISTIC_MAX_TOKEN_LENGTH);
 });
 
 // createHeaders のテスト
