@@ -2,31 +2,40 @@
  * Various limits and timeouts used in the application
  */
 
+/** Default cache TTL: 1 second */
+export const DEFAULT_CACHE_TTL_MS = 1_000;
+
+/** Default timeout for commands: 2 minutes */
+export const DEFAULT_COMMAND_TIMEOUT_MS = 120_000;
+
+/** Maximum timeout for commands: 10 minutes */
+export const MAX_COMMAND_TIMEOUT_MS = 600_000;
+
+/** Maximum output characters before truncation */
+export const MAX_OUTPUT_CHARS = 30_000;
+
+/** Maximum lines to read from a file by default */
+export const DEFAULT_FILE_READ_LINES = 2_000;
+
+/** Rate limit retry delay: 1 second */
+export const RATE_LIMIT_RETRY_DELAY_MS = 1_000;
+
+/** Default retry after seconds for rate limit */
+export const DEFAULT_RETRY_AFTER_SECONDS = 60;
+
+/** Milliseconds to seconds conversion factor */
+export const MS_TO_SECONDS = 1_000;
+
 // Define the base limits first
 const BASE_LIMITS = {
-  /** Default cache TTL: 1 second */
-  DEFAULT_CACHE_TTL_MS: 1_000,
-
-  /** Default timeout for commands: 2 minutes */
-  DEFAULT_COMMAND_TIMEOUT_MS: 120_000,
-
-  /** Maximum timeout for commands: 10 minutes */
-  MAX_COMMAND_TIMEOUT_MS: 600_000,
-
-  /** Maximum output characters before truncation */
-  MAX_OUTPUT_CHARS: 30_000,
-
-  /** Maximum lines to read from a file by default */
-  DEFAULT_FILE_READ_LINES: 2_000,
-
-  /** Rate limit retry delay: 1 second */
-  RATE_LIMIT_RETRY_DELAY_MS: 1_000,
-
-  /** Default retry after seconds for rate limit */
-  DEFAULT_RETRY_AFTER_SECONDS: 60,
-
-  /** Milliseconds to seconds conversion factor */
-  MS_TO_SECONDS: 1_000,
+  DEFAULT_CACHE_TTL_MS,
+  DEFAULT_COMMAND_TIMEOUT_MS,
+  MAX_COMMAND_TIMEOUT_MS,
+  MAX_OUTPUT_CHARS,
+  DEFAULT_FILE_READ_LINES,
+  RATE_LIMIT_RETRY_DELAY_MS,
+  DEFAULT_RETRY_AFTER_SECONDS,
+  MS_TO_SECONDS,
 } as const;
 
 export const Limits = {
