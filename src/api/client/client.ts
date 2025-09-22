@@ -27,33 +27,35 @@ export interface HttpClientOptions {
 async function handleResponse<T>(response: Response, context: RequestContext): Promise<T> {
   context.rateLimitInfo = RateLimitInfo.parseHeaders(response.headers);
 
-  if (!response.ok) {
-    const errorMessage = await parseFigmaErrorResponse(response);
-
-    if (response.status === HttpStatus.TOO_MANY_REQUESTS) {
-      const retryAfter = getRetryAfter(response.headers);
-      const message = retryAfter
-        ? `${errorMessage} (Retry after ${retryAfter} seconds)`
-        : errorMessage;
-
-      Logger.warn('Rate limit exceeded', {
-        status: response.status,
-        retryAfter,
-        rateLimitInfo: context.rateLimitInfo,
-      });
-
-      throw createFigmaError(message, response.status, context.rateLimitInfo);
-    }
-
-    Logger.error('HTTP Error', {
-      status: response.status,
-      message: errorMessage,
-    });
-
-    throw createFigmaError(errorMessage, response.status, context.rateLimitInfo);
+  // Early return for successful responses
+  if (response.ok) {
+    return response.json() as Promise<T>;
   }
 
-  return response.json() as Promise<T>;
+  // Handle error responses
+  const errorMessage = await parseFigmaErrorResponse(response);
+
+  if (response.status === HttpStatus.TOO_MANY_REQUESTS) {
+    const retryAfter = getRetryAfter(response.headers);
+    const message = retryAfter
+      ? `${errorMessage} (Retry after ${retryAfter} seconds)`
+      : errorMessage;
+
+    Logger.warn('Rate limit exceeded', {
+      status: response.status,
+      retryAfter,
+      rateLimitInfo: context.rateLimitInfo,
+    });
+
+    throw createFigmaError(message, response.status, context.rateLimitInfo);
+  }
+
+  Logger.error('HTTP Error', {
+    status: response.status,
+    message: errorMessage,
+  });
+
+  throw createFigmaError(errorMessage, response.status, context.rateLimitInfo);
 }
 
 export function createHttpClient(
