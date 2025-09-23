@@ -26,7 +26,7 @@ export const DEFAULT_RETRY_AFTER_SECONDS = 60;
 /** Milliseconds to seconds conversion factor */
 export const MS_TO_SECONDS = 1_000;
 
-const BASE_LIMITS = {
+export const Limits = {
   DEFAULT_CACHE_TTL_MS,
   DEFAULT_COMMAND_TIMEOUT_MS,
   MAX_COMMAND_TIMEOUT_MS,
@@ -35,10 +35,6 @@ const BASE_LIMITS = {
   RATE_LIMIT_RETRY_DELAY_MS,
   DEFAULT_RETRY_AFTER_SECONDS,
   MS_TO_SECONDS,
-} as const;
-
-export const Limits = {
-  ...BASE_LIMITS,
 
   /**
    * Default request timeout: 5 seconds
@@ -51,19 +47,19 @@ export const Limits = {
 
   /** @deprecated Use DEFAULT_CACHE_TTL_MS */
   get DEFAULT_CACHE_TTL(): number {
-    return BASE_LIMITS.DEFAULT_CACHE_TTL_MS;
+    return DEFAULT_CACHE_TTL_MS;
   },
   /** @deprecated Use DEFAULT_COMMAND_TIMEOUT_MS */
   get DEFAULT_COMMAND_TIMEOUT(): number {
-    return BASE_LIMITS.DEFAULT_COMMAND_TIMEOUT_MS;
+    return DEFAULT_COMMAND_TIMEOUT_MS;
   },
   /** @deprecated Use MAX_COMMAND_TIMEOUT_MS */
   get MAX_COMMAND_TIMEOUT(): number {
-    return BASE_LIMITS.MAX_COMMAND_TIMEOUT_MS;
+    return MAX_COMMAND_TIMEOUT_MS;
   },
   /** @deprecated Use RATE_LIMIT_RETRY_DELAY_MS */
   get RATE_LIMIT_RETRY_DELAY(): number {
-    return BASE_LIMITS.RATE_LIMIT_RETRY_DELAY_MS;
+    return RATE_LIMIT_RETRY_DELAY_MS;
   },
   /** @deprecated Use DEFAULT_REQUEST_TIMEOUT_MS */
   get DEFAULT_REQUEST_TIMEOUT(): number {
