@@ -27,12 +27,10 @@ export interface HttpClientOptions {
 async function handleResponse<T>(response: Response, context: RequestContext): Promise<T> {
   context.rateLimitInfo = RateLimitInfo.parseHeaders(response.headers);
 
-  // Early return for successful responses
   if (response.ok) {
     return response.json() as Promise<T>;
   }
 
-  // Handle error responses
   const errorMessage = await parseFigmaErrorResponse(response);
 
   if (response.status === HttpStatus.TOO_MANY_REQUESTS) {
