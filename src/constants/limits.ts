@@ -26,7 +26,6 @@ export const DEFAULT_RETRY_AFTER_SECONDS = 60;
 /** Milliseconds to seconds conversion factor */
 export const MS_TO_SECONDS = 1_000;
 
-// Define the base limits first
 const BASE_LIMITS = {
   DEFAULT_CACHE_TTL_MS,
   DEFAULT_COMMAND_TIMEOUT_MS,
