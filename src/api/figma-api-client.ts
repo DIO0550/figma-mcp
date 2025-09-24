@@ -19,7 +19,7 @@ import { getFileCommentsApi, type GetFileCommentsApiResponse } from './endpoints
 import { getFileVersionsApi } from './endpoints/versions/index.js';
 import { getTeamProjectsApi } from './endpoints/team/index.js';
 import { getProjectFilesApi } from './endpoints/project/index.js';
-import { FigmaContext } from './context.js';
+import { FigmaContext } from './context/index.js';
 import { getRuntimeConfig } from '../config/runtime-config/runtime-config.js';
 import { convertKeysToCamelCase, convertKeysToSnakeCase } from '../utils/case-converter/index.js';
 import type { ImageApiResponse, ImageApiOptions } from './endpoints/images/index.js';
