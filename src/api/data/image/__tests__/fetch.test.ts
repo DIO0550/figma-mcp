@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ImageExport } from '../image.js';
-import type { FigmaContext } from '../../../context.js';
+import type { FigmaContext } from '../../../context/index.js';
 import type { ImageApiResponse } from '../../../endpoints/images/index.js';
 
 describe('ImageExport.fetch', () => {
