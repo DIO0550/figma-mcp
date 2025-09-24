@@ -1,4 +1,4 @@
-import type { FigmaContext } from '../../context.js';
+import type { FigmaContext } from '../../context/index.js';
 
 /**
  * 画像エクスポートのフォーマット
@@ -152,7 +152,7 @@ async function fetchInBatches(
   batchSize = 50
 ): Promise<ImageExport[]> {
   const results: ImageExport[] = [];
-  
+
   for (let i = 0; i < exports.length; i += batchSize) {
     const batch = exports.slice(i, i + batchSize);
     const batchResults = await fetch(context, fileKey, batch);

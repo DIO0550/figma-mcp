@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ImageExport } from '../image-export.js';
-import { FigmaContext } from '../../../context.js';
+import { FigmaContext } from '../../../context/index.js';
 
 global.fetch = vi.fn();
 
@@ -24,10 +24,7 @@ describe('ImageExport.fetch', () => {
       json: vi.fn().mockResolvedValueOnce(mockResponse),
     } as unknown as Response);
 
-    const exports = [
-      ImageExport.fromOptions('node-1'),
-      ImageExport.fromOptions('node-2'),
-    ];
+    const exports = [ImageExport.fromOptions('node-1'), ImageExport.fromOptions('node-2')];
 
     const results = await ImageExport.fetch(mockContext, 'file-1', exports);
 
@@ -97,8 +94,8 @@ describe('ImageExport.fetch', () => {
 
     const exports = [ImageExport.fromOptions('node-1')];
 
-    await expect(
-      ImageExport.fetch(mockContext, 'file-1', exports)
-    ).rejects.toThrow('Failed to export images: 404 Not Found');
+    await expect(ImageExport.fetch(mockContext, 'file-1', exports)).rejects.toThrow(
+      'Failed to export images: 404 Not Found'
+    );
   });
 });

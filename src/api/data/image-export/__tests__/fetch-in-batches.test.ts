@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { ImageExport } from '../image-export.js';
-import { FigmaContext } from '../../../context.js';
+import { FigmaContext } from '../../../context/index.js';
 
 global.fetch = vi.fn();
 
@@ -19,16 +19,9 @@ describe('ImageExport.fetchInBatches', () => {
       json: vi.fn().mockResolvedValue(mockResponse),
     } as unknown as Response);
 
-    const exports = Array.from({ length: 150 }, (_, i) => 
-      ImageExport.fromOptions(`node-${i}`)
-    );
+    const exports = Array.from({ length: 150 }, (_, i) => ImageExport.fromOptions(`node-${i}`));
 
-    const results = await ImageExport.fetchInBatches(
-      mockContext,
-      'file-1',
-      exports,
-      50
-    );
+    const results = await ImageExport.fetchInBatches(mockContext, 'file-1', exports, 50);
 
     expect(fetch).toHaveBeenCalledTimes(3); // 150 / 50 = 3
     expect(results).toHaveLength(150);
