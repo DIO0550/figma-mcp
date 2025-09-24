@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { FileData } from '../file.js';
-import type { FigmaContext } from '../../../context.js';
+import type { FigmaContext } from '../../../context/index.js';
 import type { GetFileApiResponse } from '../../../endpoints/file/index.js';
 
 describe('FileData.fetch', () => {
