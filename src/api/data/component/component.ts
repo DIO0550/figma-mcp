@@ -1,4 +1,4 @@
-import type { FigmaContext } from '../../context.js';
+import type { FigmaContext } from '../../context/index.js';
 import type { FileComponentsApiResponse } from '../../../api/endpoints/components/index.js';
 
 /**
@@ -77,7 +77,7 @@ function fromResponse(response: FileComponentsApiResponse): ComponentData[] {
 
 async function fetchAll(context: FigmaContext, fileKey: string): Promise<ComponentData[]> {
   const url = `${context.baseUrl}/v1/files/${fileKey}/components`;
-  
+
   const response = await globalThis.fetch(url, {
     method: 'GET',
     headers: context.headers,
@@ -87,13 +87,11 @@ async function fetchAll(context: FigmaContext, fileKey: string): Promise<Compone
     throw new Error(`Failed to fetch components: ${response.status} ${response.statusText}`);
   }
 
-  const data = await response.json() as FileComponentsApiResponse;
+  const data = (await response.json()) as FileComponentsApiResponse;
   return fromResponse(data);
 }
 
-function groupByPage(
-  components: ComponentData[]
-): Record<string, ComponentData[]> {
+function groupByPage(components: ComponentData[]): Record<string, ComponentData[]> {
   const grouped: Record<string, ComponentData[]> = {};
 
   for (const component of components) {
@@ -107,14 +105,9 @@ function groupByPage(
   return grouped;
 }
 
-function filterByName(
-  components: ComponentData[],
-  searchTerm: string
-): ComponentData[] {
+function filterByName(components: ComponentData[], searchTerm: string): ComponentData[] {
   const lowerSearchTerm = searchTerm.toLowerCase();
-  return components.filter(comp => 
-    comp.name.toLowerCase().includes(lowerSearchTerm)
-  );
+  return components.filter((comp) => comp.name.toLowerCase().includes(lowerSearchTerm));
 }
 
 export const ComponentData = {
