@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ComponentData } from '../component.js';
-import type { FigmaContext } from '../../../context.js';
+import type { FigmaContext } from '../../../context/index.js';
 import type { FileComponentsApiResponse } from '../../../../api/endpoints/components/index.js';
 import type { Component } from '../../../../types/figma-types.js';
 
@@ -65,8 +65,8 @@ describe('ComponentData.fetchAll', () => {
       statusText: 'Forbidden',
     } as Response);
 
-    await expect(
-      ComponentData.fetchAll(mockContext, 'forbidden-file')
-    ).rejects.toThrow('Failed to fetch components: 403 Forbidden');
+    await expect(ComponentData.fetchAll(mockContext, 'forbidden-file')).rejects.toThrow(
+      'Failed to fetch components: 403 Forbidden'
+    );
   });
 });

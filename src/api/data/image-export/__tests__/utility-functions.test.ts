@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { ImageExport } from '../image-export.js';
-import { FigmaContext } from '../../../context.js';
+import { FigmaContext } from '../../../context/index.js';
 
 global.fetch = vi.fn();
 
@@ -19,12 +19,11 @@ describe('ImageExport.fetchMultipleFormats', () => {
       json: vi.fn().mockResolvedValue(mockResponse),
     } as unknown as Response);
 
-    const results = await ImageExport.fetchMultipleFormats(
-      mockContext,
-      'file-1',
-      'node-1',
-      ['PNG', 'SVG', 'PDF']
-    );
+    const results = await ImageExport.fetchMultipleFormats(mockContext, 'file-1', 'node-1', [
+      'PNG',
+      'SVG',
+      'PDF',
+    ]);
 
     expect(results).toHaveLength(3);
     expect(results[0].format).toBe('PNG');
@@ -73,10 +72,7 @@ describe('ImageExport.extractUrls', () => {
 
     const urls = ImageExport.extractUrls(exports);
 
-    expect(urls).toEqual([
-      'https://example.com/1.png',
-      'https://example.com/2.png',
-    ]);
+    expect(urls).toEqual(['https://example.com/1.png', 'https://example.com/2.png']);
   });
 });
 

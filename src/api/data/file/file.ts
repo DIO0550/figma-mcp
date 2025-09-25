@@ -1,4 +1,4 @@
-import type { FigmaContext } from '../../context.js';
+import type { FigmaContext } from '../../context/index.js';
 import type { GetFileApiResponse } from '../../endpoints/file/index.js';
 import type { Document, Node, Component } from '../../../types/figma-types.js';
 import type { Style } from '../../../models/style/style.js';
