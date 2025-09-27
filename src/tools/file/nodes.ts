@@ -1,5 +1,6 @@
 import type { GetFileApiOptions } from '../../api/endpoints/file/index.js';
-import { FigmaApiClient } from '../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
 import type { NodeEntry, FileNodesResponse } from './types.js';
 import type { McpToolDefinition } from '../types.js';
 import { GetFileNodesArgsSchema, type GetFileNodesArgs } from './get-file-nodes-args.js';
@@ -18,7 +19,7 @@ export const GetFileNodesToolDefinition = {
  * ツールインスタンス（apiClientを保持）
  */
 export interface GetFileNodesTool {
-  readonly apiClient: FigmaApiClient;
+  readonly apiClient: FigmaApiClientInterface;
 }
 
 /**
@@ -28,7 +29,7 @@ export const GetFileNodesTool = {
   /**
    * apiClientからツールインスタンスを作成
    */
-  from(apiClient: FigmaApiClient): GetFileNodesTool {
+  from(apiClient: FigmaApiClientInterface): GetFileNodesTool {
     return { apiClient };
   },
 

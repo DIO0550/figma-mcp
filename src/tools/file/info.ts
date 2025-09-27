@@ -1,5 +1,6 @@
 import type { GetFileApiOptions } from '../../api/endpoints/file/index.js';
-import { FigmaApiClient } from '../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
 import type { FileResponse } from './types.js';
 import type { McpToolDefinition } from '../types.js';
 import { GetFileArgsSchema, type GetFileArgs } from './get-file-args.js';
@@ -18,7 +19,7 @@ export const GetFileToolDefinition = {
  * ツールインスタンス（apiClientを保持）
  */
 export interface GetFileTool {
-  readonly apiClient: FigmaApiClient;
+  readonly apiClient: FigmaApiClientInterface;
 }
 
 /**
@@ -28,7 +29,7 @@ export const GetFileTool = {
   /**
    * apiClientからツールインスタンスを作成
    */
-  from(apiClient: FigmaApiClient): GetFileTool {
+  from(apiClient: FigmaApiClientInterface): GetFileTool {
     return { apiClient };
   },
 

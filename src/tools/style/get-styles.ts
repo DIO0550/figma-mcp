@@ -1,4 +1,5 @@
-import { FigmaApiClient } from '../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
 import type { GetStylesApiResponse } from '../../api/endpoints/styles/index.js';
 import { GetStylesArgsSchema, type GetStylesArgs } from './get-styles-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
@@ -17,7 +18,7 @@ export const GetStylesToolDefinition = {
  * ツールインスタンス（apiClientを保持）
  */
 export interface GetStylesTool {
-  readonly apiClient: FigmaApiClient;
+  readonly apiClient: FigmaApiClientInterface;
 }
 
 /**
@@ -27,7 +28,7 @@ export const GetStylesTool = {
   /**
    * apiClientからツールインスタンスを作成
    */
-  from(apiClient: FigmaApiClient): GetStylesTool {
+  from(apiClient: FigmaApiClientInterface): GetStylesTool {
     return { apiClient };
   },
 

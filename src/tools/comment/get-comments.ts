@@ -1,4 +1,5 @@
-import { FigmaApiClient } from '../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
 import type { GetFileCommentsApiResponse } from '../../api/endpoints/comments/index.js';
 import { Comment } from '../../models/comment/index.js';
 import { GetCommentsArgsSchema, type GetCommentsArgs } from './get-comments-args.js';
@@ -22,27 +23,21 @@ function applyFilters(comments: Comment[], args: GetCommentsArgs): Comment[] {
   // showResolvedがfalseの場合、未解決のコメントのみを返す
   if (args.showResolved === false) {
     filters.push((comments) =>
-      comments.filter(
-        (comment) => comment.resolvedAt === null || comment.resolvedAt === undefined
-      )
+      comments.filter((comment) => comment.resolvedAt === null || comment.resolvedAt === undefined)
     );
   }
 
   // userIdが指定されている場合、そのユーザーのコメントのみを返す
   if (args.userId) {
     const userId = args.userId;
-    filters.push((comments) =>
-      comments.filter((comment) => comment.user.id === userId)
-    );
+    filters.push((comments) => comments.filter((comment) => comment.user.id === userId));
   }
 
   // nodeIdが指定されている場合、そのノードに関連するコメントのみを返す
   if (args.nodeId) {
     const nodeId = args.nodeId;
     filters.push((comments) =>
-      comments.filter(
-        (comment) => comment.clientMeta?.nodeId?.includes(nodeId) ?? false
-      )
+      comments.filter((comment) => comment.clientMeta?.nodeId?.includes(nodeId) ?? false)
     );
   }
 
@@ -54,7 +49,7 @@ function applyFilters(comments: Comment[], args: GetCommentsArgs): Comment[] {
  * ツールインスタンス（apiClientを保持）
  */
 export interface GetCommentsTool {
-  readonly apiClient: FigmaApiClient;
+  readonly apiClient: FigmaApiClientInterface;
 }
 
 /**
@@ -64,17 +59,14 @@ export const GetCommentsTool = {
   /**
    * apiClientからツールインスタンスを作成
    */
-  from(apiClient: FigmaApiClient): GetCommentsTool {
+  from(apiClient: FigmaApiClientInterface): GetCommentsTool {
     return { apiClient };
   },
 
   /**
    * コメント取得を実行
    */
-  async execute(
-    tool: GetCommentsTool,
-    args: GetCommentsArgs
-  ): Promise<GetFileCommentsApiResponse> {
+  async execute(tool: GetCommentsTool, args: GetCommentsArgs): Promise<GetFileCommentsApiResponse> {
     const response = await FigmaApiClient.getComments(tool.apiClient, args.fileKey);
 
     // フィルターを順番に適用
