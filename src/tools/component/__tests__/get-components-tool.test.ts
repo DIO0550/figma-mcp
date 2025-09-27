@@ -1,10 +1,11 @@
 import { test, expect, beforeAll, afterAll } from 'vitest';
-import { FigmaApiClient } from '../../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../../api/figma-api-client/index.js';
 import { MockFigmaServer } from '../../../__tests__/mocks/server.js';
 import { GetComponentsTool } from '../get-components.js';
 
 let mockServer: MockFigmaServer;
-let apiClient: FigmaApiClient;
+let apiClient: FigmaApiClientInterface;
 let tool: GetComponentsTool;
 
 beforeAll(async () => {

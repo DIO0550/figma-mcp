@@ -76,7 +76,12 @@ export class MCPTestClient extends EventEmitter {
       });
 
       this.process.stderr?.on('data', (data: Buffer) => {
-        console.error('Server error:', data.toString());
+        const errorMessage = data.toString();
+        console.error('Server stderr:', errorMessage);
+        // FIGMAトークンエラーの場合は特別に処理
+        if (errorMessage.includes('FIGMA_ACCESS_TOKEN')) {
+          console.error('環境変数:', this.env);
+        }
       });
 
       this.process.on('error', (error) => {

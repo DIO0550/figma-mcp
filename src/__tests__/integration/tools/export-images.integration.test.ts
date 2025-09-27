@@ -30,6 +30,11 @@ describe('export_images Tool Integration', () => {
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
 
+    // エラーチェック
+    if (result.content[0].text.startsWith('Error:')) {
+      throw new Error(`MCPサーバーエラー: ${result.content[0].text}`);
+    }
+
     const content = JSON.parse(result.content[0].text) as { images: Record<string, string> };
     expect(content).toHaveProperty('images');
     expect(content.images).toHaveProperty('2:3');

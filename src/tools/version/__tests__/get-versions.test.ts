@@ -1,16 +1,16 @@
 import { test, expect, beforeAll, afterAll } from 'vitest';
 import { MockFigmaServer } from '../../../__tests__/mocks/server.js';
-import { createFigmaApiClient } from '../../../api/figma-api-client.js';
-import type { FigmaApiClient } from '../../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../../api/figma-api-client/index.js';
 import { TestPorts } from '../../../constants/__test__/index.js';
 
 let mockServer: MockFigmaServer;
-let apiClient: FigmaApiClient;
+let apiClient: FigmaApiClientInterface;
 
 beforeAll(async () => {
   mockServer = new MockFigmaServer(TestPorts.VERSION_TEST);
   await mockServer.start();
-  apiClient = createFigmaApiClient('test-token', `http://localhost:${TestPorts.VERSION_TEST}`);
+  apiClient = FigmaApiClient.create('test-token', `http://localhost:${TestPorts.VERSION_TEST}`);
 });
 
 afterAll(async () => {
@@ -34,7 +34,7 @@ test('有効なファイルキーでバージョン履歴を取得すると2つ�
 });
 
 test('無効なトークンでAPIリクエストを送信するとエラーがスローされる', async () => {
-  const errorClient = createFigmaApiClient(
+  const errorClient = FigmaApiClient.create(
     'invalid-token',
     `http://localhost:${TestPorts.VERSION_TEST}`
   );

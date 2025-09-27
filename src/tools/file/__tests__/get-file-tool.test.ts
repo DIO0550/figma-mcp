@@ -1,13 +1,14 @@
 import { test, expect, vi, beforeEach } from 'vitest';
 import { GetFileTool } from '../info.js';
-import { FigmaApiClient } from '../../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../../api/figma-api-client/index.js';
 import type { GetFileApiResponse } from '../../../api/endpoints/file/index.js';
 
-let apiClient: FigmaApiClient;
+let apiClient: FigmaApiClientInterface;
 let tool: GetFileTool;
 
 beforeEach(() => {
-  apiClient = {} as FigmaApiClient;
+  apiClient = {} as FigmaApiClientInterface;
   tool = GetFileTool.from(apiClient);
 });
 
