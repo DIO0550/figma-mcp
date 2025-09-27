@@ -1,5 +1,5 @@
 import type { GetFileApiOptions } from '../../api/endpoints/file/index.js';
-import { FigmaApiClient } from '../../api/figma-api-client/index.js';
+import { getFileNodes } from '../../api/figma-api-client/index.js';
 import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
 import type { NodeEntry, FileNodesResponse } from './types.js';
 import type { McpToolDefinition } from '../types.js';
@@ -52,12 +52,7 @@ export const GetFileNodesTool = {
       }
     });
 
-    const response = await FigmaApiClient.getFileNodes(
-      tool.apiClient,
-      args.file_key,
-      args.ids,
-      options
-    );
+    const response = await getFileNodes(tool.apiClient, args.file_key, args.ids, options);
     const nodeEntries = Object.entries(response.nodes || {}) as NodeEntry[];
     const nodes = nodeEntries.map(([nodeId, nodeData]) => ({
       ...nodeData.document,

@@ -1,4 +1,4 @@
-import { FigmaApiClient } from '../../api/figma-api-client/index.js';
+import { exportImages } from '../../api/figma-api-client/index.js';
 import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
 import type { ImageApiResponse } from '../../api/endpoints/images/index.js';
 import { ExportImagesArgsSchema, type ExportImagesArgs } from './export-images-args.js';
@@ -36,6 +36,6 @@ export const ExportImagesTool = {
    */
   async execute(tool: ExportImagesTool, args: ExportImagesArgs): Promise<ImageApiResponse> {
     const { fileKey, ...options } = args;
-    return FigmaApiClient.exportImages(tool.apiClient, fileKey, options);
+    return exportImages(tool.apiClient, fileKey, options);
   },
 } as const;

@@ -1,4 +1,4 @@
-import { FigmaApiClient } from '../../api/figma-api-client/index.js';
+import { getComments } from '../../api/figma-api-client/index.js';
 import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
 import type { GetFileCommentsApiResponse } from '../../api/endpoints/comments/index.js';
 import { Comment } from '../../models/comment/index.js';
@@ -67,7 +67,7 @@ export const GetCommentsTool = {
    * コメント取得を実行
    */
   async execute(tool: GetCommentsTool, args: GetCommentsArgs): Promise<GetFileCommentsApiResponse> {
-    const response = await FigmaApiClient.getComments(tool.apiClient, args.fileKey);
+    const response = await getComments(tool.apiClient, args.fileKey);
 
     // フィルターを順番に適用
     const filteredComments = applyFilters(response.comments, args);
