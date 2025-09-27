@@ -61,4 +61,26 @@ export const componentHandlers = {
 
     res.json(mockResponse);
   },
+
+  getComponentSets: (_req: Request, res: Response): void => {
+    // デフォルトのレスポンス
+    const mockResponse = {
+      meta: {
+        componentSets: [
+          {
+            key: 'component-set-1',
+            name: 'Button Variants',
+            description: 'Button component with multiple variants',
+          },
+          {
+            key: 'component-set-2',
+            name: 'Card Variants',
+            description: 'Card component with multiple variants',
+          },
+        ],
+      },
+    };
+
+    res.json(mockResponse);
+  },
 };
