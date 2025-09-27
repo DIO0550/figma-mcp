@@ -61,8 +61,9 @@ if (!accessToken) {
   process.exit(1);
 }
 
-// APIクライアントの作成
-const apiClient = createFigmaApiClient(accessToken);
+// APIクライアントの作成（モック用にベースURLを環境変数から上書き可能）
+const baseUrl = process.env.FIGMA_API_BASE_URL;
+const apiClient = createFigmaApiClient(accessToken, baseUrl);
 
 // ツールの作成
 const getFileTool = GetFileTool.from(apiClient);
