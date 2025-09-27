@@ -1,6 +1,9 @@
-import { FigmaApiClient } from '../../api/figma-api-client/index.js';
 import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
-import type { FileComponentsApiResponse } from '../../api/endpoints/components/index.js';
+import {
+  fileComponentsApi,
+  type FileComponentsApiResponse,
+} from '../../api/endpoints/components/index.js';
+import { getComponents } from '../../api/figma-api-client/index.js';
 import { GetComponentsArgsSchema, type GetComponentsArgs } from './get-components-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
 
@@ -38,22 +41,21 @@ export const GetComponentsTool = {
     tool: GetComponentsTool,
     args: GetComponentsArgs
   ): Promise<FileComponentsApiResponse> {
-    const analysis = await FigmaApiClient.getComponents(tool.apiClient, args.fileKey);
+    // APIから実際のコンポーネントデータを取得
+    const response = await fileComponentsApi(tool.apiClient.httpClient, args.fileKey);
 
-    // ComponentApiAnalysisをFileComponentsApiResponseに変換
-    const result: FileComponentsApiResponse = {
-      meta: {
-        components: [], // 実際のコンポーネントデータは別途取得が必要
-      },
-    };
-
+    // analyzeMetadataオプションが有効な場合、分析情報を追加
     if (args.analyzeMetadata) {
-      result.analysis = analysis;
+      const analysis = await getComponents(tool.apiClient, args.fileKey);
+      response.analysis = analysis;
     }
 
-    // 注: organizeVariantsオプションを使用する場合は、
-    // 実際のコンポーネントデータが必要なため、別のAPIを呼び出す必要があります
+    // organizeVariantsオプションが有効な場合、バリアント情報を整理
+    if (args.organizeVariants && response.meta.components.length > 0) {
+      // TODO: バリアント情報を整理するロジックを実装
+      response.variantSets = {};
+    }
 
-    return result;
+    return response;
   },
 } as const;
