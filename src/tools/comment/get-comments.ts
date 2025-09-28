@@ -22,9 +22,7 @@ function applyFilters(comments: Comment[], args: GetCommentsArgs): Comment[] {
 
   // showResolvedがfalseの場合、未解決のコメントのみを返す
   if (args.showResolved === false) {
-    filters.push((comments) =>
-      comments.filter((comment) => comment.resolvedAt === null || comment.resolvedAt === undefined)
-    );
+    filters.push((comments) => comments.filter((comment) => comment.resolvedAt == null));
   }
 
   // userIdが指定されている場合、そのユーザーのコメントのみを返す
