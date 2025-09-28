@@ -30,6 +30,15 @@ import { fileComponentsApi, fileComponentSetsApi } from '../endpoints/components
 import { getTeamProjectsApi } from '../endpoints/team/index.js';
 import { getProjectFilesApi } from '../endpoints/project/index.js';
 
+// デフォルト値の定数
+const DEFAULT_COMPONENT_ANALYSIS: ComponentApiAnalysis = {
+  totalComponents: 0,
+  categories: {},
+  namingPatterns: {},
+  pagesDistribution: {},
+  descriptionCoverage: 0,
+};
+
 // FigmaApiClient interface
 export interface FigmaApiClientInterface {
   readonly context: FigmaContext;
@@ -99,11 +108,8 @@ export async function getComponents(
   }
   const components = response.meta.components || [];
   return {
+    ...DEFAULT_COMPONENT_ANALYSIS,
     totalComponents: components.length,
-    categories: {},
-    namingPatterns: {},
-    pagesDistribution: {},
-    descriptionCoverage: 0,
   };
 }
 
