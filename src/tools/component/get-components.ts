@@ -4,6 +4,7 @@ import {
   type FileComponentsApiResponse,
 } from '../../api/endpoints/components/index.js';
 import { getComponents } from '../../api/figma-api-client/index.js';
+import { Component } from '../../models/component/index.js';
 import { GetComponentsArgsSchema, type GetComponentsArgs } from './get-components-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
 
@@ -52,8 +53,7 @@ export const GetComponentsTool = {
 
     // organizeVariantsオプションが有効な場合、バリアント情報を整理
     if (args.organizeVariants && response.meta.components.length > 0) {
-      // TODO: バリアント情報を整理するロジックを実装
-      response.variantSets = {};
+      response.variantSets = Component.organizeVariants(response.meta.components);
     }
 
     return response;
