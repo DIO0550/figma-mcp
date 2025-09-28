@@ -1,5 +1,21 @@
 import type { Request, Response } from 'express';
 
+// テストデータの定数
+const TEST_NODE_IDS = {
+  BUTTON_COMPONENT: '10:20',
+  CARD_COMPONENT: '10:21',
+} as const;
+
+const TEST_URLS = {
+  BUTTON_THUMBNAIL: 'https://example.com/component1.png',
+  CARD_THUMBNAIL: 'https://example.com/component2.png',
+} as const;
+
+const TEST_DATES = {
+  CREATED_AT: '2024-01-01T00:00:00Z',
+  UPDATED_AT: '2024-01-01T00:00:00Z',
+} as const;
+
 export const componentHandlers = {
   getComponents: (req: Request, res: Response): void => {
     const { fileKey } = req.params;
@@ -30,13 +46,13 @@ export const componentHandlers = {
           {
             key: 'component1',
             fileKey: fileKey,
-            nodeId: '10:20',
-            thumbnailUrl: 'https://example.com/component1.png',
+            nodeId: TEST_NODE_IDS.BUTTON_COMPONENT,
+            thumbnailUrl: TEST_URLS.BUTTON_THUMBNAIL,
             name: 'Button Component',
             description: 'A reusable button component',
             documentationLinks: [],
-            createdAt: '2024-01-01T00:00:00Z',
-            updatedAt: '2024-01-01T00:00:00Z',
+            createdAt: TEST_DATES.CREATED_AT,
+            updatedAt: TEST_DATES.UPDATED_AT,
             containingFrame: {
               pageName: 'Components',
               containingStateGroup: null,
@@ -45,13 +61,13 @@ export const componentHandlers = {
           {
             key: 'component2',
             fileKey: fileKey,
-            nodeId: '10:21',
-            thumbnailUrl: 'https://example.com/component2.png',
+            nodeId: TEST_NODE_IDS.CARD_COMPONENT,
+            thumbnailUrl: TEST_URLS.CARD_THUMBNAIL,
             name: 'Card Component',
             description: 'A reusable card component',
             documentationLinks: [],
-            createdAt: '2024-01-01T00:00:00Z',
-            updatedAt: '2024-01-01T00:00:00Z',
+            createdAt: TEST_DATES.CREATED_AT,
+            updatedAt: TEST_DATES.UPDATED_AT,
             containingFrame: {
               pageName: 'Components',
               containingStateGroup: null,
