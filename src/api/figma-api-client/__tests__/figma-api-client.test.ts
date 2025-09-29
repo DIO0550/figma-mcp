@@ -55,8 +55,9 @@ test('FigmaApiClient.getComponents - コンポーネント情報を取得でき�
   const result = await FigmaApiClient.getComponents(client, 'test-file-key');
 
   expect(result).toBeDefined();
-  expect(result.totalComponents).toBeDefined();
-  expect(typeof result.totalComponents).toBe('number');
+  expect(result.meta).toBeDefined();
+  expect(result.meta.components).toBeDefined();
+  expect(Array.isArray(result.meta.components)).toBe(true);
 });
 
 test('FigmaApiClient.getStyles - スタイル情報を取得できる', async () => {
