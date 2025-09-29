@@ -1,4 +1,5 @@
-import { FigmaApiClient } from '../../api/figma-api-client.js';
+import { getVersions } from '../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
 import type { GetVersionsApiResponse } from '../../api/endpoints/versions/index.js';
 import { GetVersionsArgsSchema, type GetVersionsArgs } from './get-versions-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
@@ -16,7 +17,7 @@ export const GetVersionsToolDefinition = {
  * ツールインスタンス（apiClientを保持）
  */
 export interface GetVersionsTool {
-  readonly apiClient: FigmaApiClient;
+  readonly apiClient: FigmaApiClientInterface;
 }
 
 /**
@@ -28,7 +29,7 @@ export const GetVersionsTool = {
    * @param apiClient - Figma APIクライアント
    * @returns GetVersionsToolインスタンス
    */
-  from(apiClient: FigmaApiClient): GetVersionsTool {
+  from(apiClient: FigmaApiClientInterface): GetVersionsTool {
     return { apiClient };
   },
 
@@ -39,6 +40,6 @@ export const GetVersionsTool = {
    * @returns バージョン一覧のレスポンス
    */
   async execute(tool: GetVersionsTool, args: GetVersionsArgs): Promise<GetVersionsApiResponse> {
-    return FigmaApiClient.getVersions(tool.apiClient, args.fileKey);
+    return getVersions(tool.apiClient, args.fileKey);
   },
 };

@@ -1,5 +1,9 @@
-import { FigmaApiClient } from '../../api/figma-api-client.js';
-import type { FileComponentsApiResponse } from '../../api/endpoints/components/index.js';
+import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
+import {
+  fileComponentsApi,
+  type FileComponentsApiResponse,
+} from '../../api/endpoints/components/index.js';
+// 分析は既存レスポンスから算出して追加する（重複API呼び出しを回避）
 import { Component } from '../../models/component/index.js';
 import { GetComponentsArgsSchema, type GetComponentsArgs } from './get-components-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
@@ -17,7 +21,7 @@ export const GetComponentsToolDefinition = {
  * ツールインスタンス（apiClientを保持）
  */
 export interface GetComponentsTool {
-  readonly apiClient: FigmaApiClient;
+  readonly apiClient: FigmaApiClientInterface;
 }
 
 /**
@@ -27,7 +31,7 @@ export const GetComponentsTool = {
   /**
    * apiClientからツールインスタンスを作成
    */
-  from(apiClient: FigmaApiClient): GetComponentsTool {
+  from(apiClient: FigmaApiClientInterface): GetComponentsTool {
     return { apiClient };
   },
 
@@ -38,13 +42,19 @@ export const GetComponentsTool = {
     tool: GetComponentsTool,
     args: GetComponentsArgs
   ): Promise<FileComponentsApiResponse> {
-    const response = await FigmaApiClient.getComponents(tool.apiClient, args.fileKey);
-    const result = { ...response };
+    // APIから実際のコンポーネントデータを取得
+    const response = await fileComponentsApi(tool.apiClient.httpClient, args.fileKey);
 
-    if (args.analyzeMetadata && response.meta.components.length > 0) {
-      result.analysis = Component.analyze(response.meta.components);
+    // オプションに基づいて新しいオブジェクトを構築（イミュータブルパターン）
+    const result: FileComponentsApiResponse = { ...response };
+
+    // analyzeMetadataオプションが有効な場合、取得済みデータから分析を生成
+    if (args.analyzeMetadata) {
+      const components = response.meta.components;
+      result.analysis = Component.analyze(components);
     }
 
+    // organizeVariantsオプションが有効な場合、バリアント情報を整理
     if (args.organizeVariants && response.meta.components.length > 0) {
       result.variantSets = Component.organizeVariants(response.meta.components);
     }

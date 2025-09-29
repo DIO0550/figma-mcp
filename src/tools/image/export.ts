@@ -1,4 +1,5 @@
-import { FigmaApiClient } from '../../api/figma-api-client.js';
+import { exportImages } from '../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../api/figma-api-client/index.js';
 import type { ImageApiResponse } from '../../api/endpoints/images/index.js';
 import { ExportImagesArgsSchema, type ExportImagesArgs } from './export-images-args.js';
 import { JsonSchema, type McpToolDefinition } from '../types.js';
@@ -16,7 +17,7 @@ export const ExportImagesToolDefinition = {
  * ツールインスタンス（apiClientを保持）
  */
 export interface ExportImagesTool {
-  readonly apiClient: FigmaApiClient;
+  readonly apiClient: FigmaApiClientInterface;
 }
 
 /**
@@ -26,7 +27,7 @@ export const ExportImagesTool = {
   /**
    * apiClientからツールインスタンスを作成
    */
-  from(apiClient: FigmaApiClient): ExportImagesTool {
+  from(apiClient: FigmaApiClientInterface): ExportImagesTool {
     return { apiClient };
   },
 
@@ -35,6 +36,6 @@ export const ExportImagesTool = {
    */
   async execute(tool: ExportImagesTool, args: ExportImagesArgs): Promise<ImageApiResponse> {
     const { fileKey, ...options } = args;
-    return FigmaApiClient.exportImages(tool.apiClient, fileKey, options);
+    return exportImages(tool.apiClient, fileKey, options);
   },
 } as const;

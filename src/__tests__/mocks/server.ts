@@ -8,6 +8,8 @@ import { styleHandlers } from './handlers/styles.js';
 import { imageHandlers } from './handlers/images.js';
 import { commentHandlers } from './handlers/comments.js';
 import { versionHandlers } from './handlers/versions.js';
+import { teamHandlers } from './handlers/team.js';
+import { projectHandlers } from './handlers/project.js';
 import { HttpStatus, ErrorMessages, Headers as HeaderNames } from '../../constants/index.js';
 import { TestPorts } from '../../constants/__test__/index.js';
 
@@ -58,6 +60,7 @@ export class MockFigmaServer {
 
     // コンポーネント・スタイル
     this.app.get('/v1/files/:fileKey/components', componentHandlers.getComponents);
+    this.app.get('/v1/files/:fileKey/component_sets', componentHandlers.getComponentSets);
     this.app.get('/v1/files/:fileKey/styles', styleHandlers.getStyles);
 
     // 画像エクスポート
@@ -66,6 +69,10 @@ export class MockFigmaServer {
     // コラボレーション
     this.app.get('/v1/files/:fileKey/comments', commentHandlers.getComments);
     this.app.get('/v1/files/:fileKey/versions', versionHandlers.getVersions);
+
+    // チーム・プロジェクト
+    this.app.get('/v1/teams/:teamId/projects', teamHandlers.getTeamProjects);
+    this.app.get('/v1/projects/:projectId/files', projectHandlers.getProjectFiles);
 
     // 404 ハンドラー
     this.app.use((req: Request, res: Response) => {

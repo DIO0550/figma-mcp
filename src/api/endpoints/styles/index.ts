@@ -3,6 +3,7 @@
 import type { HttpClient } from '../../client/client.js';
 import { ApiPath } from '../../paths.js';
 import type { Style } from '../../../models/style/style.js';
+import { convertKeysToCamelCase } from '../../../utils/case-converter/index.js';
 
 // API Response
 export interface StyleApiStatistics {
@@ -25,5 +26,7 @@ export async function getStylesApi(
   client: HttpClient,
   fileKey: string
 ): Promise<GetStylesApiResponse> {
-  return client.get<GetStylesApiResponse>(ApiPath.fileStyles(fileKey));
+  const raw = await client.get<unknown>(ApiPath.fileStyles(fileKey));
+  // Figma APIはsnake_caseで返すため、実行時にcamelCaseへ変換
+  return convertKeysToCamelCase(raw) as GetStylesApiResponse;
 }

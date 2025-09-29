@@ -1,14 +1,15 @@
 import { test, expect, vi, beforeEach } from 'vitest';
 import { GetFileNodesTool } from '../nodes.js';
-import { FigmaApiClient } from '../../../api/figma-api-client.js';
+import { FigmaApiClient } from '../../../api/figma-api-client/index.js';
+import type { FigmaApiClientInterface } from '../../../api/figma-api-client/index.js';
 import type { GetFileNodesApiResponse } from '../../../api/endpoints/file-nodes/index.js';
 import { GetFileNodesArgsSchema } from '../get-file-nodes-args.js';
 
-let apiClient: FigmaApiClient;
+let apiClient: FigmaApiClientInterface;
 let tool: GetFileNodesTool;
 
 beforeEach(() => {
-  apiClient = {} as FigmaApiClient;
+  apiClient = {} as FigmaApiClientInterface;
   tool = GetFileNodesTool.from(apiClient);
 });
 
