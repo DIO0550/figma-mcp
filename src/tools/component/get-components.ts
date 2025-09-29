@@ -45,17 +45,20 @@ export const GetComponentsTool = {
     // APIから実際のコンポーネントデータを取得
     const response = await fileComponentsApi(tool.apiClient.httpClient, args.fileKey);
 
+    // オプションに基づいて新しいオブジェクトを構築（イミュータブルパターン）
+    const result: FileComponentsApiResponse = { ...response };
+
     // analyzeMetadataオプションが有効な場合、取得済みデータから分析を生成
     if (args.analyzeMetadata) {
       const components = response.meta.components;
-      response.analysis = Component.analyze(components);
+      result.analysis = Component.analyze(components);
     }
 
     // organizeVariantsオプションが有効な場合、バリアント情報を整理
     if (args.organizeVariants && response.meta.components.length > 0) {
-      response.variantSets = Component.organizeVariants(response.meta.components);
+      result.variantSets = Component.organizeVariants(response.meta.components);
     }
 
-    return response;
+    return result;
   },
 } as const;
