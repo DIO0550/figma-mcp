@@ -13,7 +13,7 @@ import type {
   VersionsApiResponse,
   StylesApiResponse,
   FileComponentSetsApiResponse,
-  ComponentApiAnalysis,
+  FileComponentsApiResponse,
 } from '../endpoints/index.js';
 import type { GetTeamProjectsApiResponse } from '../endpoints/team/index.js';
 import type { GetProjectFilesApiResponse } from '../endpoints/project/index.js';
@@ -29,15 +29,6 @@ import {
 import { fileComponentsApi, fileComponentSetsApi } from '../endpoints/components/index.js';
 import { getTeamProjectsApi } from '../endpoints/team/index.js';
 import { getProjectFilesApi } from '../endpoints/project/index.js';
-
-// デフォルト値の定数
-const DEFAULT_COMPONENT_ANALYSIS: ComponentApiAnalysis = {
-  totalComponents: 0,
-  categories: {},
-  namingPatterns: {},
-  pagesDistribution: {},
-  descriptionCoverage: 0,
-};
 
 // FigmaApiClient interface
 export interface FigmaApiClientInterface {
@@ -101,16 +92,8 @@ export async function getFileNodes(
 export async function getComponents(
   client: FigmaApiClientInterface,
   fileKey: string
-): Promise<ComponentApiAnalysis> {
-  const response = await fileComponentsApi(client.httpClient, fileKey);
-  if (response.analysis) {
-    return response.analysis;
-  }
-  const components = response.meta.components || [];
-  return {
-    ...DEFAULT_COMPONENT_ANALYSIS,
-    totalComponents: components.length,
-  };
+): Promise<FileComponentsApiResponse> {
+  return await fileComponentsApi(client.httpClient, fileKey);
 }
 
 export async function getComponentSets(
