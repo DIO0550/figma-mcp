@@ -22,6 +22,8 @@ function applyFilters(comments: Comment[], args: GetCommentsArgs): Comment[] {
 
   // showResolvedがfalseの場合、未解決のコメントのみを返す
   if (args.showResolved === false) {
+    // == null でnullおよびundefinedの両方を意図的に判定しています
+    // （resolvedAtが未解決の場合はnullまたはundefinedとなるため）
     filters.push((comments) => comments.filter((comment) => comment.resolvedAt == null));
   }
 
