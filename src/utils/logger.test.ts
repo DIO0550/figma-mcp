@@ -1,3 +1,7 @@
+/**
+ * Logger機能のテスト
+ * コンソール出力の動作、ログレベル制御、データ付きログ出力を検証
+ */
 import { test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createConsoleLogger, LogLevel } from './logger.js';
 
