@@ -5,9 +5,9 @@
 import { test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createConsoleLogger, LogLevel } from './logger.js';
 
-let consoleLogSpy: ReturnType<typeof vi.spyOn> | undefined;
-let consoleWarnSpy: ReturnType<typeof vi.spyOn> | undefined;
-let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined;
+let consoleLogSpy: ReturnType<typeof vi.spyOn>;
+let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
+let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
   consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -63,7 +63,7 @@ test('logger.errorでconsole.errorに[ERROR]タグ付きメッセージが出力
   expect(call[0]).toMatch(/エラーメッセージ/);
 });
 
-test('WARNレベルに設定するとDEBUGとINFOメッセージは出力されない', () => {
+test('WARNレベルに設定したloggerでDEBUGとINFOメッセージを呼ぶとコンソールに出力されない', () => {
   const logger = createConsoleLogger(LogLevel.WARN);
 
   logger.debug('デバッグ');
@@ -74,7 +74,7 @@ test('WARNレベルに設定するとDEBUGとINFOメッセージは出力され�
   expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
 });
 
-test('OFFレベルに設定すると全てのログが出力されない', () => {
+test('OFFレベルに設定したloggerで全てのメッセージを呼ぶとコンソールに出力されない', () => {
   const logger = createConsoleLogger(LogLevel.OFF);
 
   logger.debug('デバッグ');
@@ -87,7 +87,7 @@ test('OFFレベルに設定すると全てのログが出力されない', () =>
   expect(consoleErrorSpy).not.toHaveBeenCalled();
 });
 
-test('オブジェクトデータをメッセージと一緒に出力できる', () => {
+test('logger.infoでオブジェクトデータを渡すとメッセージと一緒にコンソールに出力される', () => {
   const logger = createConsoleLogger();
   const data = { userId: 123, action: 'login' };
 
@@ -99,7 +99,7 @@ test('オブジェクトデータをメッセージと一緒に出力できる',
   expect(call[1]).toEqual(data);
 });
 
-test('データ引数を省略すると空文字列が第2引数として出力される', () => {
+test('logger.infoでデータ引数を省略するとコンソールに空文字列が第2引数として出力される', () => {
   const logger = createConsoleLogger();
 
   logger.info('メッセージのみ');
@@ -110,7 +110,7 @@ test('データ引数を省略すると空文字列が第2引数として出力�
   expect(call[1]).toBe('');
 });
 
-test('setLevelで実行中にログレベルを変更できる', () => {
+test('logger.setLevelで実行中にログレベルを変更するとその後のログ出力が変更される', () => {
   const logger = createConsoleLogger(LogLevel.ERROR);
 
   logger.info('出力されない');
