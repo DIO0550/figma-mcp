@@ -5,9 +5,9 @@
 import { test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createConsoleLogger, LogLevel } from './logger.js';
 
-let consoleLogSpy: ReturnType<typeof vi.spyOn>;
-let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
-let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+let consoleLogSpy: ReturnType<typeof vi.spyOn> | undefined;
+let consoleWarnSpy: ReturnType<typeof vi.spyOn> | undefined;
+let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined;
 
 beforeEach(() => {
   consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
