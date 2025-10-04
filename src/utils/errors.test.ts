@@ -245,10 +245,7 @@ test('isRateLimitError - 空オブジェクトは、レート制限エラーと�
 
 test('isRateLimitError - statusプロパティが文字列の場合、レート制限エラーと判定されない', () => {
   // Arrange
-  const errorWithStringStatus = new Error('Error') as unknown as {
-    status: string;
-  };
-  errorWithStringStatus.status = '429';
+  const errorWithStringStatus = Object.assign(new Error('Error'), { status: '429' });
 
   // Act & Assert
   expect(isRateLimitError(errorWithStringStatus)).toBe(false);
