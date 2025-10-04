@@ -4,7 +4,9 @@ import type { RateLimitInfo } from './rate-limit/index';
 import { HttpStatus, FigmaErrorNames, ErrorMessages } from '../constants';
 
 /**
- * モックResponseオブジェクトを作成するヘルパー関数
+ * モックResponseオブジェクトを作成するヘルパー関数。
+ * @param options レスポンスのステータスやJSONの内容などモックに必要な値
+ * @returns Figma APIレスポンスを模したResponseオブジェクト
  */
 function createMockResponse(options: {
   status: number;
