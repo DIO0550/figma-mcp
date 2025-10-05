@@ -5,7 +5,10 @@ import { HttpStatus, FigmaErrorNames, ErrorMessages } from '../constants';
 
 /**
  * モックResponseオブジェクトを作成するヘルパー関数。
- * @param options レスポンスのステータスやJSONの内容などモックに必要な値
+ * @param options.status レスポンスのHTTPステータスコード
+ * @param options.statusText レスポンスのステータステキスト
+ * @param options.jsonData JSONのパース結果として返すデータ。未指定の場合は空オブジェクトを返す
+ * @param options.shouldThrow trueの場合はjson呼び出し時に例外を投げる想定を表す
  * @returns Figma APIレスポンスを模したResponseオブジェクト
  */
 function createMockResponse(options: {
