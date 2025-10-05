@@ -51,7 +51,9 @@ async function fetch(
 ): Promise<ImageExport> {
   const params = new URLSearchParams();
   params.append('ids', options.nodeIds.join(','));
-  params.append('format', options.format || 'PNG');
+  // Figma APIは小文字のフォーマットを期待するため、toLowerCase()で正規化
+  const format = options.format || 'PNG';
+  params.append('format', format.toLowerCase());
   if (options.scale) {
     params.append('scale', options.scale.toString());
   }
@@ -71,7 +73,7 @@ async function fetch(
 
   return {
     nodeIds: options.nodeIds,
-    format: options.format || 'PNG',
+    format: format,
     scale: options.scale || 1,
     urls: data.images || {},
   };
