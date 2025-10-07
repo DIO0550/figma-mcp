@@ -51,10 +51,10 @@ const server = new Server(
 function resolveLogLevelFromEnv(envValue: string | undefined): LogLevel {
   if (!envValue) return LogLevel.INFO;
 
-  const key = envValue.trim().toUpperCase();
+  const key = envValue.trim().toUpperCase() as keyof typeof LogLevel;
   // enum のキーにマッチするかを安全に確認
   if (key in LogLevel) {
-    const lvl = (LogLevel as unknown as Record<string, LogLevel>)[key];
+    const lvl = LogLevel[key];
     if (typeof lvl === 'number') return lvl;
   }
 
@@ -67,7 +67,7 @@ function resolveLogLevelFromEnv(envValue: string | undefined): LogLevel {
 
 function resolveBaseUrlFromEnv(): string | undefined {
   const baseUrl = (process.env.FIGMA_API_BASE_URL || process.env.FIGMA_BASE_URL || '').trim();
-  return baseUrl || undefined;
+  return baseUrl.length > 0 ? baseUrl : undefined;
 }
 
 const logLevel = resolveLogLevelFromEnv(process.env.LOG_LEVEL);
