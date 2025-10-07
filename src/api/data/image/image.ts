@@ -71,6 +71,7 @@ async function fetch(
 
   const data = (await response.json()) as ImageApiResponse;
 
+  // formatは大文字の元の値を返す（API送信時のみ小文字化）
   return {
     nodeIds: options.nodeIds,
     format,

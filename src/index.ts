@@ -65,6 +65,11 @@ function resolveLogLevelFromEnv(envValue: string | undefined): LogLevel {
   return LogLevel.INFO;
 }
 
+function resolveBaseUrlFromEnv(): string | undefined {
+  const baseUrl = (process.env.FIGMA_API_BASE_URL || process.env.FIGMA_BASE_URL || '').trim();
+  return baseUrl || undefined;
+}
+
 const logLevel = resolveLogLevelFromEnv(process.env.LOG_LEVEL);
 Logger.init({ type: 'mcp', server, level: logLevel });
 
@@ -76,9 +81,7 @@ if (!accessToken) {
 }
 
 // APIクライアントの作成（モック用にベースURLを環境変数から上書き可能）
-// FIGMA_API_BASE_URL を優先し、後方互換として FIGMA_BASE_URL も許可
-const baseUrlEnv = (process.env.FIGMA_API_BASE_URL || process.env.FIGMA_BASE_URL || '').trim();
-const apiClient = createFigmaApiClient(accessToken, baseUrlEnv || undefined);
+const apiClient = createFigmaApiClient(accessToken, resolveBaseUrlFromEnv());
 
 // ツールの作成
 const getFileTool = GetFileTool.from(apiClient);
