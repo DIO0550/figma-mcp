@@ -73,7 +73,7 @@ async function fetch(
 
   return {
     nodeIds: options.nodeIds,
-    format: format,
+    format,
     scale: options.scale || 1,
     urls: data.images || {},
   };

@@ -53,7 +53,7 @@ function resolveLogLevelFromEnv(envValue: string | undefined): LogLevel {
 
   const key = envValue.trim().toUpperCase();
   // enum のキーにマッチするかを安全に確認
-  if (Object.prototype.hasOwnProperty.call(LogLevel, key)) {
+  if (key in LogLevel) {
     const lvl = (LogLevel as unknown as Record<string, LogLevel>)[key];
     if (typeof lvl === 'number') return lvl;
   }
@@ -77,8 +77,7 @@ if (!accessToken) {
 
 // APIクライアントの作成（モック用にベースURLを環境変数から上書き可能）
 // FIGMA_API_BASE_URL を優先し、後方互換として FIGMA_BASE_URL も許可
-const baseUrlEnv = (process.env.FIGMA_API_BASE_URL || process.env.FIGMA_BASE_URL || '')
-  .trim();
+const baseUrlEnv = (process.env.FIGMA_API_BASE_URL || process.env.FIGMA_BASE_URL || '').trim();
 const apiClient = createFigmaApiClient(accessToken, baseUrlEnv || undefined);
 
 // ツールの作成
