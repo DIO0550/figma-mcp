@@ -6,6 +6,7 @@ import type { DeepSnakeCase } from '../../../utils/case-converter/index.js';
  *
  * @param value - 変換対象の値
  * @returns URLパラメータとして使用可能な文字列
+ * @throws オブジェクト値が渡された場合はエラーをスロー
  *
  * @example
  * valueToString(['a', 'b', 'c']) // 'a,b,c'
@@ -19,6 +20,11 @@ export function valueToString(value: unknown): string {
 
   if (typeof value === 'boolean' || typeof value === 'number') {
     return String(value);
+  }
+
+  // オブジェクトの場合はエラーをスロー（[object Object]を防ぐ）
+  if (value !== null && typeof value === 'object') {
+    throw new Error('Object values are not allowed in URL parameters');
   }
 
   // 型安全性を確保: 明示的にString()を使用
