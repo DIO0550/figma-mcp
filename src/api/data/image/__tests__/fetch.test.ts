@@ -41,7 +41,7 @@ describe('ImageExport.fetch', () => {
     expect(imageExport.scale).toBe(2);
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://api.figma.com/v1/images/test-file-key?ids=1%3A1%2C2%3A2&format=PNG&scale=2',
+      'https://api.figma.com/v1/images/test-file-key?ids=1%3A1%2C2%3A2&format=png&scale=2',
       expect.objectContaining({
         method: 'GET',
         headers: mockContext.headers,
@@ -64,7 +64,7 @@ describe('ImageExport.fetch', () => {
     await ImageExport.fetch(mockContext, 'test-file-key', { nodeIds: ['3:3'], format: 'SVG' });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('format=SVG'),
+      expect.stringContaining('format=svg'),
       expect.any(Object)
     );
   });
@@ -84,7 +84,7 @@ describe('ImageExport.fetch', () => {
     await ImageExport.fetch(mockContext, 'test-file-key', { nodeIds: ['4:4'], format: 'PDF' });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('format=PDF'),
+      expect.stringContaining('format=pdf'),
       expect.any(Object)
     );
   });

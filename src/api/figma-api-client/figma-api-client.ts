@@ -59,7 +59,8 @@ export function createFigmaApiClientFromEnv(): FigmaApiClientInterface {
   if (!accessToken) {
     throw new Error('FIGMA_ACCESS_TOKEN environment variable is required');
   }
-  const baseUrl = process.env.FIGMA_BASE_URL;
+  // FIGMA_API_BASE_URLを優先し、後方互換のためFIGMA_BASE_URLもフォールバック
+  const baseUrl = process.env.FIGMA_API_BASE_URL || process.env.FIGMA_BASE_URL;
   return createFigmaApiClient(accessToken, baseUrl);
 }
 

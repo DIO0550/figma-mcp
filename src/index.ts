@@ -48,10 +48,29 @@ const server = new Server(
 );
 
 // ロガーの初期化
-const logLevel = process.env.LOG_LEVEL
-  ? LogLevel[process.env.LOG_LEVEL as keyof typeof LogLevel]
-  : LogLevel.INFO;
+function resolveLogLevelFromEnv(envValue: string | undefined): LogLevel {
+  if (!envValue) return LogLevel.INFO;
 
+  const key = envValue.trim().toUpperCase() as keyof typeof LogLevel;
+  // enum のキーにマッチするかを安全に確認
+  if (key in LogLevel) {
+    const lvl = LogLevel[key];
+    if (typeof lvl === 'number') return lvl;
+  }
+
+  // Logger 初期化前のため console.warn を使用
+  console.warn(
+    `Invalid LOG_LEVEL: ${envValue}. Falling back to INFO. Allowed: DEBUG|INFO|WARN|ERROR|OFF`
+  );
+  return LogLevel.INFO;
+}
+
+function resolveBaseUrlFromEnv(): string | undefined {
+  const baseUrl = (process.env.FIGMA_API_BASE_URL || process.env.FIGMA_BASE_URL || '').trim();
+  return baseUrl.length > 0 ? baseUrl : undefined;
+}
+
+const logLevel = resolveLogLevelFromEnv(process.env.LOG_LEVEL);
 Logger.init({ type: 'mcp', server, level: logLevel });
 
 // APIクライアントの初期化
@@ -62,8 +81,7 @@ if (!accessToken) {
 }
 
 // APIクライアントの作成（モック用にベースURLを環境変数から上書き可能）
-const baseUrl = process.env.FIGMA_API_BASE_URL;
-const apiClient = createFigmaApiClient(accessToken, baseUrl);
+const apiClient = createFigmaApiClient(accessToken, resolveBaseUrlFromEnv());
 
 // ツールの作成
 const getFileTool = GetFileTool.from(apiClient);
