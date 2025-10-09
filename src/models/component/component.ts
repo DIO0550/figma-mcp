@@ -56,6 +56,33 @@ export const Component = {
 
   /**
    * バリアント情報を整理する
+   *
+   * @param components - 整理対象のコンポーネント配列
+   * @returns バリアントセットのマップ（キー: セットID）
+   *
+   * @remarks
+   * この実装は簡易的なもので、コンポーネント名からバリアントプロパティを推測します。
+   * Figma APIの実際のvariant propertiesを使用する場合は、より精緻な実装が必要です。
+   *
+   * 現在の仕様:
+   * - componentSetIdが存在するコンポーネントはバリアントとして扱う
+   * - コンポーネント名の最初の部分（'/'の前）をセット名として使用
+   * - プロパティの抽出は未実装（将来の拡張ポイント）
+   * - 単独コンポーネントは仮想セットIDで個別に管理
+   *
+   * @example
+   * ```typescript
+   * const components = [
+   *   { key: '1', name: 'Button/Primary', componentSetId: 'set1' },
+   *   { key: '2', name: 'Button/Secondary', componentSetId: 'set1' },
+   *   { key: '3', name: 'Icon', componentSetId: null },
+   * ];
+   * const sets = Component.organizeVariants(components);
+   * // {
+   * //   'set1': { name: 'Button', variants: ['1', '2'], properties: {} },
+   * //   'single-3': { name: 'Icon', variants: ['3'], properties: {} }
+   * // }
+   * ```
    */
   organizeVariants(components: FigmaComponent[]): Record<string, VariantApiSet> {
     const variantSets: Record<string, VariantApiSet> = {};
