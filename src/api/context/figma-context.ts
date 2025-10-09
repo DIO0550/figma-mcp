@@ -1,3 +1,5 @@
+import { DEFAULT_BASE_URL } from '../config/api-config.js';
+
 /**
  * Figma APIアクセスのためのコンテキスト情報
  * アクセストークン、ベースURL、HTTPヘッダーを管理
@@ -15,7 +17,6 @@ export interface FigmaContext {
  * FigmaContextのコンパニオンオブジェクト相当の関数群
  * インスタンス生成と操作のための純粋関数を提供
  */
-const DEFAULT_BASE_URL = 'https://api.figma.com';
 
 function from(
   accessToken: string,

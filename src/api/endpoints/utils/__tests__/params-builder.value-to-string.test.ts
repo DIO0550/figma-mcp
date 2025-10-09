@@ -60,3 +60,16 @@ test('valueToString: undefined値を含む配列を渡すと空文字列とし�
   const arrayWithUndefined = ['a', undefined, 'b'];
   expect(valueToString(arrayWithUndefined)).toBe('a,,b');
 });
+
+test('valueToString: オブジェクトを渡すとエラーをスローする', () => {
+  expect(() => valueToString({ key: 'value' })).toThrow(
+    'Object values are not allowed in URL parameters'
+  );
+  expect(() => valueToString({ nested: { value: 1 } })).toThrow(
+    'Object values are not allowed in URL parameters'
+  );
+});
+
+test('valueToString: 空オブジェクトを渡すとエラーをスローする', () => {
+  expect(() => valueToString({})).toThrow('Object values are not allowed in URL parameters');
+});
