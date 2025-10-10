@@ -5,6 +5,9 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     fileParallelism: false, // ファイル単位の並列実行を無効化
+    env: {
+      LOG_LEVEL: 'ERROR', // テスト環境ではログノイズを削減
+    },
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
